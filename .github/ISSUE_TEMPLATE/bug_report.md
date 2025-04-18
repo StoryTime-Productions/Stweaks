@@ -1,32 +1,40 @@
 ---
 name: Bug report
-about: Create a report to help us improve
-title: ''
+about: Create a bug report to help us improve
 labels: bug
-assignees: ''
-
+assignees: ""
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+### 🐛 Issue Summary:
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+[Concise summary of the bug]
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+### 📜 Description:
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+[Detailed description of the bug]
 
-**Version information:**
- - Vanilla version: [e.g. 1.16.1]
- - Server version: [e.g. paper-123]
- - Plugin version [e.g. v0.1.0]
+### ✅ Expected Behavior:
 
-**Additional context**
-Add any other context about the problem here including console errors.
+[Describe what should happen]
+
+### ❌ Actual Behavior:
+
+[Describe what actually happens]
+
+### 🔁 Steps to Reproduce:
+
+1.
+2.
+3.
+
+### 💡 Possible Solutions
+
+[Describe possible solutions. Delete section if empty]
+
+### Additional Information:
+
+**📷 Screenshots / Code Snippets**
+
+**🖥 Environment**
+
+**📝 Additional context** [Add any other context about the problem here.]
