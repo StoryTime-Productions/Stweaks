@@ -1,0 +1,20 @@
+main: ${PACKAGE}.${NAME}
+name: ${NAME}
+version: "${VERSION}"
+api-version: "1.21.4"
+author: StoryTimeProductions
+description: A plugin containing various in-house tweaks for the StoryTime SMP.
+commands:
+  ex:
+    description: Base command for EXAMPLE
+    usage: "For a list of commands, type /ex help"
+    aliases: example
+permissions:
+  example.test:
+    description: DESCRIPTION
+    default: true
+  example.*:
+    description: Grants all other permissions
+    default: false
+    children:
+      example.test: true

@@ -1,0 +1,22 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "build:"
+    target-branch: "main"
+    reviewers:
+      - "Niravanaa"
+      - "getll"
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps:"
+    target-branch: "main"
+    reviewers:
+      - "Niravanaa"
+      - "getll"
