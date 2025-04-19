@@ -1,7 +1,9 @@
 package com.storytimeproductions.stweaks.listeners;
 
+import com.storytimeproductions.stweaks.config.SettingsManager;
 import com.storytimeproductions.stweaks.playtime.PlaytimeTracker;
 import com.storytimeproductions.stweaks.util.BossBarManager;
+import com.storytimeproductions.stweaks.util.TablistManager;
 import java.util.HashMap;
 import java.util.UUID;
 import org.bukkit.Bukkit;
@@ -77,6 +79,7 @@ public class PlayerActivityListener implements Listener {
     UUID uuid = event.getPlayer().getUniqueId();
     lastMovement.put(uuid, System.currentTimeMillis()); // Initialize last movement
     BossBarManager.updateBossBar(event.getPlayer());
+    TablistManager.updateTablist(event.getPlayer(), SettingsManager.getWeekendMultiplier());
   }
 
   /**

@@ -52,7 +52,14 @@ public class Stweaks extends JavaPlugin {
     EventManager.init(this);
     BossBarManager.init(this);
 
-    getLogger().info("Stweaks enabled!");
+    getLogger().info("");
+    getLogger().info("   _____ _                      _        ");
+    getLogger().info("  / ____| |                    | |       ");
+    getLogger().info(" | (___ | |___      _____  __ _| | _____ ");
+    getLogger().info("  \\___ \\| __\\ \\ /\\ / / _ \\/ _` | |/ / __|");
+    getLogger().info("  ____) | |_ \\ V  V /  __/ (_| |   <\\__ \\");
+    getLogger().info(" |_____/ \\__| \\_/\\_/ \\___|\\__,_|_|\\_\\___/");
+    getLogger().info("");
   }
 
   /**
