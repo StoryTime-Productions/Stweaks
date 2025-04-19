@@ -4,7 +4,6 @@ import com.storytimeproductions.stweaks.commands.StBoostCommand;
 import com.storytimeproductions.stweaks.commands.StStatusCommand;
 import com.storytimeproductions.stweaks.config.SettingsManager;
 import com.storytimeproductions.stweaks.events.EventManager;
-import com.storytimeproductions.stweaks.listeners.AfkListener;
 import com.storytimeproductions.stweaks.listeners.PlayerActivityListener;
 import com.storytimeproductions.stweaks.playtime.PlaytimeTracker;
 import com.storytimeproductions.stweaks.util.BossBarManager;
@@ -41,8 +40,7 @@ public class Stweaks extends JavaPlugin {
     dbManager.connect();
 
     // Register event listeners
-    getServer().getPluginManager().registerEvents(new PlayerActivityListener(), this);
-    getServer().getPluginManager().registerEvents(new AfkListener(), this);
+    getServer().getPluginManager().registerEvents(new PlayerActivityListener(this), this);
 
     // Register commands
     getCommand("ststatus").setExecutor(new StStatusCommand());

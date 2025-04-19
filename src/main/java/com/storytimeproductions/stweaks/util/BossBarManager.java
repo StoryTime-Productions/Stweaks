@@ -62,8 +62,15 @@ public class BossBarManager {
     double progress = (3600 - totalSecondsLeft) / 3600.0;
     progress = Math.min(1.0, Math.max(0.0, progress));
 
+    // AFK check
+    boolean isAfk = false;
+    if (PlaytimeTracker.getData(uuid) != null) {
+      isAfk = PlaytimeTracker.getData(uuid).isAfk();
+    }
+
     String timeFormatted = String.format("%02d:%02d", minutesLeft, secondsLeft);
-    String status = "Remaining playtime: " + timeFormatted;
+    String status =
+        player.getName() + "'s remaining playtime: " + timeFormatted + (isAfk ? " (AFK)" : "");
 
     final float finalProgress = (float) progress;
 
@@ -83,7 +90,7 @@ public class BossBarManager {
 
     if (finalProgress >= 1.0) {
       bar.color(Color.BLUE);
-      bar.name(Component.text("✅ You've completed today's playtime!"));
+      bar.name(Component.text("✅ You've ran out of playtime!"));
     } else if (finalProgress >= 0.5) {
       bar.color(Color.YELLOW);
     } else {

@@ -9,6 +9,8 @@ public class PlaytimeData {
   /** Total number of seconds the player has played. */
   private double secondsPlayed;
 
+  private Long afkSince;
+
   /** Indicates whether the player is currently AFK (away from keyboard). */
   private boolean isAfk;
 
@@ -79,5 +81,19 @@ public class PlaytimeData {
    */
   public void setAfk(boolean afk) {
     isAfk = afk;
+  }
+
+  /**
+   * Gets the time in milliseconds since the player was last marked as AFK.
+   *
+   * <p>This method returns the time that has passed since the player was last considered AFK. It
+   * can be used to determine how long the player has been inactive. If the player is currently not
+   * AFK, it may return {@code null} or a default value indicating no AFK status.
+   *
+   * @return The time in milliseconds since the player was last marked AFK, or {@code null} if the
+   *     player is not currently AFK.
+   */
+  public Long getAfkSince() {
+    return afkSince;
   }
 }

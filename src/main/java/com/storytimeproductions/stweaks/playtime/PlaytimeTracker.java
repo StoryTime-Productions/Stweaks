@@ -44,6 +44,11 @@ public class PlaytimeTracker {
                   player.getUniqueId(), k -> new PlaytimeData());
           if (!data.isAfk()) {
             data.addSeconds(1);
+          } else {
+            Long afkStart = data.getAfkSince();
+            if (afkStart != null && System.currentTimeMillis() - afkStart <= 3 * 60 * 1000) {
+              data.addSeconds(1);
+            }
           }
         }
       }
