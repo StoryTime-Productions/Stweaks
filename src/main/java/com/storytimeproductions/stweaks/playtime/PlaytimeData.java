@@ -1,36 +1,44 @@
 package com.storytimeproductions.stweaks.playtime;
 
-/**
- * Represents the playtime data for a player.
- *
- * <p>This class stores the amount of time a player has played and whether the player is marked as
- * AFK (Away From Keyboard). It provides methods to update and retrieve the player's playtime and
- * AFK status.
- */
+/** Represents the playtime data for a player. */
 public class PlaytimeData {
-  private double minutesPlayed;
+  private double secondsPlayed; // Store total seconds played
   private boolean isAfk;
 
   /**
-   * Adds one minute of playtime to the player's total minutes played, factoring in a multiplier.
+   * Adds seconds to the player's total time played.
    *
-   * <p>This method increments the minutes played by one minute, multiplied by the provided
-   * multiplier. This allows for adjusting the playtime based on conditions like weekends or special
-   * events.
-   *
-   * @param multiplier The multiplier to apply to the playtime.
+   * @param seconds The seconds played to add.
    */
-  public void addMinute(double multiplier) {
-    minutesPlayed += 1 * multiplier;
+  public void addSeconds(double seconds) {
+    this.secondsPlayed += seconds;
   }
 
   /**
-   * Retrieves the total number of minutes the player has played.
+   * Retrieves the total seconds played by the player (rounded down).
    *
-   * @return The total minutes played by the player.
+   * @return The total seconds played.
    */
-  public double getMinutesPlayed() {
-    return minutesPlayed;
+  public long getTotalSecondsPlayed() {
+    return (long) secondsPlayed;
+  }
+
+  /**
+   * Retrieves the number of full minutes played.
+   *
+   * @return The total minutes played.
+   */
+  public long getMinutesPlayed() {
+    return (long) (secondsPlayed / 60);
+  }
+
+  /**
+   * Retrieves the remaining seconds after full minutes.
+   *
+   * @return The seconds part after minutes.
+   */
+  public long getRemainingSeconds() {
+    return (long) secondsPlayed % 60;
   }
 
   /**
@@ -44,8 +52,6 @@ public class PlaytimeData {
 
   /**
    * Sets the player's AFK status.
-   *
-   * <p>This method updates the player's AFK status, marking them as either AFK or not AFK.
    *
    * @param afk true if the player is AFK, false otherwise.
    */

@@ -7,6 +7,7 @@ import com.storytimeproductions.stweaks.events.EventManager;
 import com.storytimeproductions.stweaks.listeners.AfkListener;
 import com.storytimeproductions.stweaks.listeners.PlayerActivityListener;
 import com.storytimeproductions.stweaks.playtime.PlaytimeTracker;
+import com.storytimeproductions.stweaks.util.BossBarManager;
 import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -45,6 +46,7 @@ public class Stweaks extends JavaPlugin {
     // Initialize playtime tracker and event manager
     PlaytimeTracker.init(this);
     EventManager.init(this);
+    BossBarManager.init(this);
 
     getLogger().info("Stweaks enabled!");
   }

@@ -1,12 +1,9 @@
 package com.storytimeproductions.stweaks.playtime;
 
-import com.storytimeproductions.stweaks.util.TimeUtils;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.UUID;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * Manages and tracks the playtime of players on the server.
@@ -16,8 +13,7 @@ import org.bukkit.scheduler.BukkitRunnable;
  * playtime tracking, set a player's AFK status, retrieve playtime data, and shutdown the tracker.
  */
 public class PlaytimeTracker {
-  private static final HashMap<UUID, PlaytimeData> playtimeMap = new HashMap<>();
-  private static JavaPlugin plugin;
+  public static final HashMap<UUID, PlaytimeData> playtimeMap = new HashMap<>();
 
   /**
    * Initializes the PlaytimeTracker and starts periodic playtime updates.
@@ -28,22 +24,7 @@ public class PlaytimeTracker {
    *
    * @param pl The plugin instance that will be used to schedule the periodic task.
    */
-  public static void init(JavaPlugin pl) {
-    plugin = pl;
-
-    new BukkitRunnable() {
-      @Override
-      public void run() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-          PlaytimeData data =
-              playtimeMap.computeIfAbsent(player.getUniqueId(), k -> new PlaytimeData());
-          if (!data.isAfk()) {
-            data.addMinute(TimeUtils.getTodayMultiplier());
-          }
-        }
-      }
-    }.runTaskTimer(plugin, 0L, 1200L); // 1 min
-  }
+  public static void init(JavaPlugin pl) {}
 
   /**
    * Shuts down the playtime tracker.
@@ -79,5 +60,52 @@ public class PlaytimeTracker {
    */
   public static PlaytimeData getData(UUID uuid) {
     return playtimeMap.get(uuid);
+  }
+
+  /**
+   * Retrieves the remaining time in minutes for a player.
+   *
+   * @param uuid The player's unique identifier.
+   * @return The remaining minutes.
+   */
+  public static long getMinutes(UUID uuid) {
+    PlaytimeData data = playtimeMap.get(uuid);
+    if (data == null) {
+      return 60; // Assume full hour is required
+    }
+
+    long totalMinutes = 60 - data.getMinutesPlayed(); // Subtract the minutes already played
+    return Math.max(totalMinutes, 0);
+  }
+
+  /**
+   * Retrieves the remaining time in seconds for a player.
+   *
+   * @param uuid The player's unique identifier.
+   * @return The remaining seconds.
+   */
+  public static long getSeconds(UUID uuid) {
+    PlaytimeData data = playtimeMap.get(uuid);
+    if (data == null) {
+      return 0; // No playtime tracked, return 0 seconds
+    }
+
+    // Calculate remaining seconds
+    long totalSeconds = 3600 - data.getTotalSecondsPlayed();
+
+    // Ensure that totalSeconds doesn't go below 0 (in case the player already
+    // completed the 60 minutes)
+    return Math.max(totalSeconds, 0);
+  }
+
+  /**
+   * Gets the total remaining time for a player as a Duration.
+   *
+   * @param uuid The player's unique identifier.
+   * @return The remaining time as Duration.
+   */
+  public static Duration getTimeLeft(UUID uuid) {
+    long secondsLeft = getSeconds(uuid); // Get remaining seconds
+    return Duration.ofSeconds(secondsLeft);
   }
 }
