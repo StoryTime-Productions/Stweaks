@@ -16,8 +16,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 /**
  * Manages Boss Bars that show each player's remaining playtime progress.
  *
- * <p>The BossBar updates every second and visualizes the remaining playtime in a "xxmxxs" format,
- * reflecting how close the player is to reaching the daily 60-minute playtime requirement.
+ * <p>
+ * The BossBar updates every second and visualizes the remaining playtime in a
+ * "xxmxxs" format,
+ * reflecting how close the player is to reaching the daily 60-minute playtime
+ * requirement.
  */
 public class BossBarManager {
 
@@ -25,7 +28,8 @@ public class BossBarManager {
   private static final Map<UUID, BossBar> playerBars = new HashMap<>();
 
   /**
-   * Initializes the BossBarManager and starts periodic updates for all online players.
+   * Initializes the BossBarManager and starts periodic updates for all online
+   * players.
    *
    * @param pl The plugin instance.
    */
@@ -43,7 +47,8 @@ public class BossBarManager {
   }
 
   /**
-   * Updates the Boss Bar for the given player to reflect their live playtime countdown.
+   * Updates the Boss Bar for the given player to reflect their live playtime
+   * countdown.
    *
    * @param player The player to update.
    */
@@ -58,6 +63,10 @@ public class BossBarManager {
     long minutesLeft = totalSecondsLeft / 60;
     long secondsLeft = totalSecondsLeft % 60;
 
+    if (secondsLeft == 0 && (minutesLeft == 10 || minutesLeft == 5 || minutesLeft == 1)) {
+      TablistManager.sendPlaytimeWarningTitle(player, (int) minutesLeft);
+    }
+
     // Calculate progress as a percentage of 60 minutes (3600 seconds)
     double progress = (3600 - totalSecondsLeft) / 3600.0;
     progress = Math.min(1.0, Math.max(0.0, progress));
@@ -69,21 +78,18 @@ public class BossBarManager {
     }
 
     String timeFormatted = String.format("%02d:%02d", minutesLeft, secondsLeft);
-    String status =
-        player.getName() + "'s remaining playtime: " + timeFormatted + (isAfk ? " (AFK)" : "");
+    String status = player.getName() + "'s remaining playtime: " + timeFormatted + (isAfk ? " (AFK)" : "");
 
     final float finalProgress = (float) progress;
 
-    BossBar bar =
-        playerBars.computeIfAbsent(
-            uuid,
-            id -> {
-              BossBar newBar =
-                  BossBar.bossBar(
-                      Component.text(status), finalProgress, Color.GREEN, Overlay.PROGRESS);
-              player.showBossBar(newBar);
-              return newBar;
-            });
+    BossBar bar = playerBars.computeIfAbsent(
+        uuid,
+        id -> {
+          BossBar newBar = BossBar.bossBar(
+              Component.text(status), finalProgress, Color.GREEN, Overlay.PROGRESS);
+          player.showBossBar(newBar);
+          return newBar;
+        });
 
     bar.name(Component.text(status));
     bar.progress(finalProgress);
