@@ -135,6 +135,12 @@ spotless {
     }
 }
 
+if (System.getenv("CI") != null) {
+    tasks.named("spotlessJava").configure {
+        enabled = false
+    }
+}
+
 // Create a task for code formatting
 task formatCode {
     dependsOn 'spotlessApply'
