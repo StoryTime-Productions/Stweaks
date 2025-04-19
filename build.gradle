@@ -6,6 +6,7 @@ plugins {
     id "com.github.spotbugs" version "6.1.7"
     id 'com.gradleup.shadow' version '8.3.6'
     id 'java'
+    id 'com.diffplug.spotless' version '6.2.0'
 }
 
 group = "com.storytimeproductions.stweaks"
@@ -75,6 +76,7 @@ dependencies {
     testImplementation 'io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.12.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.12.1'
+    implementation 'org.xerial:sqlite-jdbc:3.42.0.0'
 }
 
 test {
@@ -126,6 +128,29 @@ shadowJar {
 jar.enabled = false
 assemble.dependsOn(shadowJar)
 
+spotless {
+    java {
+        googleJavaFormat() // Use Google Java Format style
+        target 'src/**/*.java'
+    }
+}
+
+if (System.getenv("CI") != null) {
+    tasks.named("spotlessJava").configure {
+        enabled = false
+    }
+}
+
+// Create a task for code formatting
+task formatCode {
+    dependsOn 'spotlessApply'
+}
+
+task checkFormat {
+    dependsOn 'spotlessCheck'
+}
+
+// Disable jar and use shadowJar as the default task for assembling the jar
 tasks.register('printProjectName') {
     doLast {
         println rootProject.name

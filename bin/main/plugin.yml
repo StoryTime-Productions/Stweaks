@@ -1,20 +1,30 @@
-main: ${PACKAGE}.${NAME}
-name: ${NAME}
-version: "${VERSION}"
+main: com.storytimeproductions.stweaks.Stweaks
+name: Stweaks
+version: "1.0.0"
 api-version: "1.21.4"
 author: StoryTimeProductions
-description: A plugin containing various in-house tweaks for the StoryTime SMP.
+description: A collection of in-house tweaks for the StoryTime SMP. Currently includes the Stracker module for daily playtime tracking.
+
 commands:
-  ex:
-    description: Base command for EXAMPLE
-    usage: "For a list of commands, type /ex help"
-    aliases: example
+  ststatus:
+    description: Shows how much time you've actively played today
+    usage: "/ststatus"
+    aliases: status
+  stboost:
+    description: Boosts multiplier for community participation (WIP)
+    usage: "/stboost"
+    aliases: boost
+
 permissions:
-  example.test:
-    description: DESCRIPTION
+  stweaks.status:
+    description: Allows access to /ststatus
     default: true
-  example.*:
-    description: Grants all other permissions
+  stweaks.boost:
+    description: Allows use of /stboost
+    default: op
+  stweaks.*:
+    description: Grants all Stweaks permissions
     default: false
     children:
-      example.test: true
+      stweaks.status: true
+      stweaks.boost: true
