@@ -1,7 +1,5 @@
 package com.storytimeproductions.stweaks.util;
 
-import com.storytimeproductions.stweaks.config.SettingsManager;
-import com.storytimeproductions.stweaks.playtime.PlaytimeData;
 import com.storytimeproductions.stweaks.playtime.PlaytimeTracker;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,17 +36,10 @@ public class BossBarManager {
       @Override
       public void run() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-          PlaytimeData data =
-              PlaytimeTracker.playtimeMap.computeIfAbsent(
-                  player.getUniqueId(), k -> new PlaytimeData());
-          if (!data.isAfk()) {
-            data.addSeconds(1);
-          }
-
           updateBossBar(player);
         }
       }
-    }.runTaskTimer(plugin, 0L, 20L * (long) SettingsManager.getWeekendMultiplier());
+    }.runTaskTimer(plugin, 0L, 20L);
   }
 
   /**

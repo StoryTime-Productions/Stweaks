@@ -8,6 +8,7 @@ import com.storytimeproductions.stweaks.listeners.AfkListener;
 import com.storytimeproductions.stweaks.listeners.PlayerActivityListener;
 import com.storytimeproductions.stweaks.playtime.PlaytimeTracker;
 import com.storytimeproductions.stweaks.util.BossBarManager;
+import com.storytimeproductions.stweaks.util.DbManager;
 import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -22,6 +23,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Stweaks extends JavaPlugin {
 
   private static Stweaks instance;
+  private DbManager dbManager;
 
   /**
    * Called when the plugin is enabled. This method is responsible for setting up the plugin,
@@ -35,6 +37,9 @@ public class Stweaks extends JavaPlugin {
     saveDefaultConfig();
     SettingsManager.load(this);
 
+    dbManager = new DbManager();
+    dbManager.connect();
+
     // Register event listeners
     getServer().getPluginManager().registerEvents(new PlayerActivityListener(), this);
     getServer().getPluginManager().registerEvents(new AfkListener(), this);
@@ -44,6 +49,7 @@ public class Stweaks extends JavaPlugin {
     getCommand("stboost").setExecutor(new StBoostCommand());
 
     // Initialize playtime tracker and event manager
+    PlaytimeTracker.loadFromDatabase(dbManager.getConnection());
     PlaytimeTracker.init(this);
     EventManager.init(this);
     BossBarManager.init(this);
@@ -57,7 +63,7 @@ public class Stweaks extends JavaPlugin {
    */
   @Override
   public void onDisable() {
-    PlaytimeTracker.shutdown();
+    PlaytimeTracker.saveToDatabase(dbManager.getConnection());
     getLogger().info("Stweaks disabled!");
   }
 

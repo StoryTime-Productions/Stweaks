@@ -76,6 +76,7 @@ dependencies {
     testImplementation 'io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.12.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.12.1'
+    implementation 'org.xerial:sqlite-jdbc:3.42.0.0'
 }
 
 test {
