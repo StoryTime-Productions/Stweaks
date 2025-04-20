@@ -27,9 +27,13 @@ public class TablistManager {
    */
   public static void updateTablist(Player player, double multiplier) {
     Component header =
-        Component.text(">> StoryTime SMP <<")
-            .color(NamedTextColor.LIGHT_PURPLE)
-            .decorate(TextDecoration.BOLD)
+        // CHECKSTYLE:OFF: AvoidEscapedUnicodeCharacters
+        Component.text(" \uA000   ")
+            // CHECKSTYLE:ON: AvoidEscapedUnicodeCharacters
+            .append(Component.newline())
+            .append(Component.newline())
+            .append(Component.newline())
+            .append(Component.newline())
             .append(Component.newline());
 
     Component footer =
