@@ -1,0 +1,26 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+      "IBI",
+      "BCB",
+      "IBI"
+    ],
+    "key": {
+      "I": "iron_ingot",
+      "B": "minecraft:iron_block",
+      "C": "minecraft:cookie"
+    },
+    "result": {
+      "id": "minecraft:cookie",
+      "components": {
+        "minecraft:item_name": "{\"text\":\"FBI Disc\"}",
+        "minecraft:item_model": "storytime:fbi_disc",
+        "minecraft:lore": [
+          "\"If you know you know...\"",
+          "\"- Sudoku\""
+        ]
+      },
+      "count": 3
+    },
+    "show_notification": true
+  }

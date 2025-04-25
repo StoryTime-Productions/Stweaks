@@ -64,6 +64,11 @@ repositories {
         }
     }
 
+    maven {
+        name 'codemc'
+        url 'https://repo.codemc.org/repository/maven-public/'
+    }
+
     mavenCentral()
 }
 
@@ -77,6 +82,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.12.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.12.1'
     implementation 'org.xerial:sqlite-jdbc:3.42.0.0'
+    compileOnly 'net.skinsrestorer:skinsrestorer-api:15.6.2'
 }
 
 test {

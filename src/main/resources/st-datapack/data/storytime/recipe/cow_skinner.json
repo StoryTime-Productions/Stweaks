@@ -1,0 +1,26 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+      "CLC",
+      "LSL",
+      "CLC"
+    ],
+    "key": {
+      "L": "minecraft:leather",
+      "S": "minecraft:shears",
+      "C": "minecraft:beef"
+    },
+    "result": {
+      "item": "storytime:cow_skinner",
+      "id": "shears",
+      "components": {
+        "minecraft:item_model": "storytime:cow_skinner",
+        "minecraft:item_name": "{\"text\":\"Cow Skinner\"}",
+        "minecraft:lore": [
+          "\"Skin the cows... -Hyperfoxk\""
+        ]
+      },
+      "count": 1
+    },
+    "show_notification": true
+  }

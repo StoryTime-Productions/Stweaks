@@ -4,6 +4,10 @@ import com.storytimeproductions.stweaks.commands.StBoostCommand;
 import com.storytimeproductions.stweaks.commands.StStatusCommand;
 import com.storytimeproductions.stweaks.config.SettingsManager;
 import com.storytimeproductions.stweaks.events.EventManager;
+import com.storytimeproductions.stweaks.listeners.CowSkinnerListener;
+import com.storytimeproductions.stweaks.listeners.FbiDiscListener;
+import com.storytimeproductions.stweaks.listeners.IllegalWaterListener;
+import com.storytimeproductions.stweaks.listeners.LebronArmorListener;
 import com.storytimeproductions.stweaks.listeners.PlayerActivityListener;
 import com.storytimeproductions.stweaks.playtime.PlaytimeTracker;
 import com.storytimeproductions.stweaks.util.BossBarManager;
@@ -41,6 +45,10 @@ public class Stweaks extends JavaPlugin {
 
     // Register event listeners
     getServer().getPluginManager().registerEvents(new PlayerActivityListener(this), this);
+    getServer().getPluginManager().registerEvents(new CowSkinnerListener(), this);
+    getServer().getPluginManager().registerEvents(new FbiDiscListener(), this);
+    getServer().getPluginManager().registerEvents(new IllegalWaterListener(this), this);
+    getServer().getPluginManager().registerEvents(new LebronArmorListener(this), this);
 
     // Register commands
     getCommand("ststatus").setExecutor(new StStatusCommand());

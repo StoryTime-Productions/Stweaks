@@ -1,0 +1,17 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+      "minecraft:water_bucket",
+      "ice"
+    ],
+    "result": {
+      "id": "minecraft:blue_wool",
+      "components": {
+        "minecraft:item_name": "{\"text\":\"Illegal Water\"}",
+        "minecraft:item_model": "storytime:illegal_water",
+        "minecraft:lore": [
+          "\"Gotta save them ticks...\""
+        ]
+      }
+    }
+  }
