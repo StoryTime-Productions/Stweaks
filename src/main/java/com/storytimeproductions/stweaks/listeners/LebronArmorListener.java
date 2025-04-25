@@ -30,8 +30,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
- * Listener that handles applying and restoring the "Lebron" skin based on
- * whether a player is
+ * Listener that handles applying and restoring the "Lebron" skin based on whether a player is
  * wearing a full set of custom Lebron armor.
  */
 public class LebronArmorListener implements Listener {
@@ -40,26 +39,27 @@ public class LebronArmorListener implements Listener {
   private final SkinsRestorer skinsRestorer = SkinsRestorerProvider.get();
 
   /** The custom skin property representing the Lebron skin. */
-  private final SkinProperty lebronSkin = SkinProperty.of(
-      "ewogICJ0aW1lc3RhbXAiIDogMTc0NTYxOTEwMzkyNywKICAicHJvZmlsZUlkIiA6ICJiMjlj"
-          + "NTE1MTFjY2U0NzQ1OTY0YTAxOWFlZDliOTM0MiIsCiAgInByb2ZpbGVOYW1lIiA6ICJpaUx4"
-          + "bnoiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAg"
-          + "ICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQu"
-          + "bmV0L3RleHR1cmUvNjJhZWFiMzAwYjIyNzVlYTlmODE0NjJiNGMzZTU3MmMzOWU5NzQ0MDc5"
-          + "MDhiMzliMDE2OWYzMDNhMTE3YzkwMiIKICAgIH0sCiAgICAiQ0FQRSIgOiB7CiAgICAgICJ1"
-          + "cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGJjMjFlMjIy"
-          + "NTI4ZTMwZGM4ODQ0NTMxNGY3YmU2ZmYxMmQzYWVlYmMzYzE5MjA1NGZiYTdlM2IzZjhjNzdi"
-          + "MSIKICAgIH0KICB9Cn0=",
-      "nwBFTurCe8y2tILGs1HpKf7ghsW7RL66FH5S1tPohpVJBFZkKVowN5pnO1XZ/HCII8ItNSlc"
-          + "njiS2SxWQLl1o4kquLyBu9WHyT1UX7jPTHpgtCW3vOThaS5e33vLlYaRDyLxGYg+IShtr7Wiy"
-          + "f9m6R4WuI4sIjKYvoOnMis1XBsbpnjkcGTpswXBf/aSVeveTGVAsdkl2won7vWg9XFvEcERV9"
-          + "Bz8UMZ4oxCPp6CqHg1YpfolDso0YFWa4iwJyPIC2z4wDKWNwHu8r7cRMOhH2caEuH5mIR2lv9"
-          + "f4U9tDyHC3IhMngzkyOM4KWgbEWj6JiYu/dnDdfiSeYfH86ZwCxbl7CYJNEMcZxEicYgj4Apf"
-          + "ZcJ9694FP0yRTqHQB9/bAK7UzkDb81BkQ6VX8vVRxmk1gx6jO7MYk81E+WAFnjVp+K3GMntqq"
-          + "l7+KuImbjV1WzmrtTN23lmBtOU2KWKMJP8dsOlX5IlhiWecfzXQ0K+hzS6NECR1VOkavPG8Gx"
-          + "ptdqt1mbIyNdsAdDR3rZJQXhD6vwyDuV4xWHEm9WXmrGxYRM0MU/UWRG2oA1dH/DX5rO7yBWV"
-          + "nm1TZ42iIlTPWQSKCA1BhexZ+GNI1j+VxiCdvlQghIR3brvkyp2Z5tABkRulHaH4b3nn2Ui3B"
-          + "3jacTgrbFKY/lAtdip7SZkXobr8=");
+  private final SkinProperty lebronSkin =
+      SkinProperty.of(
+          "ewogICJ0aW1lc3RhbXAiIDogMTc0NTYxOTEwMzkyNywKICAicHJvZmlsZUlkIiA6ICJiMjlj"
+              + "NTE1MTFjY2U0NzQ1OTY0YTAxOWFlZDliOTM0MiIsCiAgInByb2ZpbGVOYW1lIiA6ICJpaUx4"
+              + "bnoiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAg"
+              + "ICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQu"
+              + "bmV0L3RleHR1cmUvNjJhZWFiMzAwYjIyNzVlYTlmODE0NjJiNGMzZTU3MmMzOWU5NzQ0MDc5"
+              + "MDhiMzliMDE2OWYzMDNhMTE3YzkwMiIKICAgIH0sCiAgICAiQ0FQRSIgOiB7CiAgICAgICJ1"
+              + "cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGJjMjFlMjIy"
+              + "NTI4ZTMwZGM4ODQ0NTMxNGY3YmU2ZmYxMmQzYWVlYmMzYzE5MjA1NGZiYTdlM2IzZjhjNzdi"
+              + "MSIKICAgIH0KICB9Cn0=",
+          "nwBFTurCe8y2tILGs1HpKf7ghsW7RL66FH5S1tPohpVJBFZkKVowN5pnO1XZ/HCII8ItNSlc"
+              + "njiS2SxWQLl1o4kquLyBu9WHyT1UX7jPTHpgtCW3vOThaS5e33vLlYaRDyLxGYg+IShtr7Wiy"
+              + "f9m6R4WuI4sIjKYvoOnMis1XBsbpnjkcGTpswXBf/aSVeveTGVAsdkl2won7vWg9XFvEcERV9"
+              + "Bz8UMZ4oxCPp6CqHg1YpfolDso0YFWa4iwJyPIC2z4wDKWNwHu8r7cRMOhH2caEuH5mIR2lv9"
+              + "f4U9tDyHC3IhMngzkyOM4KWgbEWj6JiYu/dnDdfiSeYfH86ZwCxbl7CYJNEMcZxEicYgj4Apf"
+              + "ZcJ9694FP0yRTqHQB9/bAK7UzkDb81BkQ6VX8vVRxmk1gx6jO7MYk81E+WAFnjVp+K3GMntqq"
+              + "l7+KuImbjV1WzmrtTN23lmBtOU2KWKMJP8dsOlX5IlhiWecfzXQ0K+hzS6NECR1VOkavPG8Gx"
+              + "ptdqt1mbIyNdsAdDR3rZJQXhD6vwyDuV4xWHEm9WXmrGxYRM0MU/UWRG2oA1dH/DX5rO7yBWV"
+              + "nm1TZ42iIlTPWQSKCA1BhexZ+GNI1j+VxiCdvlQghIR3brvkyp2Z5tABkRulHaH4b3nn2Ui3B"
+              + "3jacTgrbFKY/lAtdip7SZkXobr8=");
 
   /** A map to track and restore each player's original skin using their UUID. */
   private final ConcurrentHashMap<UUID, String> originalSkins = new ConcurrentHashMap<>();
@@ -77,10 +77,8 @@ public class LebronArmorListener implements Listener {
   }
 
   /**
-   * Handles when a player changes armor. If they are wearing the full Lebron set,
-   * applies the
-   * custom Lebron skin. If they remove part of the set, restores their original
-   * skin.
+   * Handles when a player changes armor. If they are wearing the full Lebron set, applies the
+   * custom Lebron skin. If they remove part of the set, restores their original skin.
    *
    * @param event The armor change event
    * @throws DataRequestException If fetching or applying skin data fails
@@ -94,9 +92,10 @@ public class LebronArmorListener implements Listener {
     if (hasFullSet) {
       if (!originalSkins.containsKey(player.getUniqueId())) {
         try {
-          Optional<SkinProperty> current = skinsRestorer
-              .getPlayerStorage()
-              .getSkinForPlayer(player.getUniqueId(), player.getName(), true);
+          Optional<SkinProperty> current =
+              skinsRestorer
+                  .getPlayerStorage()
+                  .getSkinForPlayer(player.getUniqueId(), player.getName(), true);
 
           current.ifPresent(
               prop -> {
@@ -134,9 +133,10 @@ public class LebronArmorListener implements Listener {
           restoreOriginalSkin(player, original);
         } else {
           try {
-            Optional<SkinProperty> current = skinsRestorer
-                .getPlayerStorage()
-                .getSkinForPlayer(player.getUniqueId(), player.getName());
+            Optional<SkinProperty> current =
+                skinsRestorer
+                    .getPlayerStorage()
+                    .getSkinForPlayer(player.getUniqueId(), player.getName());
             current.ifPresent(prop -> restoreOriginalSkin(player, prop.getValue()));
           } catch (DataRequestException e) {
             e.printStackTrace();
@@ -169,7 +169,7 @@ public class LebronArmorListener implements Listener {
   /**
    * Checks whether the given item has a custom model matching the expected ID.
    *
-   * @param item          The armor item to check
+   * @param item The armor item to check
    * @param expectedModel The expected custom model key
    * @return True if the item matches the expected model, false otherwise
    */
@@ -196,8 +196,9 @@ public class LebronArmorListener implements Listener {
     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), muteCommand);
 
     // Then, play the custom song
-    String playCommand = String.format(
-        "playsound minecraft:you_are_my_sunshine music %s ~ ~ ~ 1.0 1.0 1.0", player.getName());
+    String playCommand =
+        String.format(
+            "playsound minecraft:you_are_my_sunshine music %s ~ ~ ~ 1.0 1.0 1.0", player.getName());
     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), playCommand);
   }
 
@@ -234,7 +235,7 @@ public class LebronArmorListener implements Listener {
   /**
    * Restores the player's original skin.
    *
-   * @param player    The player to restore the skin for
+   * @param player The player to restore the skin for
    * @param skinValue The skin value to restore
    */
   private void restoreOriginalSkin(Player player, String skinValue) {
@@ -272,7 +273,7 @@ public class LebronArmorListener implements Listener {
    * Sends a packet to change the visibility of the player's armor.
    *
    * @param player The player whose armor visibility is being changed
-   * @param hide   Whether to hide (true) or show (false) the armor
+   * @param hide Whether to hide (true) or show (false) the armor
    */
   private void sendArmorPacket(Player player, boolean hide) {
     List<Pair<ItemSlot, ItemStack>> equipment = new ArrayList<>();
