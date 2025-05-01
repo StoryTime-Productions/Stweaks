@@ -1,24 +1,45 @@
 @echo off
 setlocal enabledelayedexpansion
 
+REM === Check if a Gradle path argument is passed ===
+if "%~1"=="" (
+    REM No argument passed, use default Gradle path
+    set GRADLE_PATH=gradlew
+) else (
+    REM Argument passed, use specified Gradle path
+    set GRADLE_PATH=%~1
+)
+
+REM === Ensure Gradle wrapper is available ===
+if not exist "%GRADLE_PATH%" (
+    echo [ERROR] Gradle wrapper not found at "%GRADLE_PATH%". Aborting deployment.
+    exit /b 1
+)
+
+REM === Change the working directory to where this script is located ===
+pushd "%~dp0"
+
 REM === Run Gradle formatting and build ===
 echo [INFO] Running Gradle spotlessApply...
-call gradlew spotlessApply
+call "%GRADLE_PATH%" spotlessApply
 if errorlevel 1 (
     echo [ERROR] Gradle spotlessApply failed. Aborting deployment.
+    popd
     exit /b 1
 )
 
 echo [INFO] Running Gradle build...
-call gradlew build
+call "%GRADLE_PATH%" build
 if errorlevel 1 (
     echo [ERROR] Gradle build failed. Aborting deployment.
+    popd
     exit /b 1
 )
 
 REM === Load .env file ===
 if not exist ".env" (
     echo [ERROR] .env file not found in the current directory.
+    popd
     exit /b 1
 )
 
@@ -28,10 +49,12 @@ for /f "tokens=1,* delims==" %%a in (.env) do (
 
 if "!SERVER_PATH!"=="" (
     echo [ERROR] SERVER_PATH not defined in .env
+    popd
     exit /b 1
 )
 if "!RESOURCE_PATH!"=="" (
     echo [ERROR] RESOURCE_PATH not defined in .env
+    popd
     exit /b 1
 )
 
@@ -49,16 +72,18 @@ echo [INFO] Resource path: !RESOURCE_PATH!
 
 REM === Step 1: Create ZIPs before deleting old ===
 echo [INFO] Creating !RES_ZIP! from !RES_PACK_SRC!...
-powershell -Command "Compress-Archive -Path '!RES_PACK_SRC!\*' -DestinationPath '!RES_ZIP!' -Force"
+powershell -Command "Compress-Archive -Path '!RES_PACK_SRC!\*' -DestinationPath '!RES_ZIP!'"
 if not exist "!RES_ZIP!" (
     echo [ERROR] Failed to create !RES_ZIP!. Aborting.
+    popd
     exit /b 1
 )
 
 echo [INFO] Creating !DATA_ZIP! from !DATA_PACK_SRC!...
-powershell -Command "Compress-Archive -Path '!DATA_PACK_SRC!\*' -DestinationPath '!DATA_ZIP!' -Force"
+powershell -Command "Compress-Archive -Path '!DATA_PACK_SRC!\*' -DestinationPath '!DATA_ZIP!'"
 if not exist "!DATA_ZIP!" (
     echo [ERROR] Failed to create !DATA_ZIP!. Aborting.
+    popd
     exit /b 1
 )
 
@@ -82,6 +107,7 @@ for /f "delims=" %%f in ('dir "!LIBS_PATH!\*.jar" /b /o-d') do (
 
 if not defined latestJar (
     echo [ERROR] No jar found in !LIBS_PATH!
+    popd
     exit /b 1
 )
 
@@ -112,3 +138,6 @@ if exist "!WORLD_DATAPACK_PATH!\!DATA_ZIP!" (
 )
 
 echo [SUCCESS] Deployment complete.
+
+REM === Return to the original directory ===
+popd
