@@ -1,0 +1,28 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "equipment",
+    "key": {
+      "X": "yellow_dye",
+      "Y": "purple_dye"
+    },
+    "pattern": [
+      "X Y",
+      "Y X"
+    ],
+    "result": {
+      "components": {
+        "minecraft:dyed_color": {
+          "rgb": 16776960,
+          "show_in_tooltip": false
+        },
+        "minecraft:item_model": "storytime:lebron_boots",
+        "minecraft:item_name": "\"Lebron's Kicks\"",
+        "minecraft:lore": [
+          "\"Sunshine...\""
+        ]
+      },
+      "count": 1,
+      "id": "minecraft:leather_boots"
+    },
+    "show_notification": false
+  }
