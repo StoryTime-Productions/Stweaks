@@ -70,7 +70,7 @@ public class SettingsManager {
    * @return The global weekend playtime multiplier for all players.
    */
   public static double getWeekendMultiplier() {
-    return config.getDouble("weekend_multiplier", 2.0);
+    return config.getDouble("weekend_multiplier", 20.0);
   }
 
   /**
