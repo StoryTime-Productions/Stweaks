@@ -18,6 +18,10 @@ commands:
     description: Teleport to the lobby
     usage: /stlobby
     aliases: lobby
+  spawn:
+    description: Teleports you to the spawn location in the world
+    usage: /stspawn
+    aliases: spawn
 
 permissions:
   stweaks.status:
@@ -28,6 +32,9 @@ permissions:
     default: op
   stweaks.lobby:
     description: Allows access to /stlobby
+    default: true
+  stweaks.spawn:
+    description: Allows access to /stspawn
     default: true
   stweaks.*:
     description: Grants all Stweaks permissions

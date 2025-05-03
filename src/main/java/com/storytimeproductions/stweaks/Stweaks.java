@@ -2,6 +2,7 @@ package com.storytimeproductions.stweaks;
 
 import com.storytimeproductions.stweaks.commands.StBoostCommand;
 import com.storytimeproductions.stweaks.commands.StLobbyCommand;
+import com.storytimeproductions.stweaks.commands.StSpawnCommand;
 import com.storytimeproductions.stweaks.commands.StStatusCommand;
 import com.storytimeproductions.stweaks.config.SettingsManager;
 import com.storytimeproductions.stweaks.events.EventManager;
@@ -54,7 +55,8 @@ public class Stweaks extends JavaPlugin {
     // Register commands
     getCommand("ststatus").setExecutor(new StStatusCommand());
     getCommand("stboost").setExecutor(new StBoostCommand());
-    getCommand("stlobby").setExecutor(new StLobbyCommand());
+    getCommand("stlobby").setExecutor(new StLobbyCommand(getConfig()));
+    getCommand("spawn").setExecutor(new StSpawnCommand(getConfig()));
 
     // Initialize playtime tracker and event manager
     PlaytimeTracker.loadFromDatabase(dbManager.getConnection());

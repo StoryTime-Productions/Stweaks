@@ -9,8 +9,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 /**
  * A utility class for managing player-specific configuration settings.
  *
- * <p>This class provides methods to load the configuration file and retrieve values for various
- * settings such as required playtime, AFK threshold, and weekend multipliers, with the weekend
+ * <p>
+ * This class provides methods to load the configuration file and retrieve
+ * values for various
+ * settings such as required playtime, AFK threshold, and weekend multipliers,
+ * with the weekend
  * multiplier being shared across all players.
  */
 public class SettingsManager {
@@ -23,7 +26,9 @@ public class SettingsManager {
   /**
    * Loads the plugin's configuration file.
    *
-   * <p>This method initializes the configuration by getting the config from the provided JavaPlugin
+   * <p>
+   * This method initializes the configuration by getting the config from the
+   * provided JavaPlugin
    * instance. This must be called before accessing any configuration values.
    *
    * @param pl The plugin instance from which the configuration is loaded.
@@ -36,10 +41,13 @@ public class SettingsManager {
   /**
    * Retrieves the required playtime for a specific player.
    *
-   * <p>This method fetches the "required_minutes" setting from the configuration file. If the
+   * <p>
+   * This method fetches the "required_minutes" setting from the configuration
+   * file. If the
    * setting is not found, the default value of 60 minutes is returned.
    *
-   * @param playerUuid The UUID of the player whose required playtime is being retrieved.
+   * @param playerUuid The UUID of the player whose required playtime is being
+   *                   retrieved.
    * @return The required playtime in minutes for the specific player.
    */
   public static int getRequiredMinutes(UUID playerUuid) {
@@ -50,10 +58,14 @@ public class SettingsManager {
   /**
    * Retrieves the AFK threshold in seconds for a specific player.
    *
-   * <p>This method fetches the "afk_threshold_seconds" setting from the configuration file. If the
-   * setting is not found, the default value of 300 seconds (5 minutes) is returned.
+   * <p>
+   * This method fetches the "afk_threshold_seconds" setting from the
+   * configuration file. If the
+   * setting is not found, the default value of 300 seconds (5 minutes) is
+   * returned.
    *
-   * @param playerUuid The UUID of the player whose AFK threshold is being retrieved.
+   * @param playerUuid The UUID of the player whose AFK threshold is being
+   *                   retrieved.
    * @return The AFK threshold in seconds for the specific player.
    */
   public static int getAfkThresholdSeconds(UUID playerUuid) {
@@ -64,17 +76,20 @@ public class SettingsManager {
   /**
    * Retrieves the global weekend multiplier for all players.
    *
-   * <p>This method fetches the "weekend_multiplier" setting from the configuration file. If the
+   * <p>
+   * This method fetches the "weekend_multiplier" setting from the configuration
+   * file. If the
    * setting is not found, the default value of 1.5 is returned.
    *
    * @return The global weekend playtime multiplier for all players.
    */
   public static double getWeekendMultiplier() {
-    return config.getDouble("weekend_multiplier", 20.0);
+    return config.getDouble("weekend_multiplier", 2.0);
   }
 
   /**
-   * Retrieves the player settings for a specific player. If the player settings don't exist yet,
+   * Retrieves the player settings for a specific player. If the player settings
+   * don't exist yet,
    * create a new `PlayerSettings` object and store it.
    *
    * @param playerUuid The UUID of the player whose settings are being retrieved.
@@ -83,9 +98,8 @@ public class SettingsManager {
   private static PlayerSettings getPlayerSettings(UUID playerUuid) {
     if (!playerSettingsMap.containsKey(playerUuid)) {
       // Create and store default settings for the player
-      PlayerSettings settings =
-          new PlayerSettings(
-              config.getInt("required_minutes", 60), config.getInt("afk_threshold_seconds", 300));
+      PlayerSettings settings = new PlayerSettings(
+          config.getInt("required_minutes", 60), config.getInt("afk_threshold_seconds", 300));
       playerSettingsMap.put(playerUuid, settings);
     }
     return playerSettingsMap.get(playerUuid);
