@@ -29,6 +29,9 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
 
+      - name: Run Spotless
+        run: ./gradlew spotlessApply
+
       - name: Build with Gradle
         run: ./gradlew build --info
 

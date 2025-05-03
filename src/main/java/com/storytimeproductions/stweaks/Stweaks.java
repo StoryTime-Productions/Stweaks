@@ -1,15 +1,20 @@
 package com.storytimeproductions.stweaks;
 
+import com.storytimeproductions.stweaks.commands.BiomeTrackerCommand;
 import com.storytimeproductions.stweaks.commands.StBoostCommand;
+import com.storytimeproductions.stweaks.commands.StLobbyCommand;
+import com.storytimeproductions.stweaks.commands.StSpawnCommand;
 import com.storytimeproductions.stweaks.commands.StStatusCommand;
 import com.storytimeproductions.stweaks.config.SettingsManager;
 import com.storytimeproductions.stweaks.events.EventManager;
+import com.storytimeproductions.stweaks.listeners.BiomeNotifier;
 import com.storytimeproductions.stweaks.listeners.CowSkinnerListener;
 import com.storytimeproductions.stweaks.listeners.FbiDiscListener;
 import com.storytimeproductions.stweaks.listeners.IllegalWaterListener;
 import com.storytimeproductions.stweaks.listeners.LebronArmorListener;
 import com.storytimeproductions.stweaks.listeners.PlayerActivityListener;
 import com.storytimeproductions.stweaks.playtime.PlaytimeTracker;
+import com.storytimeproductions.stweaks.util.BiomeTrackerManager;
 import com.storytimeproductions.stweaks.util.BossBarManager;
 import com.storytimeproductions.stweaks.util.DbManager;
 import io.papermc.lib.PaperLib;
@@ -43,22 +48,27 @@ public class Stweaks extends JavaPlugin {
     dbManager = new DbManager();
     dbManager.connect();
 
+    // Initialize playtime tracker and event manager
+    PlaytimeTracker.loadFromDatabase(dbManager.getConnection());
+    PlaytimeTracker.init(this);
+    EventManager.init(this);
+    BossBarManager.init(this);
+    BiomeTrackerManager trackerManager = new BiomeTrackerManager(dbManager, this);
+
     // Register event listeners
     getServer().getPluginManager().registerEvents(new PlayerActivityListener(this), this);
     getServer().getPluginManager().registerEvents(new CowSkinnerListener(), this);
     getServer().getPluginManager().registerEvents(new FbiDiscListener(), this);
     getServer().getPluginManager().registerEvents(new IllegalWaterListener(this), this);
     getServer().getPluginManager().registerEvents(new LebronArmorListener(this), this);
+    getServer().getPluginManager().registerEvents(new BiomeNotifier(this, trackerManager), this);
 
     // Register commands
     getCommand("ststatus").setExecutor(new StStatusCommand());
     getCommand("stboost").setExecutor(new StBoostCommand());
-
-    // Initialize playtime tracker and event manager
-    PlaytimeTracker.loadFromDatabase(dbManager.getConnection());
-    PlaytimeTracker.init(this);
-    EventManager.init(this);
-    BossBarManager.init(this);
+    getCommand("stlobby").setExecutor(new StLobbyCommand(getConfig()));
+    getCommand("spawn").setExecutor(new StSpawnCommand(getConfig()));
+    getCommand("biometracker").setExecutor(new BiomeTrackerCommand(trackerManager, this));
 
     getLogger().info("");
     getLogger().info("   _____ _                      _        ");

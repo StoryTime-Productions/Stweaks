@@ -14,6 +14,17 @@ commands:
     description: Boosts multiplier for community participation (WIP)
     usage: "/stboost"
     aliases: boost
+  stlobby:
+    description: Teleport to the lobby
+    usage: /stlobby
+    aliases: lobby
+  spawn:
+    description: Teleports you to the spawn location in the world
+    usage: /stspawn
+    aliases: spawn
+  biometracker:
+    description: Opens the biome tracker GUI
+    usage: /biometracker
 
 permissions:
   stweaks.status:
@@ -22,9 +33,19 @@ permissions:
   stweaks.boost:
     description: Allows use of /stboost
     default: op
+  stweaks.lobby:
+    description: Allows access to /stlobby
+    default: true
+  stweaks.spawn:
+    description: Allows access to /stspawn
+    default: true
+  stweaks.biometracker:
+    description: Allows access to /biometracker
+    default: true
   stweaks.*:
     description: Grants all Stweaks permissions
     default: false
     children:
       stweaks.status: true
       stweaks.boost: true
+      stweaks.lobby: true

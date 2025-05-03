@@ -69,17 +69,26 @@ public class PlayerActivityListener implements Listener {
   /**
    * Handles the player join event.
    *
-   * <p>Initializes the player's movement timestamp and updates the BossBar UI to show their
-   * remaining required playtime.
+   * <p>Initializes the player's movement timestamp, updates the BossBar and tablist UI, and makes
+   * the player execute the /lobby command upon joining the server.
    *
    * @param event The {@link PlayerJoinEvent} containing the joining player's information.
    */
   @EventHandler
   public void onPlayerJoin(PlayerJoinEvent event) {
-    UUID uuid = event.getPlayer().getUniqueId();
+    Player player = event.getPlayer();
+    UUID uuid = player.getUniqueId();
+
     lastMovement.put(uuid, System.currentTimeMillis()); // Initialize last movement
-    BossBarManager.updateBossBar(event.getPlayer());
-    TablistManager.updateTablist(event.getPlayer(), SettingsManager.getWeekendMultiplier());
+    BossBarManager.updateBossBar(player);
+    TablistManager.updateTablist(player, SettingsManager.getWeekendMultiplier());
+
+    // Make the player execute /lobby on join
+    Bukkit.getScheduler()
+        .runTaskLater(
+            Bukkit.getPluginManager().getPlugin("Stweaks"),
+            () -> player.performCommand("lobby"),
+            10L);
   }
 
   /**

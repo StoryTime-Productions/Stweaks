@@ -42,6 +42,9 @@ public class PlaytimeTracker {
           PlaytimeData data =
               PlaytimeTracker.playtimeMap.computeIfAbsent(
                   player.getUniqueId(), k -> new PlaytimeData());
+          if ("lobby".equalsIgnoreCase(player.getWorld().getName())) {
+            continue;
+          }
           if (!data.isAfk()) {
             data.addSeconds(1);
           } else {
@@ -102,7 +105,7 @@ public class PlaytimeTracker {
   public static long getSeconds(UUID uuid) {
     PlaytimeData data = playtimeMap.get(uuid);
     if (data == null) {
-      return 0;
+      return 3600;
     }
     long totalSeconds = 3600 - data.getTotalSecondsPlayed();
     return Math.max(totalSeconds, 0);

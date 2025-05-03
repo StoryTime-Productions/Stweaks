@@ -52,6 +52,28 @@ public class BossBarManager {
   public static void updateBossBar(Player player) {
     UUID uuid = player.getUniqueId();
 
+    // If the player is in the lobby, show that their timer is paused
+    if ("lobby".equalsIgnoreCase(player.getWorld().getName())) {
+      BossBar bar =
+          playerBars.computeIfAbsent(
+              uuid,
+              id -> {
+                BossBar newBar =
+                    BossBar.bossBar(
+                        Component.text("Your timer is paused in the lobby. :)"),
+                        0.0f,
+                        Color.WHITE,
+                        Overlay.PROGRESS);
+                player.showBossBar(newBar);
+                return newBar;
+              });
+
+      bar.name(Component.text("Your timer is paused in the lobby. :)"));
+      bar.progress(0.0f);
+      bar.color(Color.WHITE);
+      return;
+    }
+
     // Get total remaining seconds
     long totalSecondsLeft = PlaytimeTracker.getSeconds(uuid);
     totalSecondsLeft = Math.max(totalSecondsLeft, 0);
@@ -84,8 +106,7 @@ public class BossBarManager {
     }
 
     String timeFormatted = String.format("%02d:%02d", minutesLeft, secondsLeft);
-    String status =
-        player.getName() + "'s remaining playtime: " + timeFormatted + (isAfk ? " (AFK)" : "");
+    String status = "Your remaining time: " + timeFormatted + (isAfk ? " (AFK)" : "");
 
     final float finalProgress = (float) progress;
 

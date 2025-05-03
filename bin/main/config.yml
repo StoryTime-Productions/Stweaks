@@ -1,1 +1,16 @@
 # A journey of 1,000 lines starts with a single char
+spawn:
+  world: world
+  x: -1938
+  y: 166
+  z: 864
+lobby:
+  world: lobby
+  x: -117.0
+  y: 223.0
+  z: 184.0
+  yaw: -135.7298
+  pitch: -4.836296
+required_minutes: 60
+afk_threshold_seconds: 300
+weekend_multiplier: 2.0
