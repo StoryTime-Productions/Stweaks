@@ -26,20 +26,32 @@ public class DbManager {
   }
 
   /**
-   * Creates the playtime table if it does not exist. The table stores UUIDs, seconds played, and
-   * the last update timestamp.
+   * Creates the playtime and biome tracking tables if they do not exist. The playtime table stores
+   * UUIDs, seconds played, and last update timestamp. The discovered_biomes table tracks which
+   * biomes each player has visited.
    */
   private void createTableIfNotExists() {
-    String sql =
+    String playtimeSql =
         """
-                CREATE TABLE IF NOT EXISTS playtime (
-                    uuid TEXT PRIMARY KEY,
-                    seconds_played INTEGER NOT NULL,
-                    updated_last DATE NOT NULL
-                );
-                """;
+        CREATE TABLE IF NOT EXISTS playtime (
+            uuid TEXT PRIMARY KEY,
+            seconds_played INTEGER NOT NULL,
+            updated_last DATE NOT NULL
+        );
+        """;
+
+    String biomeSql =
+        """
+        CREATE TABLE IF NOT EXISTS discovered_biomes (
+            uuid TEXT NOT NULL,
+            biome_key TEXT NOT NULL,
+            PRIMARY KEY (uuid, biome_key)
+        );
+        """;
+
     try (Statement stmt = connection.createStatement()) {
-      stmt.execute(sql);
+      stmt.execute(playtimeSql);
+      stmt.execute(biomeSql);
     } catch (SQLException e) {
       e.printStackTrace();
     }

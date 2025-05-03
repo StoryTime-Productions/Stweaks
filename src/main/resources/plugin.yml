@@ -22,6 +22,9 @@ commands:
     description: Teleports you to the spawn location in the world
     usage: /stspawn
     aliases: spawn
+  biometracker:
+    description: Opens the biome tracker GUI
+    usage: /biometracker
 
 permissions:
   stweaks.status:
@@ -35,6 +38,9 @@ permissions:
     default: true
   stweaks.spawn:
     description: Allows access to /stspawn
+    default: true
+  stweaks.biometracker:
+    description: Allows access to /biometracker
     default: true
   stweaks.*:
     description: Grants all Stweaks permissions
