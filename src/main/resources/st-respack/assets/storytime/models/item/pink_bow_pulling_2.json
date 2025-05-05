@@ -1,0 +1,6 @@
+{
+    "parent": "storytime:item/pink_bow",
+    "textures": {
+      "layer0": "storytime:item/pink_bow_pulling_2"
+    }
+}

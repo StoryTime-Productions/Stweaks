@@ -1,0 +1,9 @@
+{
+    "layers": {
+        "wings": [
+            {   
+                "texture": "ax_wings_pack:dragon_wings"
+            }
+        ]
+    }
+}

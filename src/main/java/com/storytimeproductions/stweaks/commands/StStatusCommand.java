@@ -3,6 +3,9 @@ package com.storytimeproductions.stweaks.commands;
 import com.storytimeproductions.stweaks.config.SettingsManager;
 import com.storytimeproductions.stweaks.playtime.PlaytimeData;
 import com.storytimeproductions.stweaks.playtime.PlaytimeTracker;
+import java.util.UUID;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -32,6 +35,30 @@ public class StStatusCommand implements CommandExecutor {
    */
   @Override
   public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    if (args.length == 2 && args[0].equalsIgnoreCase("reset")) {
+      if (!sender.hasPermission("stweaks.ststatus.reset")) {
+        sender.sendMessage("§cYou don't have permission to reset playtime.");
+        return true;
+      }
+
+      String targetName = args[1];
+      OfflinePlayer target = Bukkit.getOfflinePlayer(targetName);
+      UUID targetIdentifer = target.getUniqueId();
+
+      if (targetIdentifer == null) {
+        sender.sendMessage("§cCould not find player: " + targetName);
+        return true;
+      }
+
+      if (PlaytimeTracker.getData(targetIdentifer) != null) {
+        PlaytimeTracker.resetPlaytime(targetIdentifer);
+        sender.sendMessage("§aReset playtime for §f" + targetName + "§a.");
+      } else {
+        sender.sendMessage("§eNo playtime data found for " + targetName + ".");
+      }
+      return true;
+    }
+
     if (sender instanceof Player player) {
       // Get the playtime data for the player using their unique ID
       PlaytimeData data = PlaytimeTracker.getData(player.getUniqueId());

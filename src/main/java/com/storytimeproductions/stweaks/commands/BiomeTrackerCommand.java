@@ -37,6 +37,7 @@ public class BiomeTrackerCommand implements CommandExecutor {
 
   private final BiomeTrackerManager trackerManager;
   private final YamlConfiguration config;
+  private Set<Biome> allBiomes = new HashSet<>();
 
   /**
    * Constructs a BiomeTrackerCommand instance.
@@ -52,6 +53,17 @@ public class BiomeTrackerCommand implements CommandExecutor {
     }
 
     config = YamlConfiguration.loadConfiguration(file);
+
+    allBiomes = new HashSet<>();
+    World world = Bukkit.getWorld("world"); // or any loaded world
+    if (world != null) {
+      RegistryAccess registryAccess = RegistryAccess.registryAccess();
+      Registry<Biome> biomeRegistry = registryAccess.getRegistry(RegistryKey.BIOME);
+      if (biomeRegistry != null) {
+        biomeRegistry.iterator().forEachRemaining(allBiomes::add);
+      }
+    }
+    trackerManager.syncAndLoadBiomeItems(allBiomes);
   }
 
   /**
@@ -70,17 +82,6 @@ public class BiomeTrackerCommand implements CommandExecutor {
     if (!(sender instanceof Player player)) {
       return false;
     }
-
-    Set<Biome> allBiomes = new HashSet<>();
-    World world = Bukkit.getWorld("world"); // or any loaded world
-    if (world != null) {
-      RegistryAccess registryAccess = RegistryAccess.registryAccess();
-      Registry<Biome> biomeRegistry = registryAccess.getRegistry(RegistryKey.BIOME);
-      if (biomeRegistry != null) {
-        biomeRegistry.iterator().forEachRemaining(allBiomes::add);
-      }
-    }
-    trackerManager.syncAndLoadBiomeItems(allBiomes);
 
     // Pagination setup
     int biomesPerPage = 14;
@@ -181,7 +182,7 @@ public class BiomeTrackerCommand implements CommandExecutor {
             page + 1));
 
     // Display current page number
-    gui.setItem(49, createCurrentPagePane(page));
+    gui.setItem(49, createBiomeProgressPane(player, allBiomes.size()));
 
     player.openInventory(gui);
     return true;
@@ -214,12 +215,57 @@ public class BiomeTrackerCommand implements CommandExecutor {
     return navigationPane;
   }
 
-  private ItemStack createCurrentPagePane(int page) {
-    ItemStack pagePane = new ItemStack(Material.PAPER);
-    ItemMeta meta = pagePane.getItemMeta();
-    meta.displayName(Component.text("Page " + page));
-    pagePane.setItemMeta(meta);
-    return pagePane;
+  private ItemStack createBiomeProgressPane(Player player, int totalBiomes) {
+    UUID uuid = player.getUniqueId();
+    Set<String> discovered = trackerManager.getDiscoveredBiomes(uuid);
+
+    int minecraftTotal = 0;
+    int terralithTotal = 0;
+    int minecraftFound = 0;
+    int terralithFound = 0;
+
+    for (Biome biome : allBiomes) {
+      String biomeKey = biome.getKey().toString();
+      if (biomeKey.startsWith("minecraft")) {
+        minecraftTotal++;
+        if (discovered.contains(biomeKey)) {
+          minecraftFound++;
+        }
+      } else if (biomeKey.startsWith("terralith")
+          || biomeKey.startsWith("incendium")
+          || biomeKey.startsWith("nullscape")) {
+        terralithTotal++;
+        if (discovered.contains(biomeKey)) {
+          terralithFound++;
+        }
+      }
+    }
+
+    ItemStack progressPane = new ItemStack(Material.PAPER);
+    ItemMeta meta = progressPane.getItemMeta();
+
+    meta.displayName(Component.text("Biome Progress"));
+
+    List<Component> lore = new ArrayList<>();
+
+    double pctMc = minecraftTotal == 0 ? 0.0 : (minecraftFound * 100.0) / minecraftTotal;
+    lore.add(
+        Component.text(
+            String.format("Minecraft: %.1f%% (%d/%d)", pctMc, minecraftFound, minecraftTotal)));
+
+    double pctT = terralithTotal == 0 ? 0.0 : (terralithFound * 100.0) / terralithTotal;
+    lore.add(
+        Component.text(
+            String.format("Terralith: %.1f%% (%d/%d)", pctT, terralithFound, terralithTotal)));
+
+    int totalFound = minecraftFound + terralithFound;
+    int total = minecraftTotal + terralithTotal;
+    double pctAll = total == 0 ? 0.0 : (totalFound * 100.0) / total;
+    lore.add(Component.text(String.format("Total: %.1f%% (%d/%d)", pctAll, totalFound, total)));
+
+    meta.lore(lore);
+    progressPane.setItemMeta(meta);
+    return progressPane;
   }
 
   /**

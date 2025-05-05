@@ -14,6 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -27,10 +28,16 @@ import org.bukkit.plugin.Plugin;
  */
 public class BiomeNotifier implements Listener {
 
+  private static class BiomeMessageState {
+    String queuedMessage;
+    int taskId = -1;
+  }
+
   /** Tracks the last known biome for each player by their UUID. */
   private final Plugin plugin;
 
   private final BiomeTrackerManager biomeTrackerManager;
+  private final HashMap<UUID, BiomeMessageState> biomeMessages = new HashMap<>();
   private final HashMap<UUID, Biome> lastKnownBiome = new HashMap<>();
 
   /**
@@ -67,6 +74,15 @@ public class BiomeNotifier implements Listener {
       return;
     }
 
+    // Check if this is our custom "BiomeTracker" inventory
+    InventoryView view = player.getOpenInventory();
+    String title =
+        view.title().toString(); // Or use getTopInventory().getName() depending on version
+
+    if (!title.contains("Biome Tracker")) {
+      return; // Only act on our GUI
+    }
+
     ItemMeta meta = clickedItem.getItemMeta();
     PersistentDataContainer data = meta.getPersistentDataContainer();
 
@@ -79,7 +95,7 @@ public class BiomeNotifier implements Listener {
       }
     }
 
-    event.setCancelled(true); // Prevent item pick-up
+    event.setCancelled(true); // Cancel only in the biometracker GUI
   }
 
   /**
@@ -121,19 +137,41 @@ public class BiomeNotifier implements Listener {
    */
   private void sendBiomeActionBar(Player player, Biome biome) {
     String biomeName = formatBiomeName(biome);
+    String message = "You've entered the " + biomeName;
 
-    Component message = Component.text("Entered biome: " + biomeName);
-    player.sendActionBar(message);
+    UUID uuid = player.getUniqueId();
+    BiomeMessageState state = biomeMessages.computeIfAbsent(uuid, k -> new BiomeMessageState());
 
-    Bukkit.getScheduler()
-        .runTaskLater(
-            plugin,
-            () -> {
-              if (lastKnownBiome.get(player.getUniqueId()) == biome) {
-                player.sendActionBar(Component.empty());
-              }
-            },
-            60L); // 3 seconds
+    // If a message is currently showing, queue the new one
+    if (state.taskId != -1) {
+      state.queuedMessage = message;
+      return;
+    }
+
+    showActionBar(player, state, message);
+  }
+
+  private void showActionBar(Player player, BiomeMessageState state, String message) {
+    player.sendActionBar(Component.text(message));
+
+    // Simulate fade-in or duration with a delayed clear
+    state.taskId =
+        Bukkit.getScheduler()
+            .runTaskLater(
+                plugin,
+                () -> {
+                  player.sendActionBar(Component.empty());
+                  state.taskId = -1;
+
+                  // Show queued message if available
+                  if (state.queuedMessage != null) {
+                    String queued = state.queuedMessage;
+                    state.queuedMessage = null;
+                    showActionBar(player, state, queued);
+                  }
+                },
+                60L)
+            .getTaskId(); // 3 seconds display time
   }
 
   private String formatBiomeName(Biome biome) {
