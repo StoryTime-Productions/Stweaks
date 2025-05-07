@@ -79,7 +79,7 @@ public class BiomeNotifier implements Listener {
     String title =
         view.title().toString(); // Or use getTopInventory().getName() depending on version
 
-    if (!title.contains("Biome Tracker")) {
+    if (!title.contains("Biome Tracker") && !title.contains("Quest Menu")) {
       return; // Only act on our GUI
     }
 

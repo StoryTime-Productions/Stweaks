@@ -1,6 +1,7 @@
 package com.storytimeproductions.stweaks;
 
 import com.storytimeproductions.stweaks.commands.BiomeTrackerCommand;
+import com.storytimeproductions.stweaks.commands.QuestMenuCommand;
 import com.storytimeproductions.stweaks.commands.StBoostCommand;
 import com.storytimeproductions.stweaks.commands.StLobbyCommand;
 import com.storytimeproductions.stweaks.commands.StSpawnCommand;
@@ -17,6 +18,7 @@ import com.storytimeproductions.stweaks.playtime.PlaytimeTracker;
 import com.storytimeproductions.stweaks.util.BiomeTrackerManager;
 import com.storytimeproductions.stweaks.util.BossBarManager;
 import com.storytimeproductions.stweaks.util.DbManager;
+import com.storytimeproductions.stweaks.util.QuestsManager;
 import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -54,6 +56,7 @@ public class Stweaks extends JavaPlugin {
     EventManager.init(this);
     BossBarManager.init(this);
     BiomeTrackerManager trackerManager = new BiomeTrackerManager(dbManager, this);
+    QuestsManager questsManager = new QuestsManager(dbManager, this);
 
     // Register event listeners
     getServer().getPluginManager().registerEvents(new PlayerActivityListener(this), this);
@@ -69,6 +72,7 @@ public class Stweaks extends JavaPlugin {
     getCommand("stlobby").setExecutor(new StLobbyCommand(getConfig()));
     getCommand("spawn").setExecutor(new StSpawnCommand(getConfig()));
     getCommand("biometracker").setExecutor(new BiomeTrackerCommand(trackerManager, this));
+    getCommand("stquests").setExecutor(new QuestMenuCommand(questsManager));
 
     getLogger().info("");
     getLogger().info("   _____ _                      _        ");

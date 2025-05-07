@@ -25,6 +25,10 @@ commands:
   biometracker:
     description: Opens the biome tracker GUI
     usage: /biometracker
+  stquests:
+    description: Opens the quests GUI
+    usage: /stquests
+    aliases: quests
 
 permissions:
   stweaks.status:
@@ -41,6 +45,9 @@ permissions:
     default: true
   stweaks.biometracker:
     description: Allows access to /biometracker
+    default: true
+  stweaks.quests:
+    description: Allows access to /stquests
     default: true
   stweaks.*:
     description: Grants all Stweaks permissions
