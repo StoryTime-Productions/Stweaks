@@ -1,11 +1,14 @@
 package com.storytimeproductions.models;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import org.bukkit.Material;
 
 /**
  * Represents a quest that a player can complete in the game. A quest contains a name, description
- * (lore), item requirements, rewards, and optional player-specific participation conditions.
+ * (lore), item requirements, rewards, an optional deadline, and optional player-specific
+ * participation conditions.
  */
 public class Quest {
 
@@ -15,31 +18,47 @@ public class Quest {
   private final List<String> itemRequirements; // Example: ["OAK_LOG:10"]
   private final List<String> rewards; // Example: ["MONEY:100", "XP:50"]
   private final List<UUID> requiredPlayers; // Empty if quest is for everyone
+  private final LocalDateTime deadline; // Null if no deadline
+  private final Material icon;
 
   /**
-   * Constructs a new Quest instance.
+   * Constructs a new Quest object with the specified parameters.
    *
-   * @param id unique identifier of the quest
-   * @param name display name of the quest
-   * @param lore lore or description of the quest
-   * @param itemRequirements list of item requirements, formatted as "ITEM:AMOUNT"
-   * @param rewards list of rewards, formatted as "TYPE:AMOUNT"
-   * @param requiredPlayers list of UUIDs of players required to complete this quest; empty if quest
-   *     is open to all
+   * @param id the unique identifier of the quest
+   * @param name the display name of the quest
+   * @param lore the lore or description of the quest
+   * @param requirements a list of item requirements formatted as "ITEM:AMOUNT"
+   * @param rewards a list of rewards formatted as "TYPE:AMOUNT"
+   * @param requiredPlayers a list of player UUIDs required to complete this quest
+   * @param deadline an optional deadline for the quest
+   * @param icon the icon representing the quest in the GUI
    */
   public Quest(
       String id,
       String name,
       String lore,
-      List<String> itemRequirements,
+      List<String> requirements,
       List<String> rewards,
-      List<UUID> requiredPlayers) {
+      List<UUID> requiredPlayers,
+      LocalDateTime deadline,
+      Material icon) {
     this.id = id;
     this.name = name;
     this.lore = lore;
-    this.itemRequirements = itemRequirements;
+    this.itemRequirements = requirements;
     this.rewards = rewards;
     this.requiredPlayers = requiredPlayers;
+    this.deadline = deadline;
+    this.icon = icon;
+  }
+
+  /**
+   * Gets the icon representing the quest in the GUI.
+   *
+   * @return the quest icon
+   */
+  public Material getIcon() {
+    return icon;
   }
 
   /**
@@ -97,6 +116,15 @@ public class Quest {
   }
 
   /**
+   * Gets the optional deadline for the quest.
+   *
+   * @return the deadline as a {@link LocalDateTime}, or null if the quest is indefinite
+   */
+  public LocalDateTime getDeadline() {
+    return deadline;
+  }
+
+  /**
    * Determines if the quest is available to all players (i.e., not limited to specific players).
    *
    * @return true if the quest is open to all players, false if restricted to specific players
@@ -116,8 +144,17 @@ public class Quest {
   }
 
   /**
+   * Checks whether the quest has expired based on the current date and time.
+   *
+   * @return true if the current time is after the deadline, false otherwise (or if no deadline)
+   */
+  public boolean isExpired() {
+    return deadline != null && deadline.isBefore(LocalDateTime.now());
+  }
+
+  /**
    * Returns a string representation of the quest, including ID, name, lore, requirements, rewards,
-   * and required players.
+   * required players, and deadline.
    *
    * @return a string representation of this quest
    */
@@ -139,6 +176,8 @@ public class Quest {
         + rewards
         + ", requiredPlayers="
         + requiredPlayers
+        + ", deadline="
+        + deadline
         + '}';
   }
 }

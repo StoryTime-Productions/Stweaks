@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -39,6 +41,18 @@ public class QuestsManager {
     this.plugin = plugin;
     loadCompletedQuestsFromDb();
     loadQuestsFromYaml();
+  }
+
+  /** Reloads all quests from both the YAML file and the database. */
+  public void reloadQuests() {
+    // Clear current quests
+    allQuests.clear();
+
+    // Reload from YAML
+    loadQuestsFromYaml();
+
+    // Reload from database
+    loadCompletedQuestsFromDb();
   }
 
   /**
@@ -85,6 +99,28 @@ public class QuestsManager {
   }
 
   /**
+   * Retrieves a quest by its unique identifier.
+   *
+   * @param questId the unique identifier of the quest
+   * @return the Quest object corresponding to the given ID, or null if not found
+   */
+  public Quest getQuestById(String questId) {
+    return allQuests.get(questId); // Assuming questDatabase is a Map<String, Quest>
+  }
+
+  /**
+   * Checks if a quest is completed for a specific player.
+   *
+   * @param playerId the UUID of the player
+   * @param questId the ID of the quest
+   * @return true if the quest is completed, false otherwise
+   */
+  public boolean isQuestCompleted(UUID playerId, String questId) {
+    Set<String> completed = completedQuests.get(playerId);
+    return completed != null && completed.contains(questId);
+  }
+
+  /**
    * Loads all quest definitions from the quests.yml configuration file. Existing quest definitions
    * are cleared before loading.
    */
@@ -93,33 +129,69 @@ public class QuestsManager {
     File file = new File(plugin.getDataFolder(), "quests.yml");
 
     if (!file.exists()) {
-      plugin.getLogger().warning("quests.yml not found.");
-      return;
+      plugin.getLogger().warning("quests.yml not found. Creating default file...");
+
+      try {
+        if (!plugin.getDataFolder().exists()) {
+          plugin.getDataFolder().mkdirs();
+        }
+
+        plugin.saveResource("quests.yml", false);
+      } catch (IllegalArgumentException e) {
+        plugin.getLogger().severe("Failed to create default quests.yml: " + e.getMessage());
+        return;
+      }
     }
 
     YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 
+    int loadedCount = 0;
     for (String questId : config.getKeys(false)) {
-      String name = config.getString(questId + ".name");
-      String lore = config.getString(questId + ".lore");
-      List<String> requirements = config.getStringList(questId + ".itemRequirements");
-      List<String> rewards = config.getStringList(questId + ".rewards");
-      List<String> requiredPlayerStrings = config.getStringList(questId + ".requiredPlayers");
-
-      List<UUID> requiredPlayers = new ArrayList<>();
-      for (String s : requiredPlayerStrings) {
-        try {
-          requiredPlayers.add(UUID.fromString(s));
-        } catch (IllegalArgumentException e) {
-          plugin.getLogger().warning("Invalid UUID in quest " + questId + ": " + s);
+      try {
+        String name = config.getString(questId + ".name");
+        String lore = config.getString(questId + ".lore");
+        String iconName = config.getString(questId + ".icon", "PAPER"); // default to PAPER
+        Material icon = Material.matchMaterial(iconName);
+        if (icon == null) {
+          plugin
+              .getLogger()
+              .warning(
+                  "Invalid icon material in quest "
+                      + questId
+                      + ": "
+                      + iconName
+                      + ". Defaulting to PAPER.");
+          icon = Material.PAPER;
         }
-      }
+        List<String> requirements = config.getStringList(questId + ".itemRequirements");
+        List<String> rewards = config.getStringList(questId + ".rewards");
+        List<String> requiredPlayerStrings = config.getStringList(questId + ".requiredPlayers");
+        LocalDateTime deadline = config.getObject(questId + ".deadline", LocalDateTime.class);
 
-      Quest quest = new Quest(questId, name, lore, requirements, rewards, requiredPlayers);
-      allQuests.put(questId, quest);
+        if (name == null || lore == null) {
+          throw new IllegalArgumentException("Missing name or lore.");
+        }
+
+        List<UUID> requiredPlayers = new ArrayList<>();
+        for (String s : requiredPlayerStrings) {
+          try {
+            requiredPlayers.add(UUID.fromString(s));
+          } catch (IllegalArgumentException e) {
+            plugin.getLogger().warning("Invalid UUID in quest " + questId + ": " + s);
+          }
+        }
+
+        Quest quest =
+            new Quest(questId, name, lore, requirements, rewards, requiredPlayers, deadline, icon);
+        allQuests.put(questId, quest);
+        loadedCount++;
+
+      } catch (Exception e) {
+        plugin.getLogger().severe("Failed to load quest '" + questId + "': " + e.getMessage());
+      }
     }
 
-    plugin.getLogger().info("Loaded " + allQuests.size() + " quests from quests.yml.");
+    plugin.getLogger().info("Loaded " + loadedCount + " quests from quests.yml.");
   }
 
   /**

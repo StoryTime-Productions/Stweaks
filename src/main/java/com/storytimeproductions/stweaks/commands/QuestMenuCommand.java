@@ -1,10 +1,15 @@
 package com.storytimeproductions.stweaks.commands;
 
+import com.storytimeproductions.models.Quest;
 import com.storytimeproductions.stweaks.util.QuestsManager;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -15,6 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 /**
  * Handles the "/questmenu" command to open a graphical quest menu interface for players. This menu
@@ -34,7 +40,7 @@ public class QuestMenuCommand implements CommandExecutor {
   }
 
   /**
-   * Executes the /questmenu command. Only players can use this command.
+   * Executes the /quests command. Only players can use this command.
    *
    * @param sender the source of the command
    * @param command the command that was executed
@@ -49,7 +55,20 @@ public class QuestMenuCommand implements CommandExecutor {
       return true;
     }
 
-    openQuestMenu(player);
+    if (args.length >= 1 && args[0].equalsIgnoreCase("reload")) {
+      questsManager.reloadQuests();
+      return true;
+    }
+
+    int page = 1;
+    if (args.length >= 1) {
+      try {
+        page = Math.max(1, Integer.parseInt(args[0]));
+      } catch (NumberFormatException e) {
+        player.sendMessage("Invalid page number. Using page 1.");
+      }
+    }
+    openQuestMenu(player, page);
     return true;
   }
 
@@ -59,58 +78,91 @@ public class QuestMenuCommand implements CommandExecutor {
    *
    * @param player the player for whom the menu is opened
    */
-  private void openQuestMenu(Player player) {
+  private void openQuestMenu(Player player, int page) {
     UUID uuid = player.getUniqueId();
-    Inventory menu =
-        Bukkit.createInventory(null, 6 * 9, Component.text("Quest Menu", NamedTextColor.GOLD));
+    int maxItems = 14;
+    List<String> allQuestIds = questsManager.getDisplayableQuestIdsFor(uuid);
+    int totalPages = (int) Math.ceil(allQuestIds.size() / (double) maxItems);
+    page = Math.max(1, Math.min(page, totalPages));
+
+    Inventory gui =
+        Bukkit.createInventory(
+            null,
+            6 * 9,
+            Component.text("Quest Menu - Page " + page).decoration(TextDecoration.ITALIC, false));
 
     // Add border panes
     for (int i = 0; i < 54; i++) {
       if (i < 9 || i >= 45 || i % 9 == 0 || i % 9 == 8) {
-        menu.setItem(i, createPane(Material.BLACK_STAINED_GLASS_PANE, " "));
+        gui.setItem(i, createPane(Material.BLACK_STAINED_GLASS_PANE, " "));
       }
     }
 
-    // Add quest papers
-    // List<String> displayableQuestIds =
-    // questsManager.getDisplayableQuestIdsFor(player.getUniqueId()).stream()
-    // .toList();
+    // Checkerboard layout: y from 1–4, x from 1–7, if (x+y)%2==0
+    int itemsPlaced = 0;
+    int startIndex = (page - 1) * maxItems;
+    int endIndex = Math.min(startIndex + maxItems, allQuestIds.size());
 
-    int[] slots = {
-      2 + 2 * 9, 3 + 2 * 9, 4 + 2 * 9, 5 + 2 * 9, 6 + 2 * 9, // row 3
-      2 + 3 * 9, 3 + 3 * 9, 4 + 3 * 9, 5 + 3 * 9, 6 + 3 * 9 // row 4
-    };
-
-    int textureNumber = 1;
-
-    for (int i = 0; i < slots.length; i++) {
-      menu.setItem(slots[i], createQuestPaper(textureNumber++));
+    for (int y = 1; y <= 4; y++) {
+      for (int x = 1; x <= 7; x++) {
+        if ((x + y) % 2 == 0 && startIndex + itemsPlaced < endIndex) {
+          String questId = allQuestIds.get(startIndex + itemsPlaced);
+          Quest quest = questsManager.getQuestById(questId);
+          boolean isCompleted = questsManager.isQuestCompleted(player.getUniqueId(), questId);
+          ItemStack paper = createQuestPaper(quest, isCompleted);
+          int slot = y * 9 + x;
+          gui.setItem(slot, paper);
+          itemsPlaced++;
+        }
+      }
     }
 
-    // Add quest completion stats
+    // Stats item in center bottom (slot 49)
     int completed = questsManager.getCompletedQuestCount(uuid);
     int open = questsManager.getOpenQuestCount(uuid);
     double percent = open + completed == 0 ? 0.0 : ((double) completed / (open + completed)) * 100;
 
-    ItemStack statsPaper = new ItemStack(Material.PAPER);
-    ItemMeta statsMeta = statsPaper.getItemMeta();
-    statsMeta.displayName(Component.text("Quest Stats", NamedTextColor.GOLD));
+    ItemStack stats = new ItemStack(Material.PAPER);
+    ItemMeta statsMeta = stats.getItemMeta();
+    statsMeta.displayName(Component.text("Quest Stats"));
     statsMeta.lore(
         List.of(
             Component.text("Open: ", NamedTextColor.YELLOW)
-                .append(Component.text(open, NamedTextColor.GREEN)),
+                .append(
+                    Component.text(open, NamedTextColor.GREEN)
+                        .decoration(TextDecoration.ITALIC, false)),
             Component.text("Completed: ", NamedTextColor.YELLOW)
-                .append(Component.text(completed, NamedTextColor.RED)),
+                .append(
+                    Component.text(completed, NamedTextColor.RED)
+                        .decoration(TextDecoration.ITALIC, false)),
             Component.text("Completion: ", NamedTextColor.YELLOW)
-                .append(Component.text(percent + "%", NamedTextColor.AQUA))));
-    statsPaper.setItemMeta(statsMeta);
-    menu.setItem(3 + 5 * 9, statsPaper);
+                .append(
+                    Component.text(String.format("%.2f%%", percent), NamedTextColor.AQUA)
+                        .decoration(TextDecoration.ITALIC, false))));
+    stats.setItemMeta(statsMeta);
+    gui.setItem(49, stats);
 
-    // Add QuestBook button
-    ItemStack openBook = createPane(Material.LIME_STAINED_GLASS_PANE, "Open Questbook");
-    menu.setItem(5 + 5 * 9, openBook);
+    // Prev and Next buttons
+    NamespacedKey pageKey =
+        new NamespacedKey(Bukkit.getPluginManager().getPlugin("stweaks"), "page");
 
-    player.openInventory(menu);
+    if (page > 1) {
+      ItemStack previous = createPane(Material.ARROW, "Previous Page");
+      ItemMeta previousMeta = previous.getItemMeta();
+      previousMeta.getPersistentDataContainer().set(pageKey, PersistentDataType.INTEGER, page - 1);
+      previous.setItemMeta(previousMeta);
+      gui.setItem(46, previous);
+    }
+
+    if (page < totalPages) {
+      ItemStack next = createPane(Material.ARROW, "Next Page");
+      ItemMeta nextMeta = next.getItemMeta();
+      nextMeta.getPersistentDataContainer().set(pageKey, PersistentDataType.INTEGER, page + 1);
+      next.setItemMeta(nextMeta);
+      gui.setItem(52, next);
+    }
+
+    player.openInventory(gui);
   }
 
   /**
@@ -135,15 +187,190 @@ public class QuestMenuCommand implements CommandExecutor {
    * @param modelNumber the model number used for custom model data
    * @return the customized quest paper item
    */
-  private ItemStack createQuestPaper(int modelNumber) {
-    ItemStack item = new ItemStack(Material.PAPER);
+  private ItemStack createQuestPaper(Quest quest, boolean isCompleted) {
+    ItemStack item = new ItemStack(quest.getIcon());
     ItemMeta meta = item.getItemMeta();
 
-    NamespacedKey key = new NamespacedKey("storytime", "quest_menu_" + modelNumber);
+    // Display name
+    meta.displayName(
+        Component.text(quest.getName(), NamedTextColor.GOLD, TextDecoration.BOLD)
+            .decoration(TextDecoration.ITALIC, false));
 
-    meta.displayName(Component.text(key.toString(), NamedTextColor.GOLD));
-    meta.setItemModel(key);
+    List<Component> lore = new ArrayList<>();
+
+    // Lore (description)
+    if (quest.getLore() != null && !quest.getLore().isBlank()) {
+      for (String line : quest.getLore().split("\n")) {
+        List<String> wrappedLines = wrapText(line.trim(), 50 - 2);
+        for (int i = 0; i < wrappedLines.size(); i++) {
+          // CHECKSTYLE:OFF: AvoidEscapedUnicodeCharacters
+          String prefix = (i == 0) ? "\u2022 " : "  ";
+          // CHECKSTYLE:ON: AvoidEscapedUnicodeCharacters
+          lore.add(Component.text(prefix + wrappedLines.get(i), NamedTextColor.WHITE));
+        }
+      }
+      lore.add(Component.empty());
+    }
+
+    // Deadline
+    if (quest.getDeadline() != null) {
+      lore.add(
+          Component.text("Deadline: ", NamedTextColor.RED)
+              .append(Component.text(quest.getDeadline().toString(), NamedTextColor.WHITE))
+              .decoration(TextDecoration.ITALIC, false));
+      lore.add(Component.empty());
+    }
+
+    // Completion Status
+    lore.add(
+        Component.text("Status: ", NamedTextColor.AQUA)
+            .append(
+                Component.text(
+                        isCompleted ? "Completed" : "In Progress",
+                        isCompleted ? NamedTextColor.GREEN : NamedTextColor.YELLOW)
+                    .decoration(TextDecoration.ITALIC, false)));
+
+    NamespacedKey questIdKey =
+        new NamespacedKey(Bukkit.getPluginManager().getPlugin("stweaks"), "questId"); // Use
+    // plugin
+    // reference
+    meta.getPersistentDataContainer().set(questIdKey, PersistentDataType.STRING, quest.getId());
+
+    meta.lore(lore);
     item.setItemMeta(meta);
     return item;
+  }
+
+  /**
+   * Opens a detailed view of a specific quest for the player.
+   *
+   * @param player the player who will see the quest details
+   * @param quest the quest to be displayed
+   */
+  public void openQuestViewMenu(Player player, Quest quest) {
+    Inventory gui =
+        Bukkit.createInventory(
+            null, 6 * 9, Component.text("Quest Details").decoration(TextDecoration.ITALIC, false));
+
+    // Border
+    for (int i = 0; i < 54; i++) {
+      if (i < 9 || i >= 45 || i % 9 == 0 || i % 9 == 8) {
+        gui.setItem(i, createPane(Material.BLACK_STAINED_GLASS_PANE, " "));
+      }
+    }
+
+    // Exit button
+    ItemStack exit = createPane(Material.BARRIER, "Exit to Main Menu");
+    ItemMeta exitMeta = exit.getItemMeta();
+    NamespacedKey exitKey =
+        new NamespacedKey(Bukkit.getPluginManager().getPlugin("stweaks"), "exit");
+    exitMeta.getPersistentDataContainer().set(exitKey, PersistentDataType.INTEGER, 1);
+    exit.setItemMeta(exitMeta);
+    gui.setItem(49, exit);
+
+    // Quest name
+    gui.setItem(20, createInfoItem(quest.getIcon(), "Quest Name", quest.getName()));
+
+    // Lore
+    gui.setItem(22, createInfoItem(Material.WRITABLE_BOOK, "Description", quest.getLore()));
+
+    // Players & Deadline
+    StringBuilder extra = new StringBuilder();
+    if (!quest.getRequiredPlayers().isEmpty()) {
+      extra
+          .append("Players: ")
+          .append(
+              quest.getRequiredPlayers().stream()
+                  .map(UUID::toString)
+                  .collect(Collectors.joining(", ")))
+          .append("\n");
+    }
+    if (quest.getDeadline() != null) {
+      extra.append("Deadline: ").append(quest.getDeadline().toString());
+    }
+    gui.setItem(24, createInfoItem(Material.CLOCK, "Requirements", extra.toString()));
+
+    // Required Items
+    gui.setItem(
+        30,
+        createInfoItem(
+            Material.CHEST, "Required Items", formatItemList(quest.getItemRequirements())));
+
+    // Rewards
+    gui.setItem(
+        32, createInfoItem(Material.EMERALD, "Rewards", formatItemList(quest.getRewards())));
+
+    player.openInventory(gui);
+  }
+
+  private ItemStack createInfoItem(Material material, String title, String content) {
+    ItemStack item = new ItemStack(material);
+    ItemMeta meta = item.getItemMeta();
+    meta.displayName(
+        Component.text(title, NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
+
+    if (content != null && !content.isBlank()) {
+      List<Component> lore = new ArrayList<>();
+      for (String paragraph : content.split("\n")) {
+        List<String> wrappedLines = wrapText(paragraph, 50);
+        for (String line : wrappedLines) {
+          lore.add(Component.text(line, NamedTextColor.WHITE));
+        }
+      }
+      meta.lore(lore);
+    }
+
+    item.setItemMeta(meta);
+    return item;
+  }
+
+  private List<String> wrapText(String text, int maxLineLength) {
+    List<String> lines = new ArrayList<>();
+    String[] words = text.split(" ");
+    StringBuilder line = new StringBuilder();
+
+    for (String word : words) {
+      if (line.length() + word.length() + 1 > maxLineLength) {
+        lines.add(line.toString().trim());
+        line = new StringBuilder();
+      }
+      line.append(word).append(" ");
+    }
+
+    if (!line.isEmpty()) {
+      lines.add(line.toString().trim());
+    }
+
+    return lines;
+  }
+
+  private String formatItemList(List<String> items) {
+    if (items == null || items.isEmpty()) {
+      return "None";
+    }
+    return items.stream()
+        .map(
+            raw -> {
+              // Remove prefix and split
+              String noPrefix = raw.replaceFirst("^minecraft:", "");
+              String[] parts = noPrefix.split(":");
+
+              // Get quantity and item name
+              String count = parts[parts.length - 1];
+              String itemNameRaw = String.join("_", Arrays.copyOf(parts, parts.length - 1));
+
+              // Convert to Title Case
+              String itemName =
+                  Arrays.stream(itemNameRaw.split("_"))
+                      .map(
+                          word ->
+                              word.isEmpty()
+                                  ? word
+                                  : Character.toUpperCase(word.charAt(0)) + word.substring(1))
+                      .collect(Collectors.joining(" "));
+
+              return "x" + count + " " + itemName;
+            })
+        .collect(Collectors.joining("\n"));
   }
 }

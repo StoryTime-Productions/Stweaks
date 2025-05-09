@@ -1,0 +1,55 @@
+gather_flowers:
+  name: "Flower Collector"
+  lore: "Collect a bouquet of beautiful flowers."
+  itemRequirements:
+    - "minecraft:dandelion:5"
+    - "minecraft:poppy:3"
+  rewards:
+    - "money:100"
+    - "item:minecraft:flower_banner"
+  requiredPlayers: []
+  deadline: 2025-06-01T23:59:00
+
+mine_diamonds:
+  name: "Shiny Discovery"
+  lore: "Mine 10 diamonds to complete this quest."
+  itemRequirements:
+    - "minecraft:diamond:10"
+  rewards:
+    - "item:minecraft:diamond_pickaxe"
+  requiredPlayers: []
+  deadline: 2025-06-15T00:00:00
+
+community_build:
+  name: "Community Builder"
+  lore: "Contribute resources for the town hall project."
+  itemRequirements:
+    - "minecraft:oak_log:64"
+    - "minecraft:stone_bricks:64"
+  rewards:
+    - "item:minecraft:golden_shovel"
+  requiredPlayers: []
+  deadline: null
+
+slay_the_beast:
+  name: "Beast Slayer"
+  lore: "Defeat the Ravager in the nearby plains."
+  itemRequirements:
+    - "item:mob_kill:ravager:1"
+  rewards:
+    - "item:minecraft:netherite_sword"
+    - "title:Beast Slayer"
+  requiredPlayers: []
+  deadline: 2025-07-01T18:00:00
+
+nether_explorer:
+  name: "Nether Explorer"
+  lore: "Bring back relics from the Nether."
+  itemRequirements:
+    - "minecraft:nether_quartz:20"
+    - "minecraft:glowstone_dust:10"
+  rewards:
+    - "xp:300"
+    - "item:minecraft:fire_resistance_potion"
+  requiredPlayers: []
+  deadline: null

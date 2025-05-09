@@ -76,10 +76,9 @@ public class BiomeNotifier implements Listener {
 
     // Check if this is our custom "BiomeTracker" inventory
     InventoryView view = player.getOpenInventory();
-    String title =
-        view.title().toString(); // Or use getTopInventory().getName() depending on version
+    String title = view.title().toString();
 
-    if (!title.contains("Biome Tracker") && !title.contains("Quest Menu")) {
+    if (!title.contains("Biome Tracker")) {
       return; // Only act on our GUI
     }
 
@@ -95,7 +94,7 @@ public class BiomeNotifier implements Listener {
       }
     }
 
-    event.setCancelled(true); // Cancel only in the biometracker GUI
+    event.setCancelled(true);
   }
 
   /**
