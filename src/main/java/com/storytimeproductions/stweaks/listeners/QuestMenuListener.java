@@ -27,17 +27,15 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 
 /**
- * QuestMenuListener handles player interactions within custom quest-related
- * GUIs, including the
- * Quest Menu (listing quests with pagination) and the Quest View (detailed view
- * of a selected
+ * QuestMenuListener handles player interactions within custom quest-related GUIs, including the
+ * Quest Menu (listing quests with pagination) and the Quest View (detailed view of a selected
  * quest). It interprets and reacts to custom data tags attached to GUI items:
  *
  * <ul>
- * <li>Triggers pagination by executing /quests [page]
- * <li>Opens a detailed quest view by quest ID
- * <li>Returns to the Quest Menu from the quest view
- * <li>Blocks default inventory interactions within quest GUIs
+ *   <li>Triggers pagination by executing /quests [page]
+ *   <li>Opens a detailed quest view by quest ID
+ *   <li>Returns to the Quest Menu from the quest view
+ *   <li>Blocks default inventory interactions within quest GUIs
  * </ul>
  */
 public class QuestMenuListener implements Listener {
@@ -49,10 +47,9 @@ public class QuestMenuListener implements Listener {
   /**
    * Constructs a new QuestMenuListener.
    *
-   * @param plugin           the plugin instance used for namespaced keys
-   * @param questsManager    the central quest registry
-   * @param questMenuCommand the command handler containing the GUI rendering
-   *                         logic
+   * @param plugin the plugin instance used for namespaced keys
+   * @param questsManager the central quest registry
+   * @param questMenuCommand the command handler containing the GUI rendering logic
    */
   public QuestMenuListener(
       Plugin plugin, QuestsManager questsManager, QuestMenuCommand questMenuCommand) {
@@ -62,14 +59,10 @@ public class QuestMenuListener implements Listener {
   }
 
   /**
-   * Handles click events inside custom quest-related inventories. - If a page
-   * navigation item is
-   * clicked (has a "page" tag), triggers the appropriate command. - If a quest
-   * item is clicked (has
-   * a "questId" tag), opens the quest view menu. - If the "exit" tag is present,
-   * returns to the
-   * main quest menu. - All interactions inside these GUIs are cancelled to
-   * prevent normal item
+   * Handles click events inside custom quest-related inventories. - If a page navigation item is
+   * clicked (has a "page" tag), triggers the appropriate command. - If a quest item is clicked (has
+   * a "questId" tag), opens the quest view menu. - If the "exit" tag is present, returns to the
+   * main quest menu. - All interactions inside these GUIs are cancelled to prevent normal item
    * movement.
    *
    * @param event the InventoryClickEvent triggered when a player clicks an item
@@ -164,7 +157,8 @@ public class QuestMenuListener implements Listener {
                         .build());
 
             Location location = player.getLocation();
-            Firework firework = (Firework) location.getWorld().spawnEntity(location, EntityType.FIREWORK_ROCKET);
+            Firework firework =
+                (Firework) location.getWorld().spawnEntity(location, EntityType.FIREWORK_ROCKET);
             FireworkMeta fireworkMeta = firework.getFireworkMeta();
             fireworkMeta.addEffect(
                 FireworkEffect.builder()

@@ -152,30 +152,12 @@ public class QuestsManager {
       int requiredAmount = entry.getValue();
 
       int playerAmount = countItems(player, material);
-      Bukkit.getLogger()
-          .info(
-              "Checking requirement for player "
-                  + player.getName()
-                  + ": "
-                  + requiredAmount
-                  + "x "
-                  + material.name()
-                  + " (player has "
-                  + playerAmount
-                  + ")");
 
       if (playerAmount < requiredAmount) {
         Bukkit.getLogger().info("Player does NOT have enough of " + material.name());
         return false;
       }
     }
-
-    Bukkit.getLogger()
-        .info(
-            "Player "
-                + player.getName()
-                + " meets all item requirements for quest: "
-                + quest.getName());
     return true;
   }
 
@@ -224,14 +206,6 @@ public class QuestsManager {
     for (Map.Entry<Material, Integer> entry : itemRequirements.entrySet()) {
       Material material = entry.getKey();
       int remainingToRemove = entry.getValue();
-      Bukkit.getLogger()
-          .info(
-              "Removing "
-                  + remainingToRemove
-                  + "x "
-                  + material.name()
-                  + " from "
-                  + player.getName());
 
       ItemStack[] contents = player.getInventory().getContents();
       for (int i = 0; i < contents.length; i++) {
@@ -299,14 +273,6 @@ public class QuestsManager {
         for (ItemStack leftover : notStored.values()) {
           player.getWorld().dropItemNaturally(player.getLocation(), leftover);
         }
-        Bukkit.getLogger()
-            .info(
-                "Player "
-                    + player.getName()
-                    + "'s inventory was full. Dropped reward items at their location.");
-      } else {
-        Bukkit.getLogger()
-            .info("Gave " + amount + "x " + material.name() + " to " + player.getName());
       }
     }
     player.updateInventory(); // Sync inventory with client
@@ -464,34 +430,29 @@ public class QuestsManager {
 
     YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 
-    int loadedCount = 0;
     for (String questId : config.getKeys(false)) {
       try {
-        String name = config.getString(questId + ".name");
-        String lore = config.getString(questId + ".lore");
         String iconName = config.getString(questId + ".icon", "PAPER"); // default to PAPER
         Material icon = Material.matchMaterial(iconName);
         if (icon == null) {
-          plugin
-              .getLogger()
-              .warning(
-                  "Invalid icon material in quest "
-                      + questId
-                      + ": "
-                      + iconName
-                      + ". Defaulting to PAPER.");
           icon = Material.PAPER;
         }
-        List<String> requirements = config.getStringList(questId + ".itemRequirements");
-        List<String> rewards = config.getStringList(questId + ".rewards");
-        List<String> requiredPlayerStrings = config.getStringList(questId + ".requiredPlayers");
-        LocalDateTime deadline = config.getObject(questId + ".deadline", LocalDateTime.class);
 
+        String deadlineStr = config.getString(questId + ".deadline");
+        LocalDateTime deadline = null;
+        if (deadlineStr != null) {
+          deadline = LocalDateTime.parse(deadlineStr);
+        }
+
+        String name = config.getString(questId + ".name");
+        String lore = config.getString(questId + ".lore");
         if (name == null || lore == null) {
           throw new IllegalArgumentException("Missing name or lore.");
         }
 
         List<UUID> requiredPlayers = new ArrayList<>();
+        List<String> requiredPlayerStrings = config.getStringList(questId + ".requiredPlayers");
+
         for (String s : requiredPlayerStrings) {
           try {
             requiredPlayers.add(UUID.fromString(s));
@@ -500,17 +461,15 @@ public class QuestsManager {
           }
         }
 
+        List<String> requirements = config.getStringList(questId + ".itemRequirements");
+        List<String> rewards = config.getStringList(questId + ".rewards");
         Quest quest =
             new Quest(questId, name, lore, requirements, rewards, requiredPlayers, deadline, icon);
         allQuests.put(questId, quest);
-        loadedCount++;
-
       } catch (Exception e) {
         plugin.getLogger().severe("Failed to load quest '" + questId + "': " + e.getMessage());
       }
     }
-
-    plugin.getLogger().info("Loaded " + loadedCount + " quests from quests.yml.");
   }
 
   /**
@@ -530,10 +489,6 @@ public class QuestsManager {
         String questId = rs.getString("quest_id");
         completedQuests.computeIfAbsent(uuid, k -> new HashSet<>()).add(questId);
       }
-
-      plugin
-          .getLogger()
-          .info("Loaded completed quests for " + completedQuests.size() + " players.");
     } catch (SQLException e) {
       e.printStackTrace();
     }

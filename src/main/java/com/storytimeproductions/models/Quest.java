@@ -1,7 +1,9 @@
 package com.storytimeproductions.models;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import org.bukkit.Material;
 
@@ -20,6 +22,8 @@ public class Quest {
   private final List<UUID> requiredPlayers; // Empty if quest is for everyone
   private final LocalDateTime deadline; // Null if no deadline
   private final Material icon;
+  DateTimeFormatter displayFormatter =
+      DateTimeFormatter.ofPattern("MMM d, yyyy h:mm a", Locale.ENGLISH);
 
   /**
    * Constructs a new Quest object with the specified parameters.
@@ -120,8 +124,11 @@ public class Quest {
    *
    * @return the deadline as a {@link LocalDateTime}, or null if the quest is indefinite
    */
-  public LocalDateTime getDeadline() {
-    return deadline;
+  public String getDeadline() {
+    if (deadline == null) {
+      return null;
+    }
+    return deadline.format(displayFormatter);
   }
 
   /**

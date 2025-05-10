@@ -106,8 +106,33 @@ public class QuestMenuCommand implements CommandExecutor {
     questsManager.reloadQuests();
 
     UUID uuid = player.getUniqueId();
+
+    List<String> allQuestIdsRaw = questsManager.getDisplayableQuestIdsFor(uuid);
+    List<String> requiredPlayerQuests = new ArrayList<>();
+    List<String> defaultQuests = new ArrayList<>();
+    List<String> completedQuests = new ArrayList<>();
+
+    for (String questId : allQuestIdsRaw) {
+      if (questsManager.isQuestCompleted(uuid, questId)) {
+        completedQuests.add(questId);
+      } else {
+        Quest quest = questsManager.getQuestById(questId);
+        List<UUID> requiredPlayers = quest.getRequiredPlayers();
+        if (requiredPlayers != null && requiredPlayers.contains(uuid)) {
+          requiredPlayerQuests.add(questId);
+        } else if (requiredPlayers == null || requiredPlayers.isEmpty()) {
+          defaultQuests.add(questId);
+        }
+      }
+    }
+
+    // Concatenate them in the desired order
+    List<String> allQuestIds = new ArrayList<>();
+    allQuestIds.addAll(requiredPlayerQuests);
+    allQuestIds.addAll(defaultQuests);
+    allQuestIds.addAll(completedQuests);
+
     int maxItems = 14;
-    List<String> allQuestIds = questsManager.getDisplayableQuestIdsFor(uuid);
     int totalPages = (int) Math.ceil(allQuestIds.size() / (double) maxItems);
     page = Math.max(1, Math.min(page, totalPages));
 
@@ -242,7 +267,7 @@ public class QuestMenuCommand implements CommandExecutor {
     if (quest.getDeadline() != null) {
       lore.add(
           Component.text("Deadline: ", NamedTextColor.RED)
-              .append(Component.text(quest.getDeadline().toString(), NamedTextColor.WHITE))
+              .append(Component.text(quest.getDeadline(), NamedTextColor.WHITE))
               .decoration(TextDecoration.ITALIC, false));
       lore.add(Component.empty());
     }
@@ -257,9 +282,7 @@ public class QuestMenuCommand implements CommandExecutor {
                     .decoration(TextDecoration.ITALIC, false)));
 
     NamespacedKey questIdKey =
-        new NamespacedKey(Bukkit.getPluginManager().getPlugin("stweaks"), "questId"); // Use
-    // plugin
-    // reference
+        new NamespacedKey(Bukkit.getPluginManager().getPlugin("stweaks"), "questId");
     meta.getPersistentDataContainer().set(questIdKey, PersistentDataType.STRING, quest.getId());
 
     meta.lore(lore);
@@ -310,7 +333,7 @@ public class QuestMenuCommand implements CommandExecutor {
     attempt.setItemMeta(attemptMeta);
 
     if (questsManager.isQuestCompleted(player.getUniqueId(), quest.getId())) {
-      gui.setItem(46, exit);
+      gui.setItem(49, exit);
     } else {
       gui.setItem(46, exit);
       gui.setItem(52, attempt);
@@ -331,7 +354,7 @@ public class QuestMenuCommand implements CommandExecutor {
           .getRequiredPlayers()
           .forEach(
               uuid -> {
-                Player currentPlayer = Bukkit.getPlayer(uuid);
+                OfflinePlayer currentPlayer = Bukkit.getOfflinePlayer(uuid);
                 if (currentPlayer != null) {
                   extra.append(currentPlayer.getName()).append(", ");
                 }
@@ -343,7 +366,7 @@ public class QuestMenuCommand implements CommandExecutor {
     }
 
     if (quest.getDeadline() != null) {
-      extra.append("Deadline: ").append(quest.getDeadline().toString());
+      extra.append("Deadline: ").append(quest.getDeadline());
     }
 
     if (extra.isEmpty()) {
@@ -393,7 +416,20 @@ public class QuestMenuCommand implements CommandExecutor {
       for (String paragraph : content.split("\n")) {
         List<String> wrappedLines = wrapText(paragraph, 50);
         for (String line : wrappedLines) {
-          lore.add(Component.text(line, NamedTextColor.WHITE));
+          if (line.startsWith("Deadline: ") || line.startsWith("Players: ")) {
+            String prefix = line.startsWith("Deadline: ") ? "Deadline: " : "Players: ";
+            String value = line.substring(prefix.length());
+
+            lore.add(
+                Component.text(prefix, NamedTextColor.YELLOW)
+                    .decoration(TextDecoration.ITALIC, false)
+                    .append(
+                        Component.text(value, NamedTextColor.WHITE)
+                            .decoration(TextDecoration.ITALIC, true)));
+          } else {
+            lore.add(
+                Component.text(line, NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, true));
+          }
         }
       }
       meta.lore(lore);
