@@ -165,19 +165,15 @@ public class BiomeTrackerCommand implements CommandExecutor {
 
     // Set navigation buttons
     gui.setItem(
-        48,
+        46,
         createNavigationPane(
-            page > 1,
-            "Previous",
-            Material.GREEN_STAINED_GLASS_PANE,
-            Material.BLACK_STAINED_GLASS_PANE,
-            page - 1));
+            page > 1, "Previous", Material.ARROW, Material.BLACK_STAINED_GLASS_PANE, page - 1));
     gui.setItem(
-        50,
+        52,
         createNavigationPane(
             page < totalPages,
             "Next",
-            Material.GREEN_STAINED_GLASS_PANE,
+            Material.ARROW,
             Material.BLACK_STAINED_GLASS_PANE,
             page + 1));
 

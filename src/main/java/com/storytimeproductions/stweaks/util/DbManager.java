@@ -74,6 +74,14 @@ public class DbManager {
    * @return The active Connection object.
    */
   public Connection getConnection() {
+    try {
+      if (connection == null || connection.isClosed()) {
+        connection = DriverManager.getConnection(DATABASE_URL);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
     return connection;
   }
 

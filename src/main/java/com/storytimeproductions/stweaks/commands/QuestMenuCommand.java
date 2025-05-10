@@ -10,9 +10,11 @@ import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -21,6 +23,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.Plugin;
 
 /**
  * Handles the "/questmenu" command to open a graphical quest menu interface for players. This menu
@@ -55,6 +58,27 @@ public class QuestMenuCommand implements CommandExecutor {
       return true;
     }
 
+    if (args.length == 3 && args[0].equalsIgnoreCase("unset")) {
+      String playerName = args[1];
+      String questName = args[2];
+
+      OfflinePlayer target = Bukkit.getOfflinePlayer(playerName);
+      if (!target.hasPlayedBefore() && !target.isOnline()) {
+        sender.sendMessage("Player not found or hasn't played before.");
+        return true;
+      }
+
+      String questId = questsManager.getQuestByName(questName);
+      if (questId == null) {
+        sender.sendMessage("Quest not found.");
+        return true;
+      }
+
+      questsManager.unsetQuestCompletion(target.getUniqueId(), questId);
+      sender.sendMessage("Quest '" + questName + "' marked as incomplete for " + playerName + ".");
+      return true;
+    }
+
     if (args.length >= 1 && args[0].equalsIgnoreCase("reload")) {
       questsManager.reloadQuests();
       return true;
@@ -79,6 +103,8 @@ public class QuestMenuCommand implements CommandExecutor {
    * @param player the player for whom the menu is opened
    */
   private void openQuestMenu(Player player, int page) {
+    questsManager.reloadQuests();
+
     UUID uuid = player.getUniqueId();
     int maxItems = 14;
     List<String> allQuestIds = questsManager.getDisplayableQuestIdsFor(uuid);
@@ -188,7 +214,7 @@ public class QuestMenuCommand implements CommandExecutor {
    * @return the customized quest paper item
    */
   private ItemStack createQuestPaper(Quest quest, boolean isCompleted) {
-    ItemStack item = new ItemStack(quest.getIcon());
+    ItemStack item = new ItemStack(isCompleted ? Material.GREEN_WOOL : quest.getIcon());
     ItemMeta meta = item.getItemMeta();
 
     // Display name
@@ -248,6 +274,7 @@ public class QuestMenuCommand implements CommandExecutor {
    * @param quest the quest to be displayed
    */
   public void openQuestViewMenu(Player player, Quest quest) {
+
     Inventory gui =
         Bukkit.createInventory(
             null, 6 * 9, Component.text("Quest Details").decoration(TextDecoration.ITALIC, false));
@@ -260,13 +287,34 @@ public class QuestMenuCommand implements CommandExecutor {
     }
 
     // Exit button
-    ItemStack exit = createPane(Material.BARRIER, "Exit to Main Menu");
+    ItemStack exit = new ItemStack(Material.BARRIER);
     ItemMeta exitMeta = exit.getItemMeta();
-    NamespacedKey exitKey =
-        new NamespacedKey(Bukkit.getPluginManager().getPlugin("stweaks"), "exit");
+    exitMeta.displayName(Component.text("Exit to Quest Menu"));
+    exit.setItemMeta(exitMeta);
+
+    Plugin plugin = Bukkit.getPluginManager().getPlugin("stweaks");
+
+    NamespacedKey exitKey = new NamespacedKey(plugin, "exit");
     exitMeta.getPersistentDataContainer().set(exitKey, PersistentDataType.INTEGER, 1);
     exit.setItemMeta(exitMeta);
-    gui.setItem(49, exit);
+
+    ItemStack attempt = new ItemStack(Material.EMERALD_BLOCK);
+    ItemMeta attemptMeta = attempt.getItemMeta();
+    attemptMeta.displayName(Component.text("Verify Completion"));
+    NamespacedKey attemptKey = new NamespacedKey(plugin, "verify_completion");
+    NamespacedKey questIdKey = new NamespacedKey(plugin, "questId");
+    attemptMeta.getPersistentDataContainer().set(attemptKey, PersistentDataType.INTEGER, 1);
+    attemptMeta
+        .getPersistentDataContainer()
+        .set(questIdKey, PersistentDataType.STRING, quest.getId());
+    attempt.setItemMeta(attemptMeta);
+
+    if (questsManager.isQuestCompleted(player.getUniqueId(), quest.getId())) {
+      gui.setItem(46, exit);
+    } else {
+      gui.setItem(46, exit);
+      gui.setItem(52, attempt);
+    }
 
     // Quest name
     gui.setItem(20, createInfoItem(quest.getIcon(), "Quest Name", quest.getName()));
@@ -276,29 +324,60 @@ public class QuestMenuCommand implements CommandExecutor {
 
     // Players & Deadline
     StringBuilder extra = new StringBuilder();
+
     if (!quest.getRequiredPlayers().isEmpty()) {
-      extra
-          .append("Players: ")
-          .append(
-              quest.getRequiredPlayers().stream()
-                  .map(UUID::toString)
-                  .collect(Collectors.joining(", ")))
-          .append("\n");
+      extra.append("Players: ");
+      quest
+          .getRequiredPlayers()
+          .forEach(
+              uuid -> {
+                Player currentPlayer = Bukkit.getPlayer(uuid);
+                if (currentPlayer != null) {
+                  extra.append(currentPlayer.getName()).append(", ");
+                }
+              });
+      if (extra.length() > 8) {
+        extra.setLength(extra.length() - 2);
+      }
+      extra.append("\n");
     }
+
     if (quest.getDeadline() != null) {
       extra.append("Deadline: ").append(quest.getDeadline().toString());
     }
-    gui.setItem(24, createInfoItem(Material.CLOCK, "Requirements", extra.toString()));
 
-    // Required Items
-    gui.setItem(
-        30,
-        createInfoItem(
-            Material.CHEST, "Required Items", formatItemList(quest.getItemRequirements())));
+    if (extra.isEmpty()) {
+      extra.append("None");
+    }
 
-    // Rewards
-    gui.setItem(
-        32, createInfoItem(Material.EMERALD, "Rewards", formatItemList(quest.getRewards())));
+    gui.setItem(24, createInfoItem(Material.CLOCK, "Optional Requirements", extra.toString()));
+
+    // Combined Required Items and Rewards in slot 30 using Kyori components
+    Component combinedComponent =
+        Component.text("Required Items:\n", NamedTextColor.YELLOW)
+            .append(
+                Component.text(formatItemList(quest.getItemRequirements()), NamedTextColor.WHITE))
+            .append(Component.newline())
+            .append(Component.newline())
+            .append(Component.text("Rewards:\n", NamedTextColor.GREEN))
+            .append(Component.text(formatItemList(quest.getRewards()), NamedTextColor.WHITE));
+
+    gui.setItem(30, createInfoItem(Material.CHEST, "Items & Rewards", combinedComponent));
+
+    // Completed Players in slot 32 using questsManager
+    List<UUID> completedPlayers = questsManager.getCompletedPlayers(quest);
+    String completedText =
+        completedPlayers.isEmpty()
+            ? "None yet"
+            : completedPlayers.stream()
+                .map(
+                    uuid -> {
+                      OfflinePlayer p = Bukkit.getOfflinePlayer(uuid);
+                      return p.getName() != null ? p.getName() : uuid.toString();
+                    })
+                .collect(Collectors.joining(",\n"));
+
+    gui.setItem(32, createInfoItem(Material.PLAYER_HEAD, "Completed By", completedText));
 
     player.openInventory(gui);
   }
@@ -312,6 +391,30 @@ public class QuestMenuCommand implements CommandExecutor {
     if (content != null && !content.isBlank()) {
       List<Component> lore = new ArrayList<>();
       for (String paragraph : content.split("\n")) {
+        List<String> wrappedLines = wrapText(paragraph, 50);
+        for (String line : wrappedLines) {
+          lore.add(Component.text(line, NamedTextColor.WHITE));
+        }
+      }
+      meta.lore(lore);
+    }
+
+    item.setItemMeta(meta);
+    return item;
+  }
+
+  private ItemStack createInfoItem(Material material, String title, Component content) {
+    ItemStack item = new ItemStack(material);
+    ItemMeta meta = item.getItemMeta();
+
+    meta.displayName(
+        Component.text(title, NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
+
+    if (content != null) {
+      List<Component> lore = new ArrayList<>();
+      // Split content into lines using newlines inside the Component
+      String plainText = LegacyComponentSerializer.legacySection().serialize(content);
+      for (String paragraph : plainText.split("\n")) {
         List<String> wrappedLines = wrapText(paragraph, 50);
         for (String line : wrappedLines) {
           lore.add(Component.text(line, NamedTextColor.WHITE));

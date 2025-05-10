@@ -7,6 +7,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -79,7 +80,12 @@ public class BiomeNotifier implements Listener {
     String title = view.title().toString();
 
     if (!title.contains("Biome Tracker")) {
-      return; // Only act on our GUI
+      return;
+    }
+
+    if (event.getAction().toString().contains("PLACE")) {
+      event.setCancelled(true);
+      return;
     }
 
     ItemMeta meta = clickedItem.getItemMeta();
@@ -89,6 +95,8 @@ public class BiomeNotifier implements Listener {
     if (data.has(new NamespacedKey("stweaks", "page"), PersistentDataType.INTEGER)) {
       int clickedPage = data.get(new NamespacedKey("stweaks", "page"), PersistentDataType.INTEGER);
       if (clickedPage > 0) {
+        player.playSound(player.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1.0f, 1.0f);
+
         String command = "biometracker " + clickedPage;
         player.performCommand(command);
       }

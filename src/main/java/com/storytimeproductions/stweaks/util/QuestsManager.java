@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,8 +17,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -43,7 +47,10 @@ public class QuestsManager {
     loadQuestsFromYaml();
   }
 
-  /** Reloads all quests from both the YAML file and the database. */
+  /**
+   * Reloads all quests from the YAML file and refreshes the completed quests mapping from the
+   * database.
+   */
   public void reloadQuests() {
     // Clear current quests
     allQuests.clear();
@@ -53,6 +60,299 @@ public class QuestsManager {
 
     // Reload from database
     loadCompletedQuestsFromDb();
+  }
+
+  private double similarity(String s1, String s2) {
+    int maxLen = Math.max(s1.length(), s2.length());
+    if (maxLen == 0) {
+      return 1.0;
+    }
+    return (maxLen - levenshteinDistance(s1.toLowerCase(), s2.toLowerCase())) / (double) maxLen;
+  }
+
+  private int levenshteinDistance(String s1, String s2) {
+    int[] costs = new int[s2.length() + 1];
+    for (int j = 0; j < costs.length; j++) {
+      costs[j] = j;
+    }
+    for (int i = 1; i <= s1.length(); i++) {
+      costs[0] = i;
+      int nw = i - 1;
+      for (int j = 1; j <= s2.length(); j++) {
+        int cj =
+            Math.min(
+                1 + Math.min(costs[j], costs[j - 1]),
+                s1.charAt(i - 1) == s2.charAt(j - 1) ? nw : nw + 1);
+        nw = costs[j];
+        costs[j] = cj;
+      }
+    }
+    return costs[s2.length()];
+  }
+
+  /**
+   * Retrieves a quest by its name.
+   *
+   * @param name the name of the quest
+   * @return the Quest object corresponding to the given name, or null if not found
+   */
+  public String getQuestByName(String name) {
+    double bestScore = 0.0;
+    String bestMatchId = null;
+
+    for (Quest quest : allQuests.values()) {
+      double score = similarity(quest.getName(), name);
+      if (score > bestScore && score >= 0.8) {
+        bestScore = score;
+        bestMatchId = quest.getId();
+      }
+    }
+
+    return bestMatchId;
+  }
+
+  /**
+   * Checks if the player has the required items for a specific quest.
+   *
+   * @param player the player to check
+   * @param quest the quest to check against
+   * @return true if the player has all required items, false otherwise
+   */
+  public boolean hasRequiredItems(Player player, Quest quest) {
+    Map<Material, Integer> itemRequirements = new HashMap<>();
+
+    for (String req : quest.getItemRequirements()) {
+      String[] parts = req.split(":");
+      if (parts.length < 3) {
+        Bukkit.getLogger().warning("Invalid item requirement format: " + req);
+        continue;
+      }
+
+      String namespacedKey = parts[0] + ":" + parts[1];
+      Material material = Material.matchMaterial(namespacedKey);
+      if (material == null) {
+        Bukkit.getLogger().warning("Unknown material: " + namespacedKey);
+        continue;
+      }
+
+      int amount;
+      try {
+        amount = Integer.parseInt(parts[2]);
+      } catch (NumberFormatException e) {
+        Bukkit.getLogger()
+            .warning("Invalid quantity for material " + namespacedKey + ": " + parts[2]);
+        continue;
+      }
+
+      itemRequirements.put(material, amount);
+    }
+
+    for (Map.Entry<Material, Integer> entry : itemRequirements.entrySet()) {
+      Material material = entry.getKey();
+      int requiredAmount = entry.getValue();
+
+      int playerAmount = countItems(player, material);
+      Bukkit.getLogger()
+          .info(
+              "Checking requirement for player "
+                  + player.getName()
+                  + ": "
+                  + requiredAmount
+                  + "x "
+                  + material.name()
+                  + " (player has "
+                  + playerAmount
+                  + ")");
+
+      if (playerAmount < requiredAmount) {
+        Bukkit.getLogger().info("Player does NOT have enough of " + material.name());
+        return false;
+      }
+    }
+
+    Bukkit.getLogger()
+        .info(
+            "Player "
+                + player.getName()
+                + " meets all item requirements for quest: "
+                + quest.getName());
+    return true;
+  }
+
+  private int countItems(Player player, Material material) {
+    return Arrays.stream(player.getInventory().getContents())
+        .filter(item -> item != null && item.getType() == material)
+        .mapToInt(ItemStack::getAmount)
+        .sum();
+  }
+
+  /**
+   * Consumes the required items from the player's inventory for a specific quest.
+   *
+   * @param player the player whose inventory to modify
+   * @param quest the quest for which to consume items
+   */
+  public void consumeRequiredItems(Player player, Quest quest) {
+    Map<Material, Integer> itemRequirements = new HashMap<>();
+
+    for (String req : quest.getItemRequirements()) {
+      String[] parts = req.split(":");
+      if (parts.length < 3) {
+        Bukkit.getLogger().warning("Invalid item requirement format: " + req);
+        continue;
+      }
+
+      String namespacedKey = parts[0] + ":" + parts[1];
+      Material material = Material.matchMaterial(namespacedKey);
+      if (material == null) {
+        Bukkit.getLogger().warning("Unknown material: " + namespacedKey);
+        continue;
+      }
+
+      int amount;
+      try {
+        amount = Integer.parseInt(parts[2]);
+      } catch (NumberFormatException e) {
+        Bukkit.getLogger()
+            .warning("Invalid quantity for material " + namespacedKey + ": " + parts[2]);
+        continue;
+      }
+
+      itemRequirements.put(material, amount);
+    }
+
+    for (Map.Entry<Material, Integer> entry : itemRequirements.entrySet()) {
+      Material material = entry.getKey();
+      int remainingToRemove = entry.getValue();
+      Bukkit.getLogger()
+          .info(
+              "Removing "
+                  + remainingToRemove
+                  + "x "
+                  + material.name()
+                  + " from "
+                  + player.getName());
+
+      ItemStack[] contents = player.getInventory().getContents();
+      for (int i = 0; i < contents.length; i++) {
+        ItemStack item = contents[i];
+        if (item != null && item.getType() == material) {
+          int amount = item.getAmount();
+          if (amount <= remainingToRemove) {
+            remainingToRemove -= amount;
+            player.getInventory().setItem(i, null);
+          } else {
+            item.setAmount(amount - remainingToRemove);
+            remainingToRemove = 0;
+            break;
+          }
+        }
+      }
+
+      if (remainingToRemove > 0) {
+        Bukkit.getLogger()
+            .warning(
+                "Could not remove full amount of "
+                    + material.name()
+                    + ". Missing "
+                    + remainingToRemove);
+      }
+    }
+
+    player.updateInventory(); // Ensure client reflects changes immediately
+  }
+
+  /**
+   * Gives the rewards to the player for completing a specific quest.
+   *
+   * @param player the player to whom to give rewards
+   * @param quest the quest for which to give rewards
+   */
+  public void giveRewards(Player player, Quest quest) {
+    for (String reward : quest.getRewards()) {
+      String[] parts = reward.split(":");
+      if (parts.length < 3) {
+        Bukkit.getLogger().warning("Invalid reward format: " + reward);
+        continue;
+      }
+
+      String namespacedKey = parts[0] + ":" + parts[1];
+      Material material = Material.matchMaterial(namespacedKey);
+      if (material == null) {
+        Bukkit.getLogger().warning("Unknown material in reward: " + namespacedKey);
+        continue;
+      }
+
+      int amount;
+      try {
+        amount = Integer.parseInt(parts[2]);
+      } catch (NumberFormatException e) {
+        Bukkit.getLogger()
+            .warning("Invalid amount in reward: " + parts[2] + " for material " + namespacedKey);
+        continue;
+      }
+
+      ItemStack rewardStack = new ItemStack(material, amount);
+      HashMap<Integer, ItemStack> notStored = player.getInventory().addItem(rewardStack);
+      if (!notStored.isEmpty()) {
+        // If inventory is full, drop the item at the player's location
+        for (ItemStack leftover : notStored.values()) {
+          player.getWorld().dropItemNaturally(player.getLocation(), leftover);
+        }
+        Bukkit.getLogger()
+            .info(
+                "Player "
+                    + player.getName()
+                    + "'s inventory was full. Dropped reward items at their location.");
+      } else {
+        Bukkit.getLogger()
+            .info("Gave " + amount + "x " + material.name() + " to " + player.getName());
+      }
+    }
+    player.updateInventory(); // Sync inventory with client
+  }
+
+  /**
+   * Unsets the completion status of a quest for a specific player, both in memory and in the
+   * database.
+   *
+   * @param playerUuid the UUID of the player
+   * @param questId the ID of the quest to unset completion for
+   */
+  public void unsetQuestCompletion(UUID playerUuid, String questId) {
+    // Remove the quest from the player's completed quest list
+    Set<String> playerCompletedQuests = completedQuests.get(playerUuid);
+    if (playerCompletedQuests != null) {
+      playerCompletedQuests.remove(questId);
+      // If the player has no more completed quests, remove their entry from the map
+      if (playerCompletedQuests.isEmpty()) {
+        completedQuests.remove(playerUuid);
+      }
+    }
+
+    // Remove the completion from the database
+    String sql = "DELETE FROM completed_quests WHERE uuid = ? AND quest_id = ?";
+    try (Connection conn = dbManager.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+      stmt.setString(1, playerUuid.toString());
+      stmt.setString(2, questId);
+      stmt.executeUpdate();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * Retrieves a list of players who have completed a specific quest.
+   *
+   * @param quest the quest for which to find completed players
+   * @return a list of UUIDs representing players who have completed the quest
+   */
+  public List<UUID> getCompletedPlayers(Quest quest) {
+    return completedQuests.entrySet().stream()
+        .filter(entry -> entry.getValue().contains(quest.getId()))
+        .map(Map.Entry::getKey)
+        .collect(Collectors.toList());
   }
 
   /**
@@ -109,15 +409,34 @@ public class QuestsManager {
   }
 
   /**
-   * Checks if a quest is completed for a specific player.
+   * Checks if a quest is completed for a specific player. If the quest has required players, it is
+   * only considered completed when all required players have completed it.
    *
    * @param playerId the UUID of the player
    * @param questId the ID of the quest
-   * @return true if the quest is completed, false otherwise
+   * @return true if the quest is completed (globally or individually), false otherwise
    */
   public boolean isQuestCompleted(UUID playerId, String questId) {
+    Quest quest = allQuests.get(questId);
+    if (quest == null) {
+      return false;
+    }
+
     Set<String> completed = completedQuests.get(playerId);
-    return completed != null && completed.contains(questId);
+    if (completed == null || !completed.contains(questId)) {
+      return false;
+    }
+
+    if (!quest.getRequiredPlayers().isEmpty()) {
+      for (UUID required : quest.getRequiredPlayers()) {
+        Set<String> requiredCompleted = completedQuests.get(required);
+        if (requiredCompleted == null || !requiredCompleted.contains(questId)) {
+          return false;
+        }
+      }
+    }
+
+    return true;
   }
 
   /**
