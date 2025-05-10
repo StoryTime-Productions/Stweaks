@@ -148,13 +148,35 @@ public class QuestMenuListener implements Listener {
             questsManager.markQuestCompleted(player.getUniqueId(), questId);
 
             // Broadcast completion
-            Bukkit.getServer()
-                .broadcast(
-                    Component.text()
-                        .append(Component.text(player.getName(), NamedTextColor.GREEN))
-                        .append(Component.text(" has completed the quest: ", NamedTextColor.WHITE))
-                        .append(Component.text(quest.getName(), NamedTextColor.GOLD))
-                        .build());
+            if (quest.getRequiredPlayers().isEmpty()) {
+              // Broadcast to everyone
+              Bukkit.getServer()
+                  .broadcast(
+                      Component.text()
+                          .append(Component.text(player.getName(), NamedTextColor.GREEN))
+                          .append(
+                              Component.text(" has completed the quest: ", NamedTextColor.WHITE))
+                          .append(Component.text(quest.getName(), NamedTextColor.GOLD))
+                          .build());
+            } else {
+              // Broadcast only to required players
+              quest
+                  .getRequiredPlayers()
+                  .forEach(
+                      uuid -> {
+                        Player requiredPlayer = Bukkit.getPlayer(uuid);
+                        if (requiredPlayer != null) {
+                          requiredPlayer.sendMessage(
+                              Component.text()
+                                  .append(Component.text(player.getName(), NamedTextColor.GREEN))
+                                  .append(
+                                      Component.text(
+                                          " has completed the quest: ", NamedTextColor.WHITE))
+                                  .append(Component.text(quest.getName(), NamedTextColor.GOLD))
+                                  .build());
+                        }
+                      });
+            }
 
             Location location = player.getLocation();
             Firework firework =

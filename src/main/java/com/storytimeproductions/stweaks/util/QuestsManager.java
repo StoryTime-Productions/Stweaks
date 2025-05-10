@@ -19,6 +19,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -322,7 +323,7 @@ public class QuestsManager {
   }
 
   /**
-   * Returns the number of open quests available to the specified player.
+   * Returns the number of open quests available to the specified player by username.
    *
    * @param playerUuid the UUID of the player
    * @return the number of quests the player has not yet completed
@@ -394,8 +395,8 @@ public class QuestsManager {
     }
 
     if (!quest.getRequiredPlayers().isEmpty()) {
-      for (UUID required : quest.getRequiredPlayers()) {
-        Set<String> requiredCompleted = completedQuests.get(required);
+      for (UUID requiredUuid : quest.getRequiredPlayers()) {
+        Set<String> requiredCompleted = completedQuests.get(requiredUuid);
         if (requiredCompleted == null || !requiredCompleted.contains(questId)) {
           return false;
         }
@@ -453,11 +454,14 @@ public class QuestsManager {
         List<UUID> requiredPlayers = new ArrayList<>();
         List<String> requiredPlayerStrings = config.getStringList(questId + ".requiredPlayers");
 
-        for (String s : requiredPlayerStrings) {
-          try {
-            requiredPlayers.add(UUID.fromString(s));
-          } catch (IllegalArgumentException e) {
-            plugin.getLogger().warning("Invalid UUID in quest " + questId + ": " + s);
+        for (String username : requiredPlayerStrings) {
+          OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(username);
+          if (offlinePlayer.hasPlayedBefore() || offlinePlayer.isOnline()) {
+            requiredPlayers.add(offlinePlayer.getUniqueId());
+          } else {
+            plugin
+                .getLogger()
+                .warning("Unknown or never-seen player in quest " + questId + ": " + username);
           }
         }
 

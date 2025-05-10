@@ -106,7 +106,6 @@ public class QuestMenuCommand implements CommandExecutor {
     questsManager.reloadQuests();
 
     UUID uuid = player.getUniqueId();
-
     List<String> allQuestIdsRaw = questsManager.getDisplayableQuestIdsFor(uuid);
     List<String> requiredPlayerQuests = new ArrayList<>();
     List<String> defaultQuests = new ArrayList<>();
@@ -362,7 +361,7 @@ public class QuestMenuCommand implements CommandExecutor {
       if (extra.length() > 8) {
         extra.setLength(extra.length() - 2);
       }
-      extra.append("\n");
+      extra.append("\n\n");
     }
 
     if (quest.getDeadline() != null) {

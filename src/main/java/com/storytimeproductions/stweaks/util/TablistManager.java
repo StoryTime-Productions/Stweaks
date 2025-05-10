@@ -26,6 +26,7 @@ public class TablistManager {
    * @param multiplier the current playtime multiplier to display in the tab footer
    */
   public static void updateTablist(Player player, double multiplier) {
+    // Header remains unchanged
     Component header =
         // CHECKSTYLE:OFF: AvoidEscapedUnicodeCharacters
         Component.text(" \uA000   ")
@@ -36,12 +37,39 @@ public class TablistManager {
             .append(Component.newline())
             .append(Component.newline());
 
+    // Player coordinates
+    int x = player.getLocation().getBlockX();
+    int y = player.getLocation().getBlockY();
+    int z = player.getLocation().getBlockZ();
+
+    // Biome name
+    String biomeName =
+        player.getWorld().getName().equalsIgnoreCase("lobby")
+            ? "Bababooey"
+            : BiomeTrackerManager.formatBiomeName(
+                player.getLocation().getBlock().getBiome().toString());
+
+    // TPS (retrieved via Bukkit server performance metrics)
+    double[] recentTps = org.bukkit.Bukkit.getServer().getTPS();
+    double tps = Math.min(recentTps[0], 20.0); // Limit to max 20.0 for display
+
     Component footer =
         Component.newline()
             .append(
-                Component.text("Timer Multiplier: ")
-                    .color(NamedTextColor.GOLD)
-                    .append(Component.text("x" + multiplier).color(NamedTextColor.GREEN)));
+                Component.text("Timer Multiplier: ", NamedTextColor.GOLD)
+                    .append(Component.text("x" + multiplier, NamedTextColor.GREEN)))
+            .append(Component.newline())
+            .append(
+                Component.text("Coords: ", NamedTextColor.GOLD)
+                    .append(Component.text(x + ", " + y + ", " + z, NamedTextColor.WHITE)))
+            .append(Component.newline())
+            .append(
+                Component.text("Biome: ", NamedTextColor.GOLD)
+                    .append(Component.text(biomeName, NamedTextColor.WHITE)))
+            .append(Component.newline())
+            .append(
+                Component.text("Server TPS: ", NamedTextColor.GOLD)
+                    .append(Component.text(String.format("%.2f", tps), NamedTextColor.WHITE)));
 
     player.sendPlayerListHeaderAndFooter(header, footer);
   }
