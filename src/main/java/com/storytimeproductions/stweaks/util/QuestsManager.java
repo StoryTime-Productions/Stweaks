@@ -20,7 +20,10 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Statistic;
+import org.bukkit.Statistic.Type;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -162,6 +165,109 @@ public class QuestsManager {
     return true;
   }
 
+  /**
+   * Checks if the player has met all required statistics for a specific quest.
+   *
+   * @param player the player to check
+   * @param quest the quest to check against
+   * @return true if the player meets all stat requirements, false otherwise
+   */
+  public boolean hasRequiredStats(Player player, Quest quest) {
+    if (quest.getStatRequirements() == null) {
+      Bukkit.getLogger().info("No stat requirements for quest: " + quest.getName());
+      return true;
+    }
+
+    for (String req : quest.getStatRequirements()) {
+      Bukkit.getLogger().info("Checking stat requirement: " + req);
+
+      String[] parts = req.split(":");
+      if (parts.length != 3) {
+        Bukkit.getLogger().warning("Invalid stat requirement format: " + req);
+        continue;
+      }
+
+      String statName = parts[0];
+      String key = parts[1]; // Might be empty
+      int requiredAmount;
+
+      try {
+        requiredAmount = Integer.parseInt(parts[2]);
+        Bukkit.getLogger().info("Parsed required amount: " + requiredAmount);
+      } catch (NumberFormatException e) {
+        Bukkit.getLogger().warning("Invalid stat quantity in: " + req);
+        continue;
+      }
+
+      Statistic statistic;
+      try {
+        statistic = Statistic.valueOf(statName.toUpperCase());
+        Bukkit.getLogger().info("Parsed statistic: " + statistic);
+      } catch (IllegalArgumentException e) {
+        Bukkit.getLogger().warning("Unknown statistic: " + statName);
+        continue;
+      }
+
+      int currentStat;
+
+      // Handle typed statistics
+      if (statistic.getType() == Type.UNTYPED) {
+        currentStat = player.getStatistic(statistic);
+        Bukkit.getLogger().info("Current stat value (UNTYPED): " + currentStat);
+      } else if (statistic.getType() == Type.BLOCK || statistic.getType() == Type.ITEM) {
+        Material material = Material.matchMaterial(key);
+        if (material == null) {
+          Bukkit.getLogger().warning("Invalid material for stat " + statistic + ": " + key);
+          continue;
+        }
+        currentStat = player.getStatistic(statistic, material);
+        Bukkit.getLogger()
+            .info("Current stat value (BLOCK/ITEM): " + currentStat + " for material: " + material);
+      } else if (statistic.getType() == Type.ENTITY) {
+        EntityType entityType;
+        try {
+          entityType = EntityType.valueOf(key.toUpperCase().replace("MINECRAFT:", ""));
+          Bukkit.getLogger().info("Parsed entity type: " + entityType);
+        } catch (IllegalArgumentException e) {
+          Bukkit.getLogger().warning("Invalid entity type for stat " + statistic + ": " + key);
+          continue;
+        }
+        currentStat = player.getStatistic(statistic, entityType);
+        Bukkit.getLogger()
+            .info("Current stat value (ENTITY): " + currentStat + " for entity: " + entityType);
+      } else {
+        Bukkit.getLogger().warning("Unsupported stat type: " + statistic);
+        continue;
+      }
+
+      if (currentStat < requiredAmount) {
+        Bukkit.getLogger()
+            .info(
+                "Player does NOT meet stat "
+                    + statistic
+                    + " (has "
+                    + currentStat
+                    + ", needs "
+                    + requiredAmount
+                    + ")");
+        return false;
+      } else {
+        Bukkit.getLogger()
+            .info(
+                "Player meets stat "
+                    + statistic
+                    + " (has "
+                    + currentStat
+                    + ", needs "
+                    + requiredAmount
+                    + ")");
+      }
+    }
+
+    Bukkit.getLogger().info("Player meets all stat requirements for quest: " + quest.getName());
+    return true;
+  }
+
   private int countItems(Player player, Material material) {
     return Arrays.stream(player.getInventory().getContents())
         .filter(item -> item != null && item.getType() == material)
@@ -252,31 +358,94 @@ public class QuestsManager {
       }
 
       String namespacedKey = parts[0] + ":" + parts[1];
-      Material material = Material.matchMaterial(namespacedKey);
-      if (material == null) {
-        Bukkit.getLogger().warning("Unknown material in reward: " + namespacedKey);
-        continue;
-      }
-
       int amount;
       try {
-        amount = Integer.parseInt(parts[2]);
+        amount = Integer.parseInt(parts[parts.length - 1]);
       } catch (NumberFormatException e) {
         Bukkit.getLogger()
             .warning("Invalid amount in reward: " + parts[2] + " for material " + namespacedKey);
         continue;
       }
 
-      ItemStack rewardStack = new ItemStack(material, amount);
-      HashMap<Integer, ItemStack> notStored = player.getInventory().addItem(rewardStack);
-      if (!notStored.isEmpty()) {
-        // If inventory is full, drop the item at the player's location
-        for (ItemStack leftover : notStored.values()) {
-          player.getWorld().dropItemNaturally(player.getLocation(), leftover);
+      // Check for NBT data
+      String nbtData = null;
+      if (reward.contains("[")) {
+        int nbtStart = reward.indexOf("[");
+        int nbtEnd = reward.lastIndexOf("]");
+        if (nbtEnd > nbtStart) {
+          nbtData = reward.substring(nbtStart, nbtEnd + 1);
+        } else {
+          Bukkit.getLogger().warning("Invalid NBT data format in reward: " + reward);
+        }
+      }
+
+      if (nbtData != null) {
+        nbtData = preprocessNbtData(nbtData);
+
+        // Manually run the give command with NBT data
+        String giveCommand =
+            String.format(
+                "minecraft:give %s %s%s %d",
+                player.getName(),
+                namespacedKey.substring(0, namespacedKey.indexOf("[")),
+                nbtData,
+                amount);
+        Bukkit.getLogger().info("Executing command: " + giveCommand);
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), giveCommand);
+      } else {
+        // Create and give the item normally
+        Material material = Material.matchMaterial(namespacedKey);
+        if (material == null) {
+          Bukkit.getLogger().warning("Unknown material in reward: " + namespacedKey);
+          continue;
+        }
+
+        ItemStack rewardStack = new ItemStack(material, amount);
+        HashMap<Integer, ItemStack> notStored = player.getInventory().addItem(rewardStack);
+        if (!notStored.isEmpty()) {
+          // If inventory is full, drop the item at the player's location
+          for (ItemStack leftover : notStored.values()) {
+            player.getWorld().dropItemNaturally(player.getLocation(), leftover);
+          }
         }
       }
     }
     player.updateInventory(); // Sync inventory with client
+  }
+
+  /**
+   * Preprocesses the NBT data to replace single quotes with double quotes for JSON-like parts.
+   *
+   * @param nbtData the raw NBT data string
+   * @return the processed NBT data string
+   */
+  private String preprocessNbtData(String nbtData) {
+    StringBuilder processed = new StringBuilder();
+    boolean insideQuotes = false;
+
+    for (int i = 0; i < nbtData.length(); i++) {
+      char currentChar = nbtData.charAt(i);
+
+      if (currentChar == '\'') {
+        // Replace single quotes with double quotes only if inside JSON-like parts
+        if (insideQuotes) {
+          processed.append('"');
+        } else {
+          processed.append(currentChar);
+        }
+      } else {
+        processed.append(currentChar);
+      }
+
+      // Toggle insideQuotes when encountering a single quote or double quote
+      if (currentChar == '{' || currentChar == '[') {
+        insideQuotes = true;
+      } else if (currentChar == '}' || currentChar == ']') {
+        insideQuotes = false;
+      }
+    }
+
+    return processed.toString();
   }
 
   /**
@@ -394,15 +563,6 @@ public class QuestsManager {
       return false;
     }
 
-    if (!quest.getRequiredPlayers().isEmpty()) {
-      for (UUID requiredUuid : quest.getRequiredPlayers()) {
-        Set<String> requiredCompleted = completedQuests.get(requiredUuid);
-        if (requiredCompleted == null || !requiredCompleted.contains(questId)) {
-          return false;
-        }
-      }
-    }
-
     return true;
   }
 
@@ -465,13 +625,151 @@ public class QuestsManager {
           }
         }
 
-        List<String> requirements = config.getStringList(questId + ".itemRequirements");
+        // Validate item requirements
+        List<String> itemRequirements = config.getStringList(questId + ".itemRequirements");
+        List<String> validItemRequirements = new ArrayList<>();
+        for (String req : itemRequirements) {
+          String[] parts = req.split(":");
+          if (parts.length < 3) {
+            plugin
+                .getLogger()
+                .warning("Invalid item requirement format in quest " + questId + ": " + req);
+            throw new IllegalArgumentException("Invalid item requirement format.");
+          }
+
+          String namespacedKey = parts[0] + ":" + parts[1];
+          Material material = Material.matchMaterial(namespacedKey);
+          if (material == null) {
+            plugin
+                .getLogger()
+                .warning(
+                    "Unknown material in item requirement for quest "
+                        + questId
+                        + ": "
+                        + namespacedKey);
+            throw new IllegalArgumentException("Unknown material in item requirement.");
+          }
+
+          try {
+            Integer.parseInt(parts[2]); // Validate the amount
+          } catch (NumberFormatException e) {
+            plugin
+                .getLogger()
+                .warning("Invalid quantity in item requirement for quest " + questId + ": " + req);
+            throw new IllegalArgumentException("Invalid quantity in item requirement.");
+          }
+
+          validItemRequirements.add(req);
+        }
+
+        // Validate stat requirements
+        List<String> statRequirements = config.getStringList(questId + ".statRequirements");
+        List<String> validStatRequirements = new ArrayList<>();
+        for (String req : statRequirements) {
+          String[] parts = req.split(":");
+          if (parts.length != 3) {
+            plugin
+                .getLogger()
+                .warning("Invalid stat requirement format in quest " + questId + ": " + req);
+            throw new IllegalArgumentException("Invalid stat requirement format.");
+          }
+
+          String statName = parts[0];
+          try {
+            Statistic.valueOf(statName.toUpperCase()); // Validate the statistic
+          } catch (IllegalArgumentException e) {
+            plugin
+                .getLogger()
+                .warning(
+                    "Unknown statistic in stat requirement for quest " + questId + ": " + statName);
+            throw new IllegalArgumentException("Unknown statistic in stat requirement.");
+          }
+
+          try {
+            Integer.parseInt(parts[2]); // Validate the required amount
+          } catch (NumberFormatException e) {
+            plugin
+                .getLogger()
+                .warning("Invalid quantity in stat requirement for quest " + questId + ": " + req);
+            throw new IllegalArgumentException("Invalid quantity in stat requirement.");
+          }
+
+          validStatRequirements.add(req);
+        }
+
         List<String> rewards = config.getStringList(questId + ".rewards");
+        List<String> validRewards = new ArrayList<>();
+
+        for (String reward : rewards) {
+          String raw = reward.startsWith("item:") ? reward.substring(5) : reward;
+
+          int amountIndex = raw.lastIndexOf(":");
+          if (amountIndex == -1) {
+            plugin.getLogger().warning("Invalid reward format in quest " + questId + ": " + reward);
+            throw new IllegalArgumentException("Invalid reward format.");
+          }
+
+          String idAndNbt = raw.substring(0, amountIndex);
+          String amountStr = raw.substring(amountIndex + 1);
+
+          // Split material and NBT
+          String materialKey;
+          String nbtData = null;
+          if (idAndNbt.contains("[")) {
+            int nbtStart = idAndNbt.indexOf("[");
+            materialKey = idAndNbt.substring(0, nbtStart);
+            nbtData = idAndNbt.substring(nbtStart);
+          } else {
+            materialKey = idAndNbt;
+          }
+
+          Material material = Material.matchMaterial(materialKey);
+          if (material == null) {
+            plugin
+                .getLogger()
+                .warning("Unknown material in reward for quest " + questId + ": " + materialKey);
+            throw new IllegalArgumentException("Unknown material in reward.");
+          }
+
+          try {
+            Integer.parseInt(amountStr);
+          } catch (NumberFormatException e) {
+            plugin
+                .getLogger()
+                .warning("Invalid quantity in reward for quest " + questId + ": " + reward);
+            throw new IllegalArgumentException("Invalid quantity in reward.");
+          }
+
+          if (nbtData != null) {
+            if (!nbtData.contains("custom_name")) {
+              plugin
+                  .getLogger()
+                  .warning(
+                      "NBT data in reward for quest "
+                          + questId
+                          + " must contain 'custom_name': "
+                          + nbtData);
+              throw new IllegalArgumentException("NBT data must contain 'custom_name'.");
+            }
+          }
+          validRewards.add(reward);
+        }
+
         Quest quest =
-            new Quest(questId, name, lore, requirements, rewards, requiredPlayers, deadline, icon);
+            new Quest(
+                questId,
+                name,
+                lore,
+                validItemRequirements,
+                validStatRequirements,
+                validRewards,
+                requiredPlayers,
+                deadline,
+                icon);
         allQuests.put(questId, quest);
       } catch (Exception e) {
         plugin.getLogger().severe("Failed to load quest '" + questId + "': " + e.getMessage());
+        continue;
       }
     }
   }

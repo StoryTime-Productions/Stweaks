@@ -17,8 +17,9 @@ public class Quest {
   private final String id;
   private final String name;
   private final String lore;
-  private final List<String> itemRequirements; // Example: ["OAK_LOG:10"]
-  private final List<String> rewards; // Example: ["MONEY:100", "XP:50"]
+  private final List<String> itemRequirements;
+  private final List<String> statRequirements;
+  private final List<String> rewards;
   private final List<UUID> requiredPlayers; // Empty if quest is for everyone
   private final LocalDateTime deadline; // Null if no deadline
   private final Material icon;
@@ -42,6 +43,7 @@ public class Quest {
       String name,
       String lore,
       List<String> requirements,
+      List<String> statRequirements,
       List<String> rewards,
       List<UUID> requiredPlayers,
       LocalDateTime deadline,
@@ -50,6 +52,7 @@ public class Quest {
     this.name = name;
     this.lore = lore;
     this.itemRequirements = requirements;
+    this.statRequirements = statRequirements;
     this.rewards = rewards;
     this.requiredPlayers = requiredPlayers;
     this.deadline = deadline;
@@ -99,6 +102,15 @@ public class Quest {
    */
   public List<String> getItemRequirements() {
     return itemRequirements;
+  }
+
+  /**
+   * Gets the list of stat requirements.
+   *
+   * @return a list of requirements formatted as "STAT:AMOUNT"
+   */
+  public List<String> getStatRequirements() {
+    return statRequirements;
   }
 
   /**

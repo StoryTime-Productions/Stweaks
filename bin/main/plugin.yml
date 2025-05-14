@@ -8,7 +8,7 @@ description: A collection of in-house tweaks for the StoryTime SMP. Currently in
 commands:
   ststatus:
     description: Shows how much time you've actively played today
-    usage: "/ststatus"
+    usage: /ststatus
     aliases: status
   stboost:
     description: Boosts multiplier for community participation (WIP)
@@ -29,8 +29,15 @@ commands:
     description: Opens the quests GUI
     usage: /stquests
     aliases: quests
+  stpets:
+    description: Opens the pets GUI
+    usage: /stpets
+    aliases: pets
 
 permissions:
+  stweaks.stpets:
+    description: Allows access to /stpets
+    default: true
   stweaks.status:
     description: Allows access to /ststatus
     default: true
@@ -56,3 +63,7 @@ permissions:
       stweaks.status: true
       stweaks.boost: true
       stweaks.lobby: true
+      stweaks.spawn: true
+      stweaks.biometracker: true
+      stweaks.quests: true
+      stweaks.pets: true

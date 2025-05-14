@@ -5,6 +5,7 @@ import com.storytimeproductions.stweaks.commands.QuestMenuCommand;
 import com.storytimeproductions.stweaks.util.QuestsManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -115,18 +116,12 @@ public class QuestMenuListener implements Listener {
 
     // Handle quest selection
     NamespacedKey questIdKey = new NamespacedKey(plugin, "questId");
-    if (data.has(questIdKey, PersistentDataType.STRING)) {
-      String questId = data.get(questIdKey, PersistentDataType.STRING);
-      Quest quest = questsManager.getQuestById(questId);
-      if (quest != null) {
-        questMenuCommand.openQuestViewMenu(player, quest);
-      }
-    }
-
-    // Handle "exit to quest menu"
+    NamespacedKey returnPage = new NamespacedKey(plugin, "returnPage");
     NamespacedKey exitKey = new NamespacedKey(plugin, "exit");
-    if (data.has(exitKey, PersistentDataType.INTEGER)) {
-      player.performCommand("quests");
+    int page = 1;
+
+    if (data.has(returnPage, PersistentDataType.INTEGER)) {
+      page = data.get(returnPage, PersistentDataType.INTEGER);
     }
 
     // Handle quest completion attempt
@@ -137,9 +132,16 @@ public class QuestMenuListener implements Listener {
         String questId = data.get(questIdKey, PersistentDataType.STRING);
         Quest quest = questsManager.getQuestById(questId);
 
-        if (quest != null && !questsManager.isQuestCompleted(player.getUniqueId(), questId)) {
+        if (!player.getWorld().getName().equals("world")) {
+          player.sendMessage(
+              Component.text(
+                  "You cannot complete quests outside the main world.", NamedTextColor.RED));
+          player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1f);
+        } else if (quest != null
+            && !questsManager.isQuestCompleted(player.getUniqueId(), questId)) {
           // Check if player has all required items
-          if (questsManager.hasRequiredItems(player, quest)) {
+          if (questsManager.hasRequiredItems(player, quest)
+              && questsManager.hasRequiredStats(player, quest)) {
             // Remove items and give rewards
             questsManager.consumeRequiredItems(player, quest);
             questsManager.giveRewards(player, quest);
@@ -159,23 +161,43 @@ public class QuestMenuListener implements Listener {
                           .append(Component.text(quest.getName(), NamedTextColor.GOLD))
                           .build());
             } else {
-              // Broadcast only to required players
-              quest
-                  .getRequiredPlayers()
-                  .forEach(
-                      uuid -> {
-                        Player requiredPlayer = Bukkit.getPlayer(uuid);
-                        if (requiredPlayer != null) {
-                          requiredPlayer.sendMessage(
-                              Component.text()
-                                  .append(Component.text(player.getName(), NamedTextColor.GREEN))
-                                  .append(
-                                      Component.text(
-                                          " has completed the quest: ", NamedTextColor.WHITE))
-                                  .append(Component.text(quest.getName(), NamedTextColor.GOLD))
-                                  .build());
-                        }
-                      });
+              // Check if all required players have completed the quest
+              boolean allPlayersCompleted =
+                  quest.getRequiredPlayers().stream()
+                      .allMatch(uuid -> questsManager.isQuestCompleted(uuid, quest.getId()));
+
+              if (allPlayersCompleted) {
+                // Send a title to all required players
+                quest
+                    .getRequiredPlayers()
+                    .forEach(
+                        uuid -> {
+                          Player requiredPlayer = Bukkit.getPlayer(uuid);
+                          if (requiredPlayer != null) {
+                            requiredPlayer.showTitle(
+                                Title.title(
+                                    Component.text("Quest Completed!", NamedTextColor.GREEN),
+                                    Component.text(
+                                        "All players have completed: " + quest.getName(),
+                                        NamedTextColor.GOLD),
+                                    Title.Times.times(
+                                        java.time.Duration.ofMillis(500),
+                                        java.time.Duration.ofSeconds(3),
+                                        java.time.Duration.ofMillis(1000))));
+                          }
+                        });
+              } else {
+                // Notify the current player of partial completion
+                player.sendMessage(
+                    Component.text()
+                        .append(
+                            Component.text("You have completed the quest: ", NamedTextColor.GREEN))
+                        .append(Component.text(quest.getName(), NamedTextColor.GOLD))
+                        .append(
+                            Component.text(
+                                ". Waiting for other players to complete.", NamedTextColor.YELLOW))
+                        .build());
+              }
             }
 
             Location location = player.getLocation();
@@ -195,16 +217,24 @@ public class QuestMenuListener implements Listener {
             player.playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 1f, 1f);
 
             // Refresh GUI
-            questMenuCommand.openQuestViewMenu(player, quest);
+            questMenuCommand.openQuestViewMenu(player, quest, 1);
           } else {
             player.sendMessage(
                 Component.text(
-                    "You do not have the required items to complete this quest.",
+                    "You do not meet the requirements to complete this quest.",
                     NamedTextColor.RED));
             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1f);
           }
         }
       }
+    } else if (data.has(questIdKey, PersistentDataType.STRING)) {
+      String questId = data.get(questIdKey, PersistentDataType.STRING);
+      Quest quest = questsManager.getQuestById(questId);
+      if (quest != null) {
+        questMenuCommand.openQuestViewMenu(player, quest, page);
+      }
+    } else if (data.has(exitKey, PersistentDataType.INTEGER)) {
+      player.performCommand("quests " + page);
     }
 
     // Prevent any default item interaction in quest GUIs

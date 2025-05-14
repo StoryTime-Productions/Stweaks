@@ -1,0 +1,2277 @@
+{
+    "__comment": "Created by Nevoska",
+    "textures": {
+        "particle": "hotbar_pets:item/McDonaldsLogoBranco",
+        "McDonaldsLogo": "hotbar_pets:item/McDonaldsLogo",
+        "Potato": "hotbar_pets:item/Potato",
+        "McDonaldsLogoBranco": "hotbar_pets:item/McDonaldsLogoBranco",
+        "canudo": "hotbar_pets:item/canudo",
+        "topcopo": "hotbar_pets:item/topcopo"
+    },
+    "elements": [
+        {
+            "from": [
+                4,
+                3,
+                9
+            ],
+            "to": [
+                12.5,
+                6,
+                16
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        12.5,
+                        12.5,
+                        12.5,
+                        12.5
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "up": {
+                    "uv": [
+                        3,
+                        3.5,
+                        12.5,
+                        13
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "north": {
+                    "uv": [
+                        3.5,
+                        12,
+                        12,
+                        15
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "south": {
+                    "uv": [
+                        3.5,
+                        13,
+                        12,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "west": {
+                    "uv": [
+                        5,
+                        13,
+                        12,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "east": {
+                    "uv": [
+                        4,
+                        13,
+                        11,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                }
+            }
+        },
+        {
+            "from": [
+                4.5,
+                0.5,
+                9.5
+            ],
+            "to": [
+                12,
+                3.5,
+                15.5
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        3,
+                        3,
+                        0,
+                        0
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "up": {
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        2.5
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "north": {
+                    "uv": [
+                        4.5,
+                        14,
+                        12,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "south": {
+                    "uv": [
+                        3.5,
+                        14,
+                        11.5,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "west": {
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        2.5
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "east": {
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        2.5
+                    ],
+                    "texture": "#McDonaldsLogo"
+                }
+            }
+        },
+        {
+            "__comment": "Refri",
+            "from": [
+                11,
+                0.5,
+                1
+            ],
+            "to": [
+                15.8,
+                11.3,
+                5.8
+            ],
+            "rotation": {
+                "origin": [
+                    11,
+                    0.5,
+                    1
+                ],
+                "axis": "y",
+                "angle": -22.5
+            },
+            "faces": {
+                "down": {
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        4
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "up": {
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ],
+                    "texture": "#topcopo"
+                },
+                "north": {
+                    "uv": [
+                        3,
+                        0,
+                        12.5,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "south": {
+                    "uv": [
+                        3,
+                        0,
+                        12.5,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "west": {
+                    "uv": [
+                        3,
+                        0,
+                        12.5,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "east": {
+                    "uv": [
+                        3,
+                        0,
+                        12.5,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                }
+            }
+        },
+        {
+            "__comment": "Refri",
+            "from": [
+                10.5,
+                10.5,
+                0.5
+            ],
+            "to": [
+                16.5,
+                11,
+                6.5
+            ],
+            "rotation": {
+                "origin": [
+                    10.5,
+                    10.5,
+                    0.5
+                ],
+                "axis": "y",
+                "angle": -22.5
+            },
+            "faces": {
+                "down": {
+                    "uv": [
+                        11,
+                        0,
+                        16,
+                        5
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "up": {
+                    "uv": [
+                        11,
+                        0,
+                        16,
+                        5
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "north": {
+                    "uv": [
+                        5.5,
+                        0,
+                        10.5,
+                        0.5
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "south": {
+                    "uv": [
+                        5,
+                        0,
+                        10,
+                        0.5
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "west": {
+                    "uv": [
+                        4,
+                        1.5,
+                        9,
+                        2
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "east": {
+                    "uv": [
+                        4,
+                        0,
+                        9,
+                        0.5
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                }
+            }
+        },
+        {
+            "__comment": "Refri",
+            "from": [
+                12,
+                8.9,
+                5.96454
+            ],
+            "to": [
+                12.6,
+                17.3,
+                6.56454
+            ],
+            "rotation": {
+                "origin": [
+                    12,
+                    17.3,
+                    5.96454
+                ],
+                "axis": "x",
+                "angle": 22.5
+            },
+            "faces": {
+                "down": {
+                    "uv": [
+                        1.5,
+                        0,
+                        3,
+                        1.5
+                    ],
+                    "texture": "#canudo"
+                },
+                "up": {
+                    "uv": [
+                        1.5,
+                        0,
+                        3,
+                        1.5
+                    ],
+                    "texture": "#canudo"
+                },
+                "north": {
+                    "uv": [
+                        0,
+                        0,
+                        5.5,
+                        16
+                    ],
+                    "texture": "#canudo"
+                },
+                "south": {
+                    "uv": [
+                        0,
+                        0,
+                        5.5,
+                        16
+                    ],
+                    "texture": "#canudo"
+                },
+                "west": {
+                    "uv": [
+                        0,
+                        0,
+                        4.5,
+                        16
+                    ],
+                    "texture": "#canudo"
+                },
+                "east": {
+                    "uv": [
+                        0,
+                        0,
+                        4.5,
+                        16
+                    ],
+                    "texture": "#canudo"
+                }
+            }
+        },
+        {
+            "__comment": "Batata",
+            "from": [
+                -0.0875,
+                0.5,
+                3.05
+            ],
+            "to": [
+                5.6875,
+                5.45,
+                5.525
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        10,
+                        0,
+                        16,
+                        2
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "up": {
+                    "uv": [
+                        10.5,
+                        0,
+                        16,
+                        2
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "north": {
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "south": {
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "west": {
+                    "uv": [
+                        13.5,
+                        0,
+                        16,
+                        4.5
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "east": {
+                    "uv": [
+                        13.5,
+                        0,
+                        16,
+                        4.5
+                    ],
+                    "texture": "#McDonaldsLogo"
+                }
+            }
+        },
+        {
+            "__comment": "Batata",
+            "from": [
+                -0.0875,
+                5.45,
+                5.1125
+            ],
+            "to": [
+                5.6875,
+                6.275,
+                5.525
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        2.5,
+                        0,
+                        13.5,
+                        1.5
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "up": {
+                    "uv": [
+                        2,
+                        0,
+                        13,
+                        2
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "north": {
+                    "uv": [
+                        3,
+                        0,
+                        11.5,
+                        1.5
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "south": {
+                    "uv": [
+                        3.5,
+                        0,
+                        11.5,
+                        1.5
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "west": {
+                    "uv": [
+                        7,
+                        0,
+                        8,
+                        2.5
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "east": {
+                    "uv": [
+                        7,
+                        0,
+                        8.5,
+                        2
+                    ],
+                    "texture": "#McDonaldsLogo"
+                }
+            }
+        },
+        {
+            "__comment": "Batata",
+            "from": [
+                5.275,
+                5.45,
+                3.05
+            ],
+            "to": [
+                5.6875,
+                7.5125,
+                5.1125
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        15,
+                        4,
+                        14,
+                        0
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "up": {
+                    "uv": [
+                        14.5,
+                        0.5,
+                        15.5,
+                        4
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "north": {
+                    "uv": [
+                        14.5,
+                        0.5,
+                        15.5,
+                        5
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "south": {
+                    "uv": [
+                        14,
+                        0,
+                        15.5,
+                        4.5
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "west": {
+                    "uv": [
+                        13,
+                        0,
+                        15.5,
+                        2.5
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "east": {
+                    "uv": [
+                        13.5,
+                        0,
+                        16,
+                        2.5
+                    ],
+                    "texture": "#McDonaldsLogo"
+                }
+            }
+        },
+        {
+            "__comment": "Batata",
+            "from": [
+                -0.0875,
+                5.45,
+                3.05
+            ],
+            "to": [
+                0.325,
+                7.5125,
+                5.1125
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        13,
+                        0,
+                        16,
+                        3.5
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "up": {
+                    "uv": [
+                        13,
+                        0,
+                        16,
+                        3.5
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "north": {
+                    "uv": [
+                        13,
+                        0,
+                        16,
+                        3
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "south": {
+                    "uv": [
+                        12.5,
+                        0,
+                        16,
+                        2.5
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "west": {
+                    "uv": [
+                        13,
+                        0,
+                        16,
+                        3.5
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "east": {
+                    "uv": [
+                        13,
+                        0,
+                        16,
+                        3
+                    ],
+                    "texture": "#McDonaldsLogo"
+                }
+            }
+        },
+        {
+            "__comment": "Batata",
+            "from": [
+                -0.0875,
+                5.45,
+                3.05
+            ],
+            "to": [
+                5.6875,
+                7.925,
+                3.4625
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        11.5,
+                        0.5,
+                        4.5,
+                        0
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "up": {
+                    "uv": [
+                        5,
+                        0,
+                        12,
+                        0.5
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "north": {
+                    "uv": [
+                        4,
+                        0,
+                        11,
+                        2
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "south": {
+                    "uv": [
+                        4,
+                        0,
+                        11,
+                        2
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "west": {
+                    "uv": [
+                        14,
+                        0.5,
+                        16,
+                        5
+                    ],
+                    "texture": "#McDonaldsLogo"
+                },
+                "east": {
+                    "uv": [
+                        14.5,
+                        0.5,
+                        16,
+                        5
+                    ],
+                    "texture": "#McDonaldsLogo"
+                }
+            }
+        },
+        {
+            "__comment": "Batata",
+            "from": [
+                1.975,
+                5.45,
+                3.4625
+            ],
+            "to": [
+                2.3875,
+                11.225,
+                3.875
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        9,
+                        7,
+                        8.5,
+                        6.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "up": {
+                    "uv": [
+                        7,
+                        6.5,
+                        7.5,
+                        7
+                    ],
+                    "texture": "#Potato"
+                },
+                "north": {
+                    "uv": [
+                        8.5,
+                        3,
+                        9,
+                        10
+                    ],
+                    "texture": "#Potato"
+                },
+                "south": {
+                    "uv": [
+                        7,
+                        3,
+                        7.5,
+                        10
+                    ],
+                    "texture": "#Potato"
+                },
+                "west": {
+                    "uv": [
+                        6.5,
+                        3,
+                        7,
+                        10
+                    ],
+                    "texture": "#Potato"
+                },
+                "east": {
+                    "uv": [
+                        9,
+                        3,
+                        9.5,
+                        10
+                    ],
+                    "texture": "#Potato"
+                }
+            }
+        },
+        {
+            "__comment": "Batata",
+            "from": [
+                0.7375,
+                4.2125,
+                4.7
+            ],
+            "to": [
+                1.15,
+                9.9875,
+                5.1125
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        10.5,
+                        8.5,
+                        10,
+                        8
+                    ],
+                    "texture": "#Potato"
+                },
+                "up": {
+                    "uv": [
+                        5.5,
+                        8,
+                        6,
+                        8.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "north": {
+                    "uv": [
+                        10,
+                        4.5,
+                        10.5,
+                        11.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "south": {
+                    "uv": [
+                        5.5,
+                        4.5,
+                        6,
+                        11.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "west": {
+                    "uv": [
+                        8,
+                        4.5,
+                        8.5,
+                        11.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "east": {
+                    "uv": [
+                        7.5,
+                        4.5,
+                        8,
+                        11.5
+                    ],
+                    "texture": "#Potato"
+                }
+            }
+        },
+        {
+            "__comment": "Batata",
+            "from": [
+                3.625,
+                4.625,
+                4.7
+            ],
+            "to": [
+                4.0375,
+                10.4,
+                5.1125
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        7,
+                        8.5,
+                        6.5,
+                        8
+                    ],
+                    "texture": "#Potato"
+                },
+                "up": {
+                    "uv": [
+                        9,
+                        8,
+                        9.5,
+                        8.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "north": {
+                    "uv": [
+                        6.5,
+                        4,
+                        7,
+                        11
+                    ],
+                    "texture": "#Potato"
+                },
+                "south": {
+                    "uv": [
+                        9,
+                        4,
+                        9.5,
+                        11
+                    ],
+                    "texture": "#Potato"
+                },
+                "west": {
+                    "uv": [
+                        8,
+                        4,
+                        8.5,
+                        11
+                    ],
+                    "texture": "#Potato"
+                },
+                "east": {
+                    "uv": [
+                        7.5,
+                        4,
+                        8,
+                        11
+                    ],
+                    "texture": "#Potato"
+                }
+            }
+        },
+        {
+            "__comment": "Batata",
+            "from": [
+                2.8,
+                5.0375,
+                3.4625
+            ],
+            "to": [
+                3.2125,
+                10.8125,
+                3.875
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        8,
+                        7,
+                        7.5,
+                        6.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "up": {
+                    "uv": [
+                        8,
+                        6.5,
+                        8.5,
+                        7
+                    ],
+                    "texture": "#Potato"
+                },
+                "north": {
+                    "uv": [
+                        7.5,
+                        3.5,
+                        8,
+                        10.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "south": {
+                    "uv": [
+                        8,
+                        3.5,
+                        8.5,
+                        10.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "west": {
+                    "uv": [
+                        6.5,
+                        3.5,
+                        7,
+                        10.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "east": {
+                    "uv": [
+                        9,
+                        3.5,
+                        9.5,
+                        10.5
+                    ],
+                    "texture": "#Potato"
+                }
+            }
+        },
+        {
+            "__comment": "Batata",
+            "from": [
+                4.0375,
+                3.8,
+                3.875
+            ],
+            "to": [
+                4.45,
+                9.575,
+                4.2875
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        6.5,
+                        7.5,
+                        6,
+                        7
+                    ],
+                    "texture": "#Potato"
+                },
+                "up": {
+                    "uv": [
+                        9.5,
+                        7,
+                        10,
+                        7.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "north": {
+                    "uv": [
+                        6,
+                        5,
+                        6.5,
+                        12
+                    ],
+                    "texture": "#Potato"
+                },
+                "south": {
+                    "uv": [
+                        9.5,
+                        5,
+                        10,
+                        12
+                    ],
+                    "texture": "#Potato"
+                },
+                "west": {
+                    "uv": [
+                        7,
+                        5,
+                        7.5,
+                        12
+                    ],
+                    "texture": "#Potato"
+                },
+                "east": {
+                    "uv": [
+                        8.5,
+                        5,
+                        9,
+                        12
+                    ],
+                    "texture": "#Potato"
+                }
+            }
+        },
+        {
+            "__comment": "Batata",
+            "from": [
+                4.8625,
+                3.3875,
+                4.2875
+            ],
+            "to": [
+                5.275,
+                9.1625,
+                4.7
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        5.5,
+                        8,
+                        5,
+                        7.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "up": {
+                    "uv": [
+                        10.5,
+                        7.5,
+                        11,
+                        8
+                    ],
+                    "texture": "#Potato"
+                },
+                "north": {
+                    "uv": [
+                        5,
+                        5.5,
+                        5.5,
+                        12.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "south": {
+                    "uv": [
+                        10.5,
+                        5.5,
+                        11,
+                        12.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "west": {
+                    "uv": [
+                        7.5,
+                        5.5,
+                        8,
+                        12.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "east": {
+                    "uv": [
+                        8,
+                        5.5,
+                        8.5,
+                        12.5
+                    ],
+                    "texture": "#Potato"
+                }
+            }
+        },
+        {
+            "__comment": "Batata",
+            "from": [
+                4.45,
+                4.625,
+                3.4625
+            ],
+            "to": [
+                4.8625,
+                10.4,
+                3.875
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        6,
+                        7,
+                        5.5,
+                        6.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "up": {
+                    "uv": [
+                        10,
+                        6.5,
+                        10.5,
+                        7
+                    ],
+                    "texture": "#Potato"
+                },
+                "north": {
+                    "uv": [
+                        5.5,
+                        4,
+                        6,
+                        11
+                    ],
+                    "texture": "#Potato"
+                },
+                "south": {
+                    "uv": [
+                        10,
+                        4,
+                        10.5,
+                        11
+                    ],
+                    "texture": "#Potato"
+                },
+                "west": {
+                    "uv": [
+                        6.5,
+                        4,
+                        7,
+                        11
+                    ],
+                    "texture": "#Potato"
+                },
+                "east": {
+                    "uv": [
+                        9,
+                        4,
+                        9.5,
+                        11
+                    ],
+                    "texture": "#Potato"
+                }
+            }
+        },
+        {
+            "__comment": "Batata",
+            "from": [
+                1.15,
+                3.8,
+                3.875
+            ],
+            "to": [
+                1.5625,
+                9.575,
+                4.2875
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        10,
+                        7.5,
+                        9.5,
+                        7
+                    ],
+                    "texture": "#Potato"
+                },
+                "up": {
+                    "uv": [
+                        6,
+                        7,
+                        6.5,
+                        7.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "north": {
+                    "uv": [
+                        9.5,
+                        5,
+                        10,
+                        12
+                    ],
+                    "texture": "#Potato"
+                },
+                "south": {
+                    "uv": [
+                        6,
+                        5,
+                        6.5,
+                        12
+                    ],
+                    "texture": "#Potato"
+                },
+                "west": {
+                    "uv": [
+                        7,
+                        5,
+                        7.5,
+                        12
+                    ],
+                    "texture": "#Potato"
+                },
+                "east": {
+                    "uv": [
+                        8.5,
+                        5,
+                        9,
+                        12
+                    ],
+                    "texture": "#Potato"
+                }
+            }
+        },
+        {
+            "__comment": "Batata",
+            "from": [
+                0.325,
+                3.8,
+                3.4625
+            ],
+            "to": [
+                0.7375,
+                9.575,
+                3.875
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        11,
+                        7,
+                        10.5,
+                        6.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "up": {
+                    "uv": [
+                        5,
+                        6.5,
+                        5.5,
+                        7
+                    ],
+                    "texture": "#Potato"
+                },
+                "north": {
+                    "uv": [
+                        10.5,
+                        5,
+                        11,
+                        12
+                    ],
+                    "texture": "#Potato"
+                },
+                "south": {
+                    "uv": [
+                        5,
+                        5,
+                        5.5,
+                        12
+                    ],
+                    "texture": "#Potato"
+                },
+                "west": {
+                    "uv": [
+                        6.5,
+                        5,
+                        7,
+                        12
+                    ],
+                    "texture": "#Potato"
+                },
+                "east": {
+                    "uv": [
+                        9,
+                        5,
+                        9.5,
+                        12
+                    ],
+                    "texture": "#Potato"
+                }
+            }
+        },
+        {
+            "__comment": "Batata",
+            "from": [
+                0.325,
+                3.3875,
+                4.23594
+            ],
+            "to": [
+                0.7375,
+                9.1625,
+                4.64844
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        11,
+                        7.9375,
+                        10.5,
+                        7.4375
+                    ],
+                    "texture": "#Potato"
+                },
+                "up": {
+                    "uv": [
+                        5,
+                        7.4375,
+                        5.5,
+                        7.9375
+                    ],
+                    "texture": "#Potato"
+                },
+                "north": {
+                    "uv": [
+                        10.5,
+                        5.5,
+                        11,
+                        12.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "south": {
+                    "uv": [
+                        5,
+                        5.5,
+                        5.5,
+                        12.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "west": {
+                    "uv": [
+                        7.4375,
+                        5.5,
+                        7.9375,
+                        12.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "east": {
+                    "uv": [
+                        8.0625,
+                        5.5,
+                        8.5625,
+                        12.5
+                    ],
+                    "texture": "#Potato"
+                }
+            }
+        },
+        {
+            "__comment": "Batata",
+            "from": [
+                3.2125,
+                3.3875,
+                4.23594
+            ],
+            "to": [
+                3.625,
+                9.1625,
+                4.64844
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        7.5,
+                        7.9375,
+                        7,
+                        7.4375
+                    ],
+                    "texture": "#Potato"
+                },
+                "up": {
+                    "uv": [
+                        8.5,
+                        7.4375,
+                        9,
+                        7.9375
+                    ],
+                    "texture": "#Potato"
+                },
+                "north": {
+                    "uv": [
+                        7,
+                        5.5,
+                        7.5,
+                        12.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "south": {
+                    "uv": [
+                        8.5,
+                        5.5,
+                        9,
+                        12.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "west": {
+                    "uv": [
+                        7.4375,
+                        5.5,
+                        7.9375,
+                        12.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "east": {
+                    "uv": [
+                        8.0625,
+                        5.5,
+                        8.5625,
+                        12.5
+                    ],
+                    "texture": "#Potato"
+                }
+            }
+        },
+        {
+            "__comment": "Batata",
+            "from": [
+                4.45,
+                5.0375,
+                4.64844
+            ],
+            "to": [
+                4.8625,
+                10.8125,
+                5.06094
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        6,
+                        8.4375,
+                        5.5,
+                        7.9375
+                    ],
+                    "texture": "#Potato"
+                },
+                "up": {
+                    "uv": [
+                        10,
+                        7.9375,
+                        10.5,
+                        8.4375
+                    ],
+                    "texture": "#Potato"
+                },
+                "north": {
+                    "uv": [
+                        5.5,
+                        3.5,
+                        6,
+                        10.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "south": {
+                    "uv": [
+                        10,
+                        3.5,
+                        10.5,
+                        10.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "west": {
+                    "uv": [
+                        7.9375,
+                        3.5,
+                        8.4375,
+                        10.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "east": {
+                    "uv": [
+                        7.5625,
+                        3.5,
+                        8.0625,
+                        10.5
+                    ],
+                    "texture": "#Potato"
+                }
+            }
+        },
+        {
+            "__comment": "Batata",
+            "from": [
+                1.975,
+                4.625,
+                4.23594
+            ],
+            "to": [
+                2.3875,
+                10.4,
+                4.64844
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        9,
+                        7.9375,
+                        8.5,
+                        7.4375
+                    ],
+                    "texture": "#Potato"
+                },
+                "up": {
+                    "uv": [
+                        7,
+                        7.4375,
+                        7.5,
+                        7.9375
+                    ],
+                    "texture": "#Potato"
+                },
+                "north": {
+                    "uv": [
+                        8.5,
+                        4,
+                        9,
+                        11
+                    ],
+                    "texture": "#Potato"
+                },
+                "south": {
+                    "uv": [
+                        7,
+                        4,
+                        7.5,
+                        11
+                    ],
+                    "texture": "#Potato"
+                },
+                "west": {
+                    "uv": [
+                        7.4375,
+                        4,
+                        7.9375,
+                        11
+                    ],
+                    "texture": "#Potato"
+                },
+                "east": {
+                    "uv": [
+                        8.0625,
+                        4,
+                        8.5625,
+                        11
+                    ],
+                    "texture": "#Potato"
+                }
+            }
+        },
+        {
+            "__comment": "Batata",
+            "from": [
+                1.5625,
+                5.0375,
+                4.64844
+            ],
+            "to": [
+                1.975,
+                10.8125,
+                5.06094
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        9.5,
+                        8.4375,
+                        9,
+                        7.9375
+                    ],
+                    "texture": "#Potato"
+                },
+                "up": {
+                    "uv": [
+                        6.5,
+                        7.9375,
+                        7,
+                        8.4375
+                    ],
+                    "texture": "#Potato"
+                },
+                "north": {
+                    "uv": [
+                        9,
+                        3.5,
+                        9.5,
+                        10.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "south": {
+                    "uv": [
+                        6.5,
+                        3.5,
+                        7,
+                        10.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "west": {
+                    "uv": [
+                        7.9375,
+                        3.5,
+                        8.4375,
+                        10.5
+                    ],
+                    "texture": "#Potato"
+                },
+                "east": {
+                    "uv": [
+                        7.5625,
+                        3.5,
+                        8.0625,
+                        10.5
+                    ],
+                    "texture": "#Potato"
+                }
+            }
+        },
+        {
+            "__comment": "Batata",
+            "from": [
+                2.8,
+                4.625,
+                4.64844
+            ],
+            "to": [
+                3.2125,
+                10.4,
+                5.06094
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        8,
+                        8.4375,
+                        7.5,
+                        7.9375
+                    ],
+                    "texture": "#Potato"
+                },
+                "up": {
+                    "uv": [
+                        8,
+                        7.9375,
+                        8.5,
+                        8.4375
+                    ],
+                    "texture": "#Potato"
+                },
+                "north": {
+                    "uv": [
+                        7.5,
+                        4,
+                        8,
+                        11
+                    ],
+                    "texture": "#Potato"
+                },
+                "south": {
+                    "uv": [
+                        8,
+                        4,
+                        8.5,
+                        11
+                    ],
+                    "texture": "#Potato"
+                },
+                "west": {
+                    "uv": [
+                        7.9375,
+                        4,
+                        8.4375,
+                        11
+                    ],
+                    "texture": "#Potato"
+                },
+                "east": {
+                    "uv": [
+                        7.5625,
+                        4,
+                        8.0625,
+                        11
+                    ],
+                    "texture": "#Potato"
+                }
+            }
+        },
+        {
+            "__comment": "Batata",
+            "from": [
+                2.3875,
+                3.8,
+                3.82344
+            ],
+            "to": [
+                2.8,
+                9.575,
+                4.23594
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        8.5,
+                        7.4375,
+                        8,
+                        6.9375
+                    ],
+                    "texture": "#Potato"
+                },
+                "up": {
+                    "uv": [
+                        7.5,
+                        6.9375,
+                        8,
+                        7.4375
+                    ],
+                    "texture": "#Potato"
+                },
+                "north": {
+                    "uv": [
+                        8,
+                        5,
+                        8.5,
+                        12
+                    ],
+                    "texture": "#Potato"
+                },
+                "south": {
+                    "uv": [
+                        7.5,
+                        5,
+                        8,
+                        12
+                    ],
+                    "texture": "#Potato"
+                },
+                "west": {
+                    "uv": [
+                        6.9375,
+                        5,
+                        7.4375,
+                        12
+                    ],
+                    "texture": "#Potato"
+                },
+                "east": {
+                    "uv": [
+                        8.5625,
+                        5,
+                        9.0625,
+                        12
+                    ],
+                    "texture": "#Potato"
+                }
+            }
+        },
+        {
+            "__comment": "Batata",
+            "from": [
+                4.0375,
+                4.625,
+                4.23594
+            ],
+            "to": [
+                4.45,
+                10.4,
+                4.64844
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        6.5,
+                        7.9375,
+                        6,
+                        7.4375
+                    ],
+                    "texture": "#Potato"
+                },
+                "up": {
+                    "uv": [
+                        9.5,
+                        7.4375,
+                        10,
+                        7.9375
+                    ],
+                    "texture": "#Potato"
+                },
+                "north": {
+                    "uv": [
+                        6,
+                        4,
+                        6.5,
+                        11
+                    ],
+                    "texture": "#Potato"
+                },
+                "south": {
+                    "uv": [
+                        9.5,
+                        4,
+                        10,
+                        11
+                    ],
+                    "texture": "#Potato"
+                },
+                "west": {
+                    "uv": [
+                        7.4375,
+                        4,
+                        7.9375,
+                        11
+                    ],
+                    "texture": "#Potato"
+                },
+                "east": {
+                    "uv": [
+                        8.0625,
+                        4,
+                        8.5625,
+                        11
+                    ],
+                    "texture": "#Potato"
+                }
+            }
+        },
+        {
+            "from": [
+                0,
+                0,
+                0
+            ],
+            "to": [
+                16,
+                0.5,
+                16
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        16,
+                        16,
+                        0,
+                        0
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "up": {
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "north": {
+                    "uv": [
+                        0,
+                        15.5,
+                        16,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "south": {
+                    "uv": [
+                        0,
+                        15.5,
+                        16,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "west": {
+                    "uv": [
+                        0,
+                        15.5,
+                        16,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "east": {
+                    "uv": [
+                        0,
+                        15.5,
+                        16,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                }
+            }
+        },
+        {
+            "from": [
+                16,
+                0,
+                0
+            ],
+            "to": [
+                16.5,
+                1,
+                16
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        0,
+                        16,
+                        0,
+                        0
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "up": {
+                    "uv": [
+                        16,
+                        0,
+                        16,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "north": {
+                    "uv": [
+                        0,
+                        15,
+                        0,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "south": {
+                    "uv": [
+                        16,
+                        15,
+                        16,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "west": {
+                    "uv": [
+                        0,
+                        15,
+                        16,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "east": {
+                    "uv": [
+                        0,
+                        15,
+                        16,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                }
+            }
+        },
+        {
+            "from": [
+                -0.5,
+                0,
+                0
+            ],
+            "to": [
+                0,
+                1,
+                16
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        16,
+                        16,
+                        16,
+                        0
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "up": {
+                    "uv": [
+                        0,
+                        0,
+                        0,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "north": {
+                    "uv": [
+                        16,
+                        15,
+                        16,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "south": {
+                    "uv": [
+                        0,
+                        15,
+                        0,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "west": {
+                    "uv": [
+                        0,
+                        15,
+                        16,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "east": {
+                    "uv": [
+                        0,
+                        15,
+                        16,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                }
+            }
+        },
+        {
+            "from": [
+                -1,
+                -0.5,
+                6.5
+            ],
+            "to": [
+                0,
+                1,
+                9
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        16,
+                        9,
+                        16,
+                        6.5
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "up": {
+                    "uv": [
+                        0,
+                        6.5,
+                        0,
+                        9
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "north": {
+                    "uv": [
+                        16,
+                        15,
+                        16,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "south": {
+                    "uv": [
+                        0,
+                        15,
+                        0,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "west": {
+                    "uv": [
+                        6.5,
+                        15,
+                        9,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "east": {
+                    "uv": [
+                        7,
+                        15,
+                        9.5,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                }
+            }
+        },
+        {
+            "from": [
+                16,
+                -0.5,
+                6.5
+            ],
+            "to": [
+                17,
+                1,
+                9
+            ],
+            "faces": {
+                "down": {
+                    "uv": [
+                        0,
+                        9,
+                        0,
+                        6.5
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "up": {
+                    "uv": [
+                        16,
+                        6.5,
+                        16,
+                        9
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "north": {
+                    "uv": [
+                        0,
+                        15,
+                        0,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "south": {
+                    "uv": [
+                        16,
+                        15,
+                        16,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "west": {
+                    "uv": [
+                        6.5,
+                        15,
+                        9,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                },
+                "east": {
+                    "uv": [
+                        7,
+                        15,
+                        9.5,
+                        16
+                    ],
+                    "texture": "#McDonaldsLogoBranco"
+                }
+            }
+        }
+    ],
+    "display": {
+        "thirdperson": {
+            "rotation": [
+                -160,
+                -10,
+                0
+            ],
+            "translation": [
+                0.6,
+                -0.6,
+                -5.1
+            ],
+            "scale": [
+                0.7,
+                0.7,
+                0.7
+            ]
+        },
+        "firstperson": {
+            "rotation": [
+                0,
+                123,
+                0
+            ],
+            "translation": [
+                0,
+                5.9,
+                -4.5
+            ],
+            "scale": [
+                1,
+                1,
+                1
+            ]
+        }
+    }
+}
