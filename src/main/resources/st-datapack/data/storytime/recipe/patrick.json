@@ -2,13 +2,14 @@
     "type": "minecraft:crafting_shaped",
     "pattern": [
         "KPK",
-        "SSS",
+        "SQS",
         "KPK"
     ],
     "key": {
         "K": "minecraft:kelp",
         "P": "minecraft:pink_dye",
-        "S": "minecraft:sand"
+        "S": "minecraft:sand",
+        "Q": "minecraft:sea_pickle"
     },
     "result": {
         "item": "hotbar_pets:patrick",

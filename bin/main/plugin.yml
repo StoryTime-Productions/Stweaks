@@ -33,6 +33,10 @@ commands:
     description: Opens the pets GUI
     usage: /stpets
     aliases: pets
+  stcosmetics:
+    description: Opens the cosmetics GUI
+    usage: /stcosmetics
+    aliases: cosmetics
 
 permissions:
   stweaks.stpets:
@@ -56,6 +60,9 @@ permissions:
   stweaks.quests:
     description: Allows access to /stquests
     default: true
+  stweaks.cosmetics:
+    description: Allows access to /stcosmetics
+    default: true
   stweaks.*:
     description: Grants all Stweaks permissions
     default: false
@@ -67,3 +74,4 @@ permissions:
       stweaks.biometracker: true
       stweaks.quests: true
       stweaks.pets: true
+      stweaks.cosmetics: true

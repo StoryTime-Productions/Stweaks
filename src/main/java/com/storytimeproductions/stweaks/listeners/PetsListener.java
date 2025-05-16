@@ -39,6 +39,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class PetsListener implements Listener {
 
   private final Map<UUID, Map<String, Integer>> petHunger = new HashMap<>();
+  private final Map<UUID, Long> nextPetActionTime = new HashMap<>();
   private PetsManager petsManager;
 
   // Hunger settings
@@ -54,82 +55,89 @@ public class PetsListener implements Listener {
   public PetsListener(JavaPlugin plugin, PetsManager petsManager) {
     this.petsManager = petsManager;
 
-    // Periodic task for pet actions
+    // Periodic task for pet actions (runs every 10 seconds, but only acts if
+    // player's timer is up)
     new BukkitRunnable() {
       @Override
       public void run() {
-        try {
-          for (Player player : Bukkit.getOnlinePlayers()) {
-            ItemStack offhand = player.getInventory().getItemInOffHand();
-            String petId = null;
-            if (offhand != null && isPetItem(offhand)) {
-              Pet pet = petsManager.getPetByItem(offhand);
-              if (pet != null) {
-                petId = pet.getId();
+        long now = System.currentTimeMillis();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+          UUID uuid = player.getUniqueId();
+          long nextTime = nextPetActionTime.getOrDefault(uuid, 0L);
+          if (now < nextTime) {
+            continue; // Not time for this player's pet action yet
+          }
 
-                // Initialize hunger if needed
-                petHunger
-                    .computeIfAbsent(player.getUniqueId(), k -> new HashMap<>())
-                    .putIfAbsent(petId, MAX_HUNGER);
+          // Schedule next action for this player (random 5-10 min)
+          int minMillis = 1 * 30 * 1000;
+          int maxMillis = 2 * 30 * 1000;
+          int nextDelay = minMillis + new Random().nextInt(maxMillis - minMillis + 1);
+          nextPetActionTime.put(uuid, now + nextDelay);
 
-                int hunger = petHunger.get(player.getUniqueId()).get(petId);
-                if (hunger > 0) {
-                  // Randomly decide to give item or play sound/message
-                  if (shouldGiveItem()) {
-                    givePetReward(player, pet);
-                    decreaseHunger(player, petId);
-                  } else if (shouldPlayAmbient()) {
-                    playAmbientEffect(player, pet);
-                  }
+          ItemStack offhand = player.getInventory().getItemInOffHand();
+          String petId = null;
+          if (offhand != null && isPetItem(offhand)) {
+            Pet pet = petsManager.getPetByItem(offhand);
+            if (pet != null) {
+              petId = pet.getId();
 
-                  // Ensure hunger is defined before using it
-                  if (petId != null) {
-                    hunger = petHunger.get(player.getUniqueId()).getOrDefault(petId, 0);
-                    String hungerState = getHungerState(hunger);
-                    updatePetLore(offhand, hungerState);
-                  }
-                } else {
-                  player.sendActionBar(
-                      Component.text(
-                          "Your "
-                              + (petId != null
-                                  ? petId.replace("_", " ").toLowerCase()
-                                  : "unknown pet")
-                              + " is hungry!"));
+              // Initialize hunger if needed
+              petHunger.computeIfAbsent(uuid, k -> new HashMap<>()).putIfAbsent(petId, MAX_HUNGER);
+
+              int hunger = petHunger.get(uuid).get(petId);
+              if (hunger > 0) {
+                // Randomly decide to give item or play sound/message
+                if (shouldGiveItem()) {
+                  givePetReward(player, pet);
+                  decreaseHunger(player, petId);
+                } else if (shouldPlayAmbient()) {
+                  playAmbientEffect(player, pet);
                 }
 
-                // Try to feed the pet automatically from inventory
-                ItemStack foodStack = findAndConsumeFood(player, pet.getFood());
-                if (foodStack != null) {
-                  petHunger.get(player.getUniqueId()).put(petId, MAX_HUNGER);
-                  player.sendMessage(
-                      Component.text(
-                          "Your "
-                              + (petId != null
-                                  ? petId.replace("_", " ").toLowerCase()
-                                  : "unknown pet")
-                              + " ate some "
-                              + pet.getFood().name().toLowerCase()
-                              + "!"));
+                // Ensure hunger is defined before using it
+                if (petId != null) {
+                  hunger = petHunger.get(uuid).getOrDefault(petId, 0);
+                  String hungerState = getHungerState(hunger);
+                  updatePetLore(offhand, hungerState);
                 }
+              } else {
+                player.sendActionBar(
+                    Component.text(
+                        "Your "
+                            + (petId != null
+                                ? petId.replace("_", " ").toLowerCase()
+                                : "unknown pet")
+                            + " is hungry!"));
+              }
+
+              // Try to feed the pet automatically from inventory
+              ItemStack foodStack = findAndConsumeFood(player, pet.getFood());
+              if (foodStack != null) {
+                petHunger.get(uuid).put(petId, MAX_HUNGER);
+                player.sendMessage(
+                    Component.text(
+                        "Your "
+                            + (petId != null
+                                ? petId.replace("_", " ").toLowerCase()
+                                : "unknown pet")
+                            + " ate some "
+                            + pet.getFood().name().toLowerCase()
+                            + "!"));
               }
             }
-
-            // Ensure hunger is defined before using it
-            Map<String, Integer> hungerMap = petHunger.get(player.getUniqueId());
-            int hunger = 0;
-            if (hungerMap != null && petId != null) {
-              hunger = hungerMap.getOrDefault(petId, 0);
-            }
-            String hungerState = getHungerState(hunger);
-            updatePetLore(offhand, hungerState);
           }
-        } catch (Exception e) {
-          Bukkit.getLogger().severe("Error in PetsListener task: " + e.getMessage());
-          e.printStackTrace();
+
+          // Ensure hunger is defined before using it
+          Map<String, Integer> hungerMap = petHunger.get(uuid);
+          int hunger = 0;
+          if (hungerMap != null && petId != null) {
+            hunger = hungerMap.getOrDefault(petId, 0);
+          }
+          String hungerState = getHungerState(hunger);
+          updatePetLore(offhand, hungerState);
         }
       }
-    }.runTaskTimer(plugin, 40L, 40L);
+    }.runTaskTimer(plugin, 40L, 200L); // Check every 10 seconds (200 ticks)
   }
 
   private String getHungerState(int hunger) {
