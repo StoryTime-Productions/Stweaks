@@ -1,0 +1,24 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "FWF",
+        "EYE",
+        "FWF"
+    ],
+    "key": {
+        "F": "minecraft:feather",
+        "W": "minecraft:wheat_seeds",
+        "E": "minecraft:egg",
+        "Y": "minecraft:yellow_dye"
+    },
+    "result": {
+        "item": "hotbar_pets:chick",
+        "id": "wheat_seeds",
+        "components": {
+            "minecraft:item_model": "hotbar_pets:chick",
+            "minecraft:item_name": "{\"text\":\"Chick Pet\"}"
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

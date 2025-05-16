@@ -23,13 +23,10 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
- * Command handler for the pets menu. This class manages the command to open the
- * pets menu and
+ * Command handler for the pets menu. This class manages the command to open the pets menu and
  * reloads the configuration if necessary.
  *
- * <p>
- * It also provides methods to open the main pets menu and individual pet view
- * menus.
+ * <p>It also provides methods to open the main pets menu and individual pet view menus.
  */
 public class PetsMenuCommand implements CommandExecutor {
   private final JavaPlugin plugin;
@@ -38,7 +35,7 @@ public class PetsMenuCommand implements CommandExecutor {
   /**
    * Constructs the PetsMenuCommand.
    *
-   * @param plugin      the main plugin instance
+   * @param plugin the main plugin instance
    * @param petsManager manager responsible for loading and accessing pet data
    */
   public PetsMenuCommand(JavaPlugin plugin, PetsManager petsManager) {
@@ -49,10 +46,10 @@ public class PetsMenuCommand implements CommandExecutor {
   /**
    * Executes the command to open the pets menu or reload the configuration.
    *
-   * @param sender  the command sender
+   * @param sender the command sender
    * @param command the command being executed
-   * @param label   the label of the command
-   * @param args    the arguments passed to the command
+   * @param label the label of the command
+   * @param args the arguments passed to the command
    * @return true if the command was executed successfully, false otherwise
    */
   @Override
@@ -82,7 +79,7 @@ public class PetsMenuCommand implements CommandExecutor {
    * Opens the main pets menu for the player with pagination.
    *
    * @param player the player to whom the menu is displayed
-   * @param page   the current page number
+   * @param page the current page number
    */
   public void openMainPetsMenu(Player player, int page) {
     int maxItems = 14; // Maximum number of pets per page
@@ -90,10 +87,11 @@ public class PetsMenuCommand implements CommandExecutor {
     int totalPages = (int) Math.ceil(pets.size() / (double) maxItems);
     page = Math.max(1, Math.min(page, totalPages));
 
-    Inventory menu = Bukkit.createInventory(
-        null,
-        6 * 9,
-        Component.text("Pets Menu - Page " + page).decoration(TextDecoration.ITALIC, false));
+    Inventory menu =
+        Bukkit.createInventory(
+            null,
+            6 * 9,
+            Component.text("Pets Menu - Page " + page).decoration(TextDecoration.ITALIC, false));
 
     // Add border panes
     for (int i = 0; i < 54; i++) {
@@ -180,8 +178,7 @@ public class PetsMenuCommand implements CommandExecutor {
   }
 
   /**
-   * Converts a string to title case format (first letter of each word
-   * capitalized, rest lowercase).
+   * Converts a string to title case format (first letter of each word capitalized, rest lowercase).
    *
    * @param text the text to convert
    * @return the text in title case format
@@ -217,7 +214,7 @@ public class PetsMenuCommand implements CommandExecutor {
    * Creates a decorative pane item.
    *
    * @param material the material of the pane
-   * @param name     the display name of the pane
+   * @param name the display name of the pane
    * @return the created ItemStack
    */
   private ItemStack createPane(Material material, String name) {
@@ -231,16 +228,17 @@ public class PetsMenuCommand implements CommandExecutor {
   /**
    * Opens the detailed pet view menu for a specific pet.
    *
-   * @param player     the player to whom the menu is displayed
-   * @param pet        the pet whose details are displayed
+   * @param player the player to whom the menu is displayed
+   * @param pet the pet whose details are displayed
    * @param returnPage the page to return to when closing the pet view
    */
   public void openPetView(Player player, Pet pet, int returnPage) {
-    Inventory menu = Bukkit.createInventory(
-        null,
-        54,
-        Component.text(formatText(pet.getId() + " Pet", false))
-            .decoration(TextDecoration.ITALIC, false));
+    Inventory menu =
+        Bukkit.createInventory(
+            null,
+            54,
+            Component.text(formatText(pet.getId() + " Pet", false))
+                .decoration(TextDecoration.ITALIC, false));
 
     // Add border panes
     for (int i = 0; i < 54; i++) {
@@ -267,7 +265,7 @@ public class PetsMenuCommand implements CommandExecutor {
     // Display recipe (slots 10, 11, 12, 19, 20, 21, 28, 29, 30)
     List<List<Material>> recipe = pet.getRecipe();
     if (recipe != null) {
-      int[] ingredientSlots = { 10, 11, 12, 19, 20, 21, 28, 29, 30 };
+      int[] ingredientSlots = {10, 11, 12, 19, 20, 21, 28, 29, 30};
       int slotIndex = 0;
 
       for (List<Material> row : recipe) {
@@ -428,7 +426,7 @@ public class PetsMenuCommand implements CommandExecutor {
    * Previews a pet by playing a random sound and showing a random quote.
    *
    * @param player the player who will see/hear the preview
-   * @param pet    the pet to preview
+   * @param pet the pet to preview
    */
   public void previewPet(Player player, Pet pet) {
     // Get a random burp sound

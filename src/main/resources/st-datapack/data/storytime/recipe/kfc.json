@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "BCB",
+        "CFC",
+        "BCB"
+    ],
+    "key": {
+        "B": "minecraft:bread",
+        "C": "minecraft:chicken",
+        "F": "minecraft:furnace"
+    },
+    "result": {
+        "item": "hotbar_pets:kfc",
+        "id": "chicken",
+        "components": {
+            "minecraft:item_model": "hotbar_pets:kfc",
+            "minecraft:item_name": "{\"text\":\"KFC Pet\"}"
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

@@ -143,7 +143,6 @@ public class QuestMenuListener implements Listener {
           if (questsManager.hasRequiredItems(player, quest)
               && questsManager.hasRequiredStats(player, quest)) {
             // Remove items and give rewards
-            questsManager.consumeRequiredItems(player, quest);
             questsManager.giveRewards(player, quest);
 
             // Mark quest as completed

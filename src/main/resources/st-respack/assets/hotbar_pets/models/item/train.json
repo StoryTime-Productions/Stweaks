@@ -2247,71 +2247,41 @@
     ],
     "display": {
         "thirdperson_righthand": {
-            "scale": [
-                0.375,
-                0.375,
-                0.375
-            ],
             "rotation": [
-                75,
-                45,
+                83,
+                0,
                 0
             ],
             "translation": [
-                0,
-                2.5,
-                0
+                1,
+                -1,
+                18
             ]
         },
         "thirdperson_lefthand": {
-            "scale": [
-                0.375,
-                0.375,
-                0.375
-            ],
             "rotation": [
-                75,
-                45,
+                83,
+                0,
                 0
             ],
             "translation": [
-                0,
-                2.5,
-                0
-            ]
-        },
-        "firstperson_righthand": {
-            "scale": [
-                0.325,
-                0.325,
-                0.325
-            ],
-            "rotation": [
-                -10,
-                20,
-                0
-            ],
-            "translation": [
-                0,
-                2,
-                0
+                1,
+                -1,
+                18
             ]
         },
         "firstperson_lefthand": {
-            "scale": [
-                0.325,
-                0.325,
-                0.325
-            ],
-            "rotation": [
-                -10,
-                20,
-                0
-            ],
             "translation": [
                 0,
-                2,
-                0
+                -32,
+                32
+            ]
+        },
+        "firstperson_righthand": {
+            "translation": [
+                0,
+                -32,
+                32
             ]
         },
         "head": {

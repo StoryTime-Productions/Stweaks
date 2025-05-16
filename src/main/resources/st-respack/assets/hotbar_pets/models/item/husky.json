@@ -3537,5 +3537,45 @@
                 43
             ]
         }
-    ]
+    ],
+    "display": {
+        "thirdperson_righthand": {
+            "rotation": [
+                83,
+                0,
+                0
+            ],
+            "translation": [
+                1,
+                -1,
+                18
+            ]
+        },
+        "thirdperson_lefthand": {
+            "rotation": [
+                83,
+                0,
+                0
+            ],
+            "translation": [
+                1,
+                -1,
+                18
+            ]
+        },
+        "firstperson_lefthand": {
+            "translation": [
+                0,
+                -32,
+                32
+            ]
+        },
+        "firstperson_righthand": {
+            "translation": [
+                0,
+                -32,
+                32
+            ]
+        }
+    }
 }

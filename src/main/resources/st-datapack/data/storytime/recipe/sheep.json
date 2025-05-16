@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "WWW",
+        "SLS",
+        "WWW"
+    ],
+    "key": {
+        "W": "minecraft:white_wool",
+        "S": "minecraft:shears",
+        "L": "minecraft:lead"
+    },
+    "result": {
+        "item": "hotbar_pets:sheep",
+        "id": "wheat",
+        "components": {
+            "minecraft:item_model": "hotbar_pets:sheep",
+            "minecraft:item_name": "{\"text\":\"Sheep Pet\"}"
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

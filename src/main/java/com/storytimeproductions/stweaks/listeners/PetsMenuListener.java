@@ -3,6 +3,9 @@ package com.storytimeproductions.stweaks.listeners;
 import com.storytimeproductions.models.Pet;
 import com.storytimeproductions.stweaks.commands.PetsMenuCommand;
 import com.storytimeproductions.stweaks.util.PetsManager;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,6 +29,7 @@ public class PetsMenuListener implements Listener {
   private final Plugin plugin;
   private final PetsManager petsManager;
   private final PetsMenuCommand petsMenuCommand;
+  private final Map<UUID, Long> lastPreviewTime = new HashMap<>();
 
   /**
    * Constructs the PetsMenuListener.
@@ -79,9 +83,26 @@ public class PetsMenuListener implements Listener {
     NamespacedKey returnPageKey = new NamespacedKey(plugin, "returnPage");
     NamespacedKey prevPageKey = new NamespacedKey(plugin, "prevPage");
     NamespacedKey nextPageKey = new NamespacedKey(plugin, "nextPage");
+    NamespacedKey previewPetKey = new NamespacedKey(plugin, "previewPet");
 
     // Handle item clicks in the main pets menu
     if (title.contains("Pet")) {
+      if (data.has(previewPetKey, PersistentDataType.STRING)) {
+        long now = System.currentTimeMillis();
+        long last = lastPreviewTime.getOrDefault(player.getUniqueId(), 0L);
+        if (now - last >= 30_000) {
+          String petId = data.get(previewPetKey, PersistentDataType.STRING);
+          Pet pet = petsManager.getPetById(petId);
+          if (pet != null) {
+            pet.sendRandomPetMessage(player);
+            lastPreviewTime.put(player.getUniqueId(), now);
+          }
+        } else {
+          player.sendMessage("Please wait before previewing your pet again!");
+        }
+        return;
+      }
+
       if (data.has(petIdKey, PersistentDataType.STRING)) {
         String petId = data.get(petIdKey, PersistentDataType.STRING);
         Integer returnPage = data.get(returnPageKey, PersistentDataType.INTEGER);

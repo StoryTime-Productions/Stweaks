@@ -1,7 +1,9 @@
 package com.storytimeproductions.models;
 
 import java.util.List;
+import java.util.Random;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 
 /**
  * Represents a custom pet in the plugin, which includes metadata such as a subtitle, special perk
@@ -111,5 +113,23 @@ public class Pet {
    */
   public List<List<Material>> getRecipe() {
     return recipe;
+  }
+
+  /**
+   * Sends a random quote as a message and plays a random sound from burpSounds for the player.
+   *
+   * @param player The player to send the message to and play the sound for.
+   */
+  public void sendRandomPetMessage(Player player) {
+    Random random = new Random();
+    // Send a random quote message, if available
+    if (!quotes.isEmpty()) {
+      String message = quotes.get(random.nextInt(quotes.size()));
+      player.sendMessage(message);
+    }
+    // Play a random burp sound, if available
+    if (!burpSounds.isEmpty()) {
+      player.playSound(player.getLocation(), id, org.bukkit.SoundCategory.PLAYERS, 1.0f, 1.0f);
+    }
   }
 }

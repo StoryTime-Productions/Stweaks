@@ -14,6 +14,7 @@ import com.storytimeproductions.stweaks.listeners.CowSkinnerListener;
 import com.storytimeproductions.stweaks.listeners.FbiDiscListener;
 import com.storytimeproductions.stweaks.listeners.IllegalWaterListener;
 import com.storytimeproductions.stweaks.listeners.LebronArmorListener;
+import com.storytimeproductions.stweaks.listeners.PetsListener;
 import com.storytimeproductions.stweaks.listeners.PetsMenuListener;
 import com.storytimeproductions.stweaks.listeners.PlayerActivityListener;
 import com.storytimeproductions.stweaks.listeners.QuestMenuListener;
@@ -80,6 +81,7 @@ public class Stweaks extends JavaPlugin {
     getServer()
         .getPluginManager()
         .registerEvents(new PetsMenuListener(this, petsManager, petsMenuCommand), this);
+    getServer().getPluginManager().registerEvents(new PetsListener(this, petsManager), this);
 
     // Register commands
     getCommand("ststatus").setExecutor(new StStatusCommand());

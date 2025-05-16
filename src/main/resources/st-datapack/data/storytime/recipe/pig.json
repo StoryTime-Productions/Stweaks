@@ -1,0 +1,24 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "CHC",
+        "LPL",
+        "CHC"
+    ],
+    "key": {
+        "C": "minecraft:carrot",
+        "H": "minecraft:hay_block",
+        "L": "minecraft:leather",
+        "P": "minecraft:porkchop"
+    },
+    "result": {
+        "item": "hotbar_pets:pig",
+        "id": "carrot",
+        "components": {
+            "minecraft:item_model": "hotbar_pets:pig",
+            "minecraft:item_name": "{\"text\":\"Pig Pet\"}"
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

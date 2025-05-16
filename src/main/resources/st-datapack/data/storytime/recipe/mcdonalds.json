@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "BNB",
+        "BGB",
+        "BNB"
+    ],
+    "key": {
+        "B": "minecraft:bread",
+        "N": "minecraft:gold_nugget",
+        "G": "minecraft:golden_apple"
+    },
+    "result": {
+        "item": "hotbar_pets:mcdonalds",
+        "id": "golden_apple",
+        "components": {
+            "minecraft:item_model": "hotbar_pets:mcdonalds",
+            "minecraft:item_name": "{\"text\":\"McDonalds Pet\"}"
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

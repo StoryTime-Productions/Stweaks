@@ -2239,38 +2239,42 @@
         }
     ],
     "display": {
-        "thirdperson": {
+        "thirdperson_righthand": {
             "rotation": [
-                -160,
-                -10,
+                83,
+                0,
                 0
             ],
             "translation": [
-                0.6,
-                -0.6,
-                -5.1
-            ],
-            "scale": [
-                0.7,
-                0.7,
-                0.7
+                1,
+                -1,
+                18
             ]
         },
-        "firstperson": {
+        "thirdperson_lefthand": {
             "rotation": [
+                83,
                 0,
-                123,
                 0
             ],
             "translation": [
+                1,
+                -1,
+                18
+            ]
+        },
+        "firstperson_lefthand": {
+            "translation": [
                 0,
-                5.9,
-                -4.5
-            ],
-            "scale": [
-                1,
-                1,
-                1
+                -32,
+                32
+            ]
+        },
+        "firstperson_righthand": {
+            "translation": [
+                0,
+                -32,
+                32
             ]
         }
     }

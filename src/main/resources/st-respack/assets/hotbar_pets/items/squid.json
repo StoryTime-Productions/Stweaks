@@ -1,6 +1,6 @@
 {
     "model": {
         "type": "minecraft:model",
-        "model": "hotbar_pets:item/hamster"
+        "model": "hotbar_pets:item/squid"
     }
 }

@@ -1,0 +1,24 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "ICI",
+        "MRM",
+        "ICI"
+    ],
+    "key": {
+        "I": "minecraft:iron_ingot",
+        "C": "minecraft:coal",
+        "M": "minecraft:minecart",
+        "R": "minecraft:redstone"
+    },
+    "result": {
+        "item": "hotbar_pets:train",
+        "id": "coal",
+        "components": {
+            "minecraft:item_model": "hotbar_pets:train",
+            "minecraft:item_name": "{\"text\":\"Train Pet\"}"
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

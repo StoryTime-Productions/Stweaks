@@ -11,6 +11,8 @@ import org.bukkit.Registry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
 
@@ -32,6 +34,29 @@ public class PetsManager {
     this.plugin = plugin;
     loadPetsConfig();
     loadPets();
+  }
+
+  /**
+   * Returns the Pet corresponding to the given item if it has a hotbar_pets model, or null
+   * otherwise.
+   */
+  public Pet getPetByItem(ItemStack item) {
+    if (item == null || !item.hasItemMeta()) {
+      return null;
+    }
+    ItemMeta meta = item.getItemMeta();
+
+    NamespacedKey itemModel = meta.getItemModel();
+    if (itemModel != null && itemModel.getNamespace().equals("hotbar_pets")) {
+      String petId = itemModel.getKey();
+      Pet pet = getPetById(petId);
+      if (pet != null) {
+      } else {
+      }
+      return pet;
+    }
+
+    return null;
   }
 
   /** Loads the pets.yml configuration file. */

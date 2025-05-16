@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "LSL",
+        "ISI",
+        "LSL"
+    ],
+    "key": {
+        "L": "minecraft:snowball",
+        "S": "minecraft:bone",
+        "I": "minecraft:ice"
+    },
+    "result": {
+        "item": "hotbar_pets:husky",
+        "id": "bone",
+        "components": {
+            "minecraft:item_model": "hotbar_pets:husky",
+            "minecraft:item_name": "{\"text\":\"Husky Pet\"}"
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

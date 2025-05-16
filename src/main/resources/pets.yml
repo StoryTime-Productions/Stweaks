@@ -2,7 +2,7 @@ pets:
   gible:
     subtitle: "Tiny land shark"
     perk: "effect:speed"
-    burp_sounds: [ "storytime:gible_burp1", "storytime:gible_burp2", "storytime:gible_burp3" ]
+    burp_sounds: [ "hotbar_pets:gible_burp1", "hotbar_pets:gible_burp2", "hotbar_pets:gible_burp3" ]
     quotes: [ "Chomp!", "Gible gible!", "Snack time!" ]
     food: "minecraft:cod"
     recipe:
@@ -13,7 +13,7 @@ pets:
   hamster:
     subtitle: "Cute wheel spinner"
     perk: "effect:speed"
-    burp_sounds: [ "storytime:hamster_burp1", "storytime:hamster_burp2", "storytime:hamster_burp3" ]
+    burp_sounds: [ "hotbar_pets:hamster_burp1", "hotbar_pets:hamster_burp2", "hotbar_pets:hamster_burp3" ]
     quotes: [ "Squeak squeak!", "Nom nom!", "I'm so fluffy!" ]
     food: "minecraft:wheat_seeds"
     recipe:
@@ -24,7 +24,7 @@ pets:
   husky:
     subtitle: "Loyal winter pup"
     perk: "effect:resistance"
-    burp_sounds: [ "storytime:husky_burp1", "storytime:husky_burp2", "storytime:husky_burp3" ]
+    burp_sounds: [ "hotbar_pets:husky_burp1", "hotbar_pets:husky_burp2", "hotbar_pets:husky_burp3" ]
     quotes: [ "Awooga!", "Woof!", "I will never leave your side!" ]
     food: "minecraft:bone"
     recipe:
@@ -35,7 +35,7 @@ pets:
   kfc:
     subtitle: "Fast food chicken"
     perk: "item:cooked_chicken"
-    burp_sounds: [ "storytime:kfc_burp1", "storytime:kfc_burp2", "storytime:kfc_burp3" ]
+    burp_sounds: [ "hotbar_pets:kfc_burp1", "hotbar_pets:kfc_burp2", "hotbar_pets:kfc_burp3" ]
     quotes: [ "Crispy!", "Extra spicy!", "It’s finger-lickin’ good!" ]
     food: "minecraft:raw_chicken"
     recipe:
@@ -46,7 +46,7 @@ pets:
   mcdonalds:
     subtitle: "Golden arches snack"
     perk: "effect:saturation"
-    burp_sounds: [ "storytime:mcd_burp1", "storytime:mcd_burp2", "storytime:mcd_burp3" ]
+    burp_sounds: [ "hotbar_pets:mcd_burp1", "hotbar_pets:mcd_burp2", "hotbar_pets:mcd_burp3" ]
     quotes: [ "I’m lovin’ it!", "Big Back energy.", "Minecraft Happy Meal Toy!" ]
     food: "minecraft:golden_apple"
     recipe:
@@ -57,7 +57,7 @@ pets:
   nautilus:
     subtitle: "Spiral sea dweller"
     perk: "effect:water_breathing"
-    burp_sounds: [ "storytime:nautilus_burp1", "storytime:nautilus_burp2", "storytime:nautilus_burp3" ]
+    burp_sounds: [ "hotbar_pets:nautilus_burp1", "hotbar_pets:nautilus_burp2", "hotbar_pets:nautilus_burp3" ]
     quotes: [ "Blub blub...", "I'm doing my best.", "Current’s strong today." ]
     food: "minecraft:nautilus_shell"
     recipe:
@@ -68,7 +68,7 @@ pets:
   patrick:
     subtitle: "Pink sea buddy"
     perk: "effect:night_vision"
-    burp_sounds: [ "storytime:patrick_burp1", "storytime:patrick_burp2", "storytime:patrick_burp3" ]
+    burp_sounds: [ "hotbar_pets:patrick_burp1", "hotbar_pets:patrick_burp2", "hotbar_pets:patrick_burp3" ]
     quotes: [ "Is mayonnaise an instrument?", "I'm ready!", "Under the rock again." ]
     food: "minecraft:kelp"
     recipe:
@@ -79,7 +79,7 @@ pets:
   seal:
     subtitle: "Fishy flopper"
     perk: "effect:dolphins_grace"
-    burp_sounds: [ "storytime:seal_burp1", "storytime:seal_burp2", "storytime:seal_burp3" ]
+    burp_sounds: [ "hotbar_pets:seal_burp1", "hotbar_pets:seal_burp2", "hotbar_pets:seal_burp3" ]
     quotes: [ "Er, er, er!", "Seal of approval!", "Seal or no seal!" ]
     food: "minecraft:salmon"
     recipe:
@@ -90,7 +90,7 @@ pets:
   spider:
     subtitle: "Wall crawler"
     perk: "effect:jump_boost"
-    burp_sounds: [ "storytime:spider_burp1", "storytime:spider_burp2", "storytime:spider_burp3" ]
+    burp_sounds: [ "hotbar_pets:spider_burp1", "hotbar_pets:spider_burp2", "hotbar_pets:spider_burp3" ]
     quotes: [ "Creepy crawly!", "Hang in there!", "Eight legs, no problem." ]
     food: "minecraft:beef"
     recipe:
@@ -101,7 +101,7 @@ pets:
   swablu:
     subtitle: "Cloud-winged chirper"
     perk: "effect:slow_falling"
-    burp_sounds: [ "storytime:swablu_burp1", "storytime:swablu_burp2", "storytime:swablu_burp3" ]
+    burp_sounds: [ "hotbar_pets:swablu_burp1", "hotbar_pets:swablu_burp2", "hotbar_pets:swablu_burp3" ]
     quotes: [ "Fluff time!", "Chirp chirp!", "Light as air." ]
     food: "minecraft:sweet_berries"
     recipe:
@@ -112,7 +112,7 @@ pets:
   train:
     subtitle: "Steam-powered ride"
     perk: "effect:knockback_resistance"
-    burp_sounds: [ "storytime:train_burp1", "storytime:train_burp2", "storytime:train_burp3" ]
+    burp_sounds: [ "hotbar_pets:train_burp1", "hotbar_pets:train_burp2", "hotbar_pets:train_burp3" ]
     quotes: [ "All aboard!", "Next stop: Narnia!", "Choo choo!" ]
     food: "minecraft:coal"
     recipe:
@@ -123,7 +123,7 @@ pets:
   shark:
     subtitle: "Ocean predator"
     perk: "effect:strength"
-    burp_sounds: [ "storytime:shark_burp1", "storytime:shark_burp2", "storytime:shark_burp3" ]
+    burp_sounds: [ "hotbar_pets:shark_burp1", "hotbar_pets:shark_burp2", "hotbar_pets:shark_burp3" ]
     quotes: [ "Dun dun dun dun dun dun...", "Bite mode!", "Top of the food chain." ]
     food: "minecraft:tropical_fish"
     recipe:
@@ -134,7 +134,7 @@ pets:
   chick:
     subtitle: "Tiny peeper"
     perk: "effect:luck"
-    burp_sounds: [ "storytime:chick_burp1", "storytime:chick_burp2", "storytime:chick_burp3" ]
+    burp_sounds: [ "hotbar_pets:chick_burp1", "hotbar_pets:chick_burp2", "hotbar_pets:chick_burp3" ]
     quotes: [ "Peep!", "So smol.", "Cluck luck!" ]
     food: "minecraft:seeds"
     recipe:
@@ -145,7 +145,7 @@ pets:
   squid:
     subtitle: "Inky swimmer"
     perk: "effect:invisibility"
-    burp_sounds: [ "storytime:squid_burp1", "storytime:squid_burp2", "storytime:squid_burp3" ]
+    burp_sounds: [ "hotbar_pets:squid_burp1", "hotbar_pets:squid_burp2", "hotbar_pets:squid_burp3" ]
     quotes: [ "Poof!", "Can’t catch me!", "Squiddy style." ]
     food: "minecraft:ink_sac"
     recipe:
@@ -156,7 +156,7 @@ pets:
   pig:
     subtitle: "Pink oinker"
     perk: "effect:saturation"
-    burp_sounds: [ "storytime:pig_burp1", "storytime:pig_burp2", "storytime:pig_burp3" ]
+    burp_sounds: [ "hotbar_pets:pig_burp1", "hotbar_pets:pig_burp2", "hotbar_pets:pig_burp3" ]
     quotes: [ "Oink!", "I smell carrots!", "Snort snort!" ]
     food: "minecraft:carrot"
     recipe:
@@ -167,7 +167,7 @@ pets:
   sheep:
     subtitle: "Wooly buddy"
     perk: "effect:fire_resistance"
-    burp_sounds: [ "storytime:sheep_burp1", "storytime:sheep_burp2", "storytime:sheep_burp3" ]
+    burp_sounds: [ "hotbar_pets:sheep_burp1", "hotbar_pets:sheep_burp2", "hotbar_pets:sheep_burp3" ]
     quotes: [ "Baaah!", "Skin the cows...", "Wool ya be mine?" ]
     food: "minecraft:wheat"
     recipe:
@@ -178,7 +178,7 @@ pets:
   lavender_jar:
     subtitle: "Peaceful scent"
     perk: "effect:regeneration"
-    burp_sounds: [ "storytime:lavender_burp1", "storytime:lavender_burp2", "storytime:lavender_burp3" ]
+    burp_sounds: [ "hotbar_pets:lavender_burp1", "hotbar_pets:lavender_burp2", "hotbar_pets:lavender_burp3" ]
     quotes: [ "Breathe in...", "Breathe out...", "Don't you love smelling lavenders?" ]
     food: "minecraft:flower_pot"
     recipe:
@@ -189,7 +189,7 @@ pets:
   chicken:
     subtitle: "Clucky companion"
     perk: "effect:feather_falling"
-    burp_sounds: [ "storytime:chicken_burp1", "storytime:chicken_burp2", "storytime:chicken_burp3" ]
+    burp_sounds: [ "hotbar_pets:chicken_burp1", "hotbar_pets:chicken_burp2", "hotbar_pets:chicken_burp3" ]
     quotes: [ "Bawk!", "Don’t drop me!", "I’m not food..." ]
     food: "minecraft:seeds"
     recipe:
@@ -200,7 +200,7 @@ pets:
   iron_block:
     subtitle: "Chunk of power"
     perk: "effect:resistance"
-    burp_sounds: [ "storytime:iron_burp1", "storytime:iron_burp2", "storytime:iron_burp3" ]
+    burp_sounds: [ "hotbar_pets:iron_burp1", "hotbar_pets:iron_burp2", "hotbar_pets:iron_burp3" ]
     quotes: [ "Heavy duty!", "Ironclad!", "TheyCallMeSu is my dad!" ]
     food: "minecraft:iron_ingot"
     recipe:
@@ -211,7 +211,7 @@ pets:
   mooshroom:
     subtitle: "Mushroom cow"
     perk: "effect:saturation"
-    burp_sounds: [ "storytime:mooshroom_burp1", "storytime:mooshroom_burp2", "storytime:mooshroom_burp3" ]
+    burp_sounds: [ "hotbar_pets:mooshroom_burp1", "hotbar_pets:mooshroom_burp2", "hotbar_pets:mooshroom_burp3" ]
     quotes: [ "Moo!", "Shroom boom!", "Spores incoming!" ]
     food: "minecraft:red_mushroom"
     recipe:

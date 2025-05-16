@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "SSS",
+        "ILI",
+        "SSS"
+    ],
+    "key": {
+        "S": "minecraft:snow_block",
+        "I": "minecraft:ice",
+        "L": "minecraft:lead"
+    },
+    "result": {
+        "item": "hotbar_pets:seal",
+        "id": "salmon",
+        "components": {
+            "minecraft:item_model": "hotbar_pets:seal",
+            "minecraft:item_name": "{\"text\":\"Seal Pet\"}"
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

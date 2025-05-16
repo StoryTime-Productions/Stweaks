@@ -1,0 +1,24 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "SBS",
+        "CEC",
+        "SBS"
+    ],
+    "key": {
+        "S": "minecraft:string",
+        "B": "minecraft:beef",
+        "C": "minecraft:cobweb",
+        "E": "minecraft:spider_eye"
+    },
+    "result": {
+        "item": "hotbar_pets:spider",
+        "id": "beef",
+        "components": {
+            "minecraft:item_model": "hotbar_pets:spider",
+            "minecraft:item_name": "{\"text\":\"Spider Pet\"}"
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

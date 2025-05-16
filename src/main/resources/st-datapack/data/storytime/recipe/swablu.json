@@ -1,0 +1,24 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "WSW",
+        "FPF",
+        "WSW"
+    ],
+    "key": {
+        "W": "minecraft:white_wool",
+        "S": "minecraft:sweet_berries",
+        "F": "minecraft:feather",
+        "P": "minecraft:phantom_membrane"
+    },
+    "result": {
+        "item": "hotbar_pets:swablu",
+        "id": "sweet_berries",
+        "components": {
+            "minecraft:item_model": "hotbar_pets:swablu",
+            "minecraft:item_name": "{\"text\":\"Swablu Pet\"}"
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

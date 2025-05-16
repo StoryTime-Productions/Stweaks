@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "PKP",
+        "KWK",
+        "PKP"
+    ],
+    "key": {
+        "P": "minecraft:prismarine",
+        "K": "minecraft:kelp",
+        "W": "minecraft:water_bucket"
+    },
+    "result": {
+        "item": "hotbar_pets:nautilus",
+        "id": "nautilus_shell",
+        "components": {
+            "minecraft:item_model": "hotbar_pets:nautilus",
+            "minecraft:item_name": "{\"text\":\"Nautilus Pet\"}"
+        },
+        "count": 1
+    },
+    "show_notification": true
+}
