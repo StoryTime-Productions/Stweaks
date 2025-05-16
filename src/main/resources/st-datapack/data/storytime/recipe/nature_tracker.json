@@ -1,0 +1,25 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+      "FFF",
+      "FCF",
+      "FFF"
+    ],
+    "key": {
+      "F": {"tag" : "minecraft:flowers"},
+      "C": "minecraft:compass"
+    },
+    "result": {
+      "item": "storytime:nature_tracker",
+      "id": "minecraft:compass",
+      "components": {
+        "minecraft:item_model": "storytime:nature_tracker",
+        "minecraft:item_name": "{\"text\":\"Nature Tracker\"}",
+        "minecraft:lore": [
+          "\"East? I thought you said weast!\""
+        ]
+      },
+      "count": 1
+    },
+    "show_notification": true
+  }
