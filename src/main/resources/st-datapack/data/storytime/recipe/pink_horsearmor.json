@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "AAA",
+        "ABA",
+        "AAA"
+    ],
+    "key": {
+        "A": "minecraft:pink_dye",
+        "B": "minecraft:diamond_horse_armor"
+    },
+    "result": {
+        "id": "minecraft:diamond_horse_armor",
+        "components": {
+            "minecraft:item_model": "storytime:pink_horsearmor",
+            "minecraft:item_name": "{\"text\":\"Rose Quartz Horsearmor\"}"
+        },
+        "count": 1
+    }
+}

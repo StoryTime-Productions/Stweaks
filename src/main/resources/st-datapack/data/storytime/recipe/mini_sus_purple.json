@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        " B "
+    ],
+    "key": {
+        "B": "minecraft:purple_wool"
+    },
+    "result": {
+        "id": "minecraft:paper",
+        "components": {
+            "minecraft:item_model": "mini_sus:mini_sus_purple",
+            "minecraft:item_name": "{\"text\":\"Purple Crewmate\"}",
+            "minecraft:equippable": {
+                "slot": "head"
+            }
+        },
+        "count": 1
+    }
+}

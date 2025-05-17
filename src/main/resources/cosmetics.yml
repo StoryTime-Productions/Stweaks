@@ -3,503 +3,503 @@ cosmetics:
     item_model: storytime:cow_skinner
     name: Cow Skinner
     lore:
-    - A custom cosmetic item.
+    - Skin the cows...
     recipe:
-    - "IRON_INGOT AIR IRON_INGOT"
-    - "AIR DIAMOND AIR"
-    - "LEATHER AIR LEATHER"
+    - "BEEF LEATHER BEEF"
+    - "LEATHER SHEARS LEATHER"
+    - "BEEF LEATHER BEEF"
   fbi_disc:
     item_model: storytime:fbi_disc
     name: FBI Disc
     lore:
-    - A custom cosmetic item.
+    - If you know you know...
     recipe:
-    - "IRON_INGOT AIR IRON_INGOT"
-    - "AIR DIAMOND AIR"
-    - "LEATHER AIR LEATHER"
+    - "IRON_INGOT IRON_BLOCK IRON_INGOT"
+    - "IRON_BLOCK COOKIE IRON_BLOCK"
+    - "IRON_INGOT IRON_BLOCK IRON_INGOT"
   illegal_water:
     item_model: storytime:illegal_water
     name: Illegal Water
     lore:
-    - A custom cosmetic item.
+    - WHAT?!
     recipe:
-    - "IRON_INGOT AIR IRON_INGOT"
-    - "AIR DIAMOND AIR"
-    - "LEATHER AIR LEATHER"
+    - "AIR WATER_BUCKET AIR"
+    - "AIR ICE AIR"
+    - "AIR AIR AIR"
   lebron_boots:
     item_model: storytime:lebron_boots
-    name: Lebron Boots
+    name: Lebron's Kicks
     lore:
-    - A custom cosmetic item.
+    - Sunshine...
     recipe:
-    - "IRON_INGOT AIR IRON_INGOT"
-    - "AIR DIAMOND AIR"
-    - "LEATHER AIR LEATHER"
+    - "YELLOW_DYE AIR PURPLE_DYE"
+    - "PURPLE_DYE AIR YELLOW_DYE"
+    - "AIR AIR AIR"
   lebron_chestplate:
     item_model: storytime:lebron_chestplate
-    name: Lebron Chestplate
+    name: Lebron's Jersey
     lore:
-    - A custom cosmetic item.
+    - Are...
     recipe:
-    - "IRON_INGOT AIR IRON_INGOT"
-    - "AIR DIAMOND AIR"
-    - "LEATHER AIR LEATHER"
+    - "YELLOW_DYE AIR PURPLE_DYE"
+    - "PURPLE_DYE YELLOW_DYE YELLOW_DYE"
+    - "YELLOW_DYE PURPLE_DYE YELLOW_DYE"
   lebron_helmet:
     item_model: storytime:lebron_helmet
-    name: Lebron Helmet
+    name: Lebron's Crown
     lore:
-    - A custom cosmetic item.
+    - You...
     recipe:
-    - "IRON_INGOT AIR IRON_INGOT"
-    - "AIR DIAMOND AIR"
-    - "LEATHER AIR LEATHER"
+    - "PURPLE_DYE YELLOW_DYE PURPLE_DYE"
+    - "YELLOW_DYE AIR YELLOW_DYE"
+    - "AIR AIR AIR"
   lebron_leggings:
     item_model: storytime:lebron_leggings
-    name: Lebron Leggings
+    name: Lebron's Shorts
     lore:
-    - A custom cosmetic item.
+    - My...
     recipe:
-    - "IRON_INGOT AIR IRON_INGOT"
-    - "AIR DIAMOND AIR"
-    - "LEATHER AIR LEATHER"
+    - "YELLOW_DYE AIR PURPLE_DYE"
+    - "PURPLE_DYE AIR YELLOW_DYE"
+    - "YELLOW_DYE AIR PURPLE_DYE"
   pink_arrow:
     item_model: storytime:pink_arrow
-    name: Pink Arrow
+    name: Rose Quartz Arrow
     lore:
-    - A custom cosmetic item.
+    - Pierce their hearts...
     recipe:
-    - "IRON_INGOT AIR IRON_INGOT"
-    - "AIR DIAMOND AIR"
-    - "LEATHER AIR LEATHER"
+    - "AIR PINK_DYE AIR"
+    - "AIR STICK AIR"
+    - "AIR FEATHER AIR"
   pink_axe:
     item_model: storytime:pink_axe
-    name: Pink Axe
+    name: Rose Quartz Axe
     lore:
-    - A custom cosmetic item.
+    - Cut their animosity...
     recipe:
-    - "IRON_INGOT AIR IRON_INGOT"
+    - "PINK_DYE PINK_DYE AIR"
+    - "PINK_DYE DIAMOND AIR"
     - "AIR DIAMOND AIR"
-    - "LEATHER AIR LEATHER"
   pink_boots:
     item_model: storytime:pink_boots
-    name: Pink Boots
+    name: Rose Quartz Boots
     lore:
-    - A custom cosmetic item.
+    - Stomp with love...
     recipe:
-    - "IRON_INGOT AIR IRON_INGOT"
-    - "AIR DIAMOND AIR"
-    - "LEATHER AIR LEATHER"
+    - "PINK_DYE AIR DIAMOND"
+    - "DIAMOND AIR PINK_DYE"
+    - "AIR AIR AIR"
   pink_bow:
     item_model: storytime:pink_bow
-    name: Pink Bow
+    name: Rose Quartz Bow
     lore:
-    - A custom cosmetic item.
+    - Pierce hearts...
     recipe:
-    - "IRON_INGOT AIR IRON_INGOT"
-    - "AIR DIAMOND AIR"
-    - "LEATHER AIR LEATHER"
+    - "AIR PINK_DYE DIAMOND"
+    - "PINK_DYE AIR DIAMOND"
+    - "AIR PINK_DYE DIAMOND"
   pink_chestplate:
     item_model: storytime:pink_chestplate
-    name: Pink Chestplate
+    name: Rose Quartz Chestplate
     lore:
-    - A custom cosmetic item.
+    - Impenetrable heart...
     recipe:
-    - "IRON_INGOT AIR IRON_INGOT"
-    - "AIR DIAMOND AIR"
-    - "LEATHER AIR LEATHER"
+    - "PINK_DYE AIR PINK_DYE"
+    - "DIAMOND PINK_DYE DIAMOND"
+    - "PINK_DYE DIAMOND PINK_DYE"
   pink_enderpearl:
     item_model: storytime:pink_enderpearl
-    name: Pink Enderpearl
+    name: Rose Quartz Enderpearl
     lore:
-    - A custom cosmetic item.
+    - Love brings us close...
     recipe:
-    - "IRON_INGOT AIR IRON_INGOT"
-    - "AIR DIAMOND AIR"
-    - "LEATHER AIR LEATHER"
+    - "PINK_DYE PINK_DYE PINK_DYE"
+    - "PINK_DYE ENDER_PEARL PINK_DYE"
+    - "PINK_DYE PINK_DYE PINK_DYE"
   pink_fishing_rod:
     item_model: storytime:pink_fishing_rod
-    name: Pink Fishing Rod
+    name: Rose Quartz Fishing Rod
     lore:
-    - A custom cosmetic item.
+    - Reel their heart into yours...
     recipe:
-    - "IRON_INGOT AIR IRON_INGOT"
+    - "AIR AIR PINK_DYE"
     - "AIR DIAMOND AIR"
-    - "LEATHER AIR LEATHER"
+    - "PINK_DYE AIR AIR"
   pink_helmet:
     item_model: storytime:pink_helmet
-    name: Pink Helmet
+    name: Rose Quartz Helmet
     lore:
-    - A custom cosmetic item.
+    - The heart over the mind...
     recipe:
-    - "IRON_INGOT AIR IRON_INGOT"
-    - "AIR DIAMOND AIR"
-    - "LEATHER AIR LEATHER"
+    - "PINK_DYE DIAMOND PINK_DYE"
+    - "DIAMOND AIR DIAMOND"
+    - "AIR AIR AIR"
   pink_hoe:
     item_model: storytime:pink_hoe
-    name: Pink Hoe
+    name: Rose Quartz Hoe
     lore:
-    - A custom cosmetic item.
+    - They deserve love too...
     recipe:
-    - "IRON_INGOT AIR IRON_INGOT"
+    - "PINK_DYE PINK_DYE AIR"
     - "AIR DIAMOND AIR"
-    - "LEATHER AIR LEATHER"
+    - "AIR DIAMOND AIR"
   pink_horsearmor:
     item_model: storytime:pink_horsearmor
-    name: Pink Horsearmor
+    name: Rose Quartz Horsearmor
     lore:
-    - A custom cosmetic item.
+    - Ride with love...
     recipe:
-    - "IRON_INGOT AIR IRON_INGOT"
-    - "AIR DIAMOND AIR"
-    - "LEATHER AIR LEATHER"
+    - "PINK_DYE PINK_DYE PINK_DYE"
+    - "PINK_DYE DIAMOND_HORSE_ARMOR PINK_DYE"
+    - "PINK_DYE PINK_DYE PINK_DYE"
   pink_leggings:
     item_model: storytime:pink_leggings
-    name: Pink Leggings
+    name: Rose Quartz Leggings
     lore:
-    - A custom cosmetic item.
+    - Try to keep these on...
     recipe:
-    - "IRON_INGOT AIR IRON_INGOT"
-    - "AIR DIAMOND AIR"
-    - "LEATHER AIR LEATHER"
+    - "PINK_DYE DIAMOND PINK_DYE"
+    - "DIAMOND AIR DIAMOND"
+    - "PINK_DYE AIR PINK_DYE"
   pink_pickaxe:
     item_model: storytime:pink_pickaxe
-    name: Pink Pickaxe
+    name: Rose Quartz Pickaxe
     lore:
-    - A custom cosmetic item.
+    - Crack through their hearts...
     recipe:
-    - "IRON_INGOT AIR IRON_INGOT"
+    - "PINK_DYE PINK_DYE PINK_DYE"
     - "AIR DIAMOND AIR"
-    - "LEATHER AIR LEATHER"
+    - "AIR DIAMOND AIR"
   pink_shovel:
     item_model: storytime:pink_shovel
-    name: Pink Shovel
+    name: Rose Quartz Shovel
     lore:
-    - A custom cosmetic item.
+    - Dig for love...
     recipe:
-    - "IRON_INGOT AIR IRON_INGOT"
+    - "AIR PINK_DYE AIR"
     - "AIR DIAMOND AIR"
-    - "LEATHER AIR LEATHER"
+    - "AIR DIAMOND AIR"
   pink_sword:
     item_model: storytime:pink_sword
-    name: Pink Sword
+    name: Rose Quartz Sword
     lore:
-    - A custom cosmetic item.
+    - Slice through their hearts...
     recipe:
-    - "IRON_INGOT AIR IRON_INGOT"
+    - "AIR PINK_DYE AIR"
+    - "AIR PINK_DYE AIR"
     - "AIR DIAMOND AIR"
-    - "LEATHER AIR LEATHER"
   repohat_black:
-    item_model: repohats:repohat_black
+    item_model: repohats:repohatblack
     name: Black Repo Hat
     lore:
     - A stylish repo hat.
     recipe:
     - "BLACK_WOOL BLACK_WOOL BLACK_WOOL"
-    - "AIR LEATHER_HELMET AIR"
     - "BLACK_WOOL AIR BLACK_WOOL"
+    - "AIR AIR AIR"
   repohat_crown_black:
-    item_model: repohats:repohat_crown_black
+    item_model: repohats:repohatblackcrown
     name: Black Crown Repo Hat
     lore:
     - A repo hat with a crown.
     recipe:
-    - "GOLD_BLOCK BLACK_WOOL GOLD_BLOCK"
-    - "AIR LEATHER_HELMET AIR"
-    - "GOLD_BLOCK AIR GOLD_BLOCK"
+    - "BLACK_WOOL BLACK_WOOL BLACK_WOOL"
+    - "BLACK_WOOL GOLD_BLOCK BLACK_WOOL"
+    - "AIR AIR AIR"
   repohat_blue:
-    item_model: repohats:repohat_blue
+    item_model: repohats:repohatblue
     name: Blue Repo Hat
     lore:
     - A stylish repo hat.
     recipe:
     - "BLUE_WOOL BLUE_WOOL BLUE_WOOL"
-    - "AIR LEATHER_HELMET AIR"
     - "BLUE_WOOL AIR BLUE_WOOL"
+    - "AIR AIR AIR"
   repohat_crown_blue:
-    item_model: repohats:repohat_crown_blue
+    item_model: repohats:repohatbluecrown
     name: Blue Crown Repo Hat
     lore:
     - A repo hat with a crown.
     recipe:
-    - "GOLD_BLOCK BLUE_WOOL GOLD_BLOCK"
-    - "AIR LEATHER_HELMET AIR"
-    - "GOLD_BLOCK AIR GOLD_BLOCK"
+    - "BLUE_WOOL BLUE_WOOL BLUE_WOOL"
+    - "BLUE_WOOL GOLD_BLOCK BLUE_WOOL"
+    - "AIR AIR AIR"
   repohat_green:
-    item_model: repohats:repohat_green
+    item_model: repohats:repohatgreen
     name: Green Repo Hat
     lore:
     - A stylish repo hat.
     recipe:
     - "GREEN_WOOL GREEN_WOOL GREEN_WOOL"
-    - "AIR LEATHER_HELMET AIR"
     - "GREEN_WOOL AIR GREEN_WOOL"
+    - "AIR AIR AIR"
   repohat_crown_green:
-    item_model: repohats:repohat_crown_green
+    item_model: repohats:repohatgreencrown
     name: Green Crown Repo Hat
     lore:
     - A repo hat with a crown.
     recipe:
-    - "GOLD_BLOCK GREEN_WOOL GOLD_BLOCK"
-    - "AIR LEATHER_HELMET AIR"
-    - "GOLD_BLOCK AIR GOLD_BLOCK"
+    - "GREEN_WOOL GREEN_WOOL GREEN_WOOL"
+    - "GREEN_WOOL GOLD_BLOCK GREEN_WOOL"
+    - "AIR AIR AIR"
   repohat_pink:
-    item_model: repohats:repohat_pink
+    item_model: repohats:repohatpink
     name: Pink Repo Hat
     lore:
     - A stylish repo hat.
     recipe:
     - "PINK_WOOL PINK_WOOL PINK_WOOL"
-    - "AIR LEATHER_HELMET AIR"
     - "PINK_WOOL AIR PINK_WOOL"
+    - "AIR AIR AIR"
   repohat_crown_pink:
-    item_model: repohats:repohat_crown_pink
+    item_model: repohats:repohatpinkcrown
     name: Pink Crown Repo Hat
     lore:
     - A repo hat with a crown.
     recipe:
-    - "GOLD_BLOCK PINK_WOOL GOLD_BLOCK"
-    - "AIR LEATHER_HELMET AIR"
-    - "GOLD_BLOCK AIR GOLD_BLOCK"
+    - "PINK_WOOL PINK_WOOL PINK_WOOL"
+    - "PINK_WOOL GOLD_BLOCK PINK_WOOL"
+    - "AIR AIR AIR"
   repohat_purple:
-    item_model: repohats:repohat_purple
+    item_model: repohats:repohatpurple
     name: Purple Repo Hat
     lore:
     - A stylish repo hat.
     recipe:
     - "PURPLE_WOOL PURPLE_WOOL PURPLE_WOOL"
-    - "AIR LEATHER_HELMET AIR"
     - "PURPLE_WOOL AIR PURPLE_WOOL"
+    - "AIR AIR AIR"
   repohat_crown_purple:
-    item_model: repohats:repohat_crown_purple
+    item_model: repohats:repohatpurplecrown
     name: Purple Crown Repo Hat
     lore:
     - A repo hat with a crown.
     recipe:
-    - "GOLD_BLOCK PURPLE_WOOL GOLD_BLOCK"
-    - "AIR LEATHER_HELMET AIR"
-    - "GOLD_BLOCK AIR GOLD_BLOCK"
+    - "PURPLE_WOOL PURPLE_WOOL PURPLE_WOOL"
+    - "PURPLE_WOOL GOLD_BLOCK PURPLE_WOOL"
+    - "AIR AIR AIR"
   repohat_red:
-    item_model: repohats:repohat_red
+    item_model: repohats:repohatred
     name: Red Repo Hat
     lore:
     - A stylish repo hat.
     recipe:
     - "RED_WOOL RED_WOOL RED_WOOL"
-    - "AIR LEATHER_HELMET AIR"
     - "RED_WOOL AIR RED_WOOL"
+    - "AIR AIR AIR"
   repohat_crown_red:
-    item_model: repohats:repohat_crown_red
+    item_model: repohats:repohatredcrown
     name: Red Crown Repo Hat
     lore:
     - A repo hat with a crown.
     recipe:
-    - "GOLD_BLOCK RED_WOOL GOLD_BLOCK"
-    - "AIR LEATHER_HELMET AIR"
-    - "GOLD_BLOCK AIR GOLD_BLOCK"
+    - "RED_WOOL RED_WOOL RED_WOOL"
+    - "RED_WOOL GOLD_BLOCK RED_WOOL"
+    - "AIR AIR AIR"
   repohat_white:
-    item_model: repohats:repohat_white
+    item_model: repohats:repohatwhite
     name: White Repo Hat
     lore:
     - A stylish repo hat.
     recipe:
     - "WHITE_WOOL WHITE_WOOL WHITE_WOOL"
-    - "AIR LEATHER_HELMET AIR"
     - "WHITE_WOOL AIR WHITE_WOOL"
+    - "AIR AIR AIR"
   repohat_crown_white:
-    item_model: repohats:repohat_crown_white
+    item_model: repohats:repohatwhitecrown
     name: White Crown Repo Hat
     lore:
     - A repo hat with a crown.
     recipe:
-    - "GOLD_BLOCK WHITE_WOOL GOLD_BLOCK"
-    - "AIR LEATHER_HELMET AIR"
-    - "GOLD_BLOCK AIR GOLD_BLOCK"
+    - "WHITE_WOOL WHITE_WOOL WHITE_WOOL"
+    - "WHITE_WOOL GOLD_BLOCK WHITE_WOOL"
+    - "AIR AIR AIR"
   repohat_yellow:
-    item_model: repohats:repohat_yellow
+    item_model: repohats:repohatyellow
     name: Yellow Repo Hat
     lore:
     - A stylish repo hat.
     recipe:
     - "YELLOW_WOOL YELLOW_WOOL YELLOW_WOOL"
-    - "AIR LEATHER_HELMET AIR"
     - "YELLOW_WOOL AIR YELLOW_WOOL"
+    - "AIR AIR AIR"
   repohat_crown_yellow:
-    item_model: repohats:repohat_crown_yellow
+    item_model: repohats:repohatyellowcrown
     name: Yellow Crown Repo Hat
     lore:
     - A repo hat with a crown.
     recipe:
-    - "GOLD_BLOCK YELLOW_WOOL GOLD_BLOCK"
-    - "AIR LEATHER_HELMET AIR"
-    - "GOLD_BLOCK AIR GOLD_BLOCK"
+    - "YELLOW_WOOL YELLOW_WOOL YELLOW_WOOL"
+    - "YELLOW_WOOL GOLD_BLOCK YELLOW_WOOL"
+    - "AIR AIR AIR"
   mini_sus_black:
     item_model: mini_sus:mini_sus_black
     name: Mini Sus Black
     lore:
     - A tiny suspicious companion.
     recipe:
-    - "BLACK_WOOL REDSTONE BLACK_WOOL"
-    - "AIR ARMOR_STAND AIR"
-    - "BLACK_WOOL REDSTONE BLACK_WOOL"
+    - "AIR AIR AIR"
+    - "AIR BLACK_WOOL AIR"
+    - "AIR AIR AIR"
   mini_sus_blue:
     item_model: mini_sus:mini_sus_blue
     name: Mini Sus Blue
     lore:
     - A tiny suspicious companion.
     recipe:
-    - "BLUE_WOOL REDSTONE BLUE_WOOL"
-    - "AIR ARMOR_STAND AIR"
-    - "BLUE_WOOL REDSTONE BLUE_WOOL"
+    - "AIR AIR AIR"
+    - "AIR BLUE_WOOL AIR"
+    - "AIR AIR AIR"
   mini_sus_green:
     item_model: mini_sus:mini_sus_green
     name: Mini Sus Green
     lore:
     - A tiny suspicious companion.
     recipe:
-    - "GREEN_WOOL REDSTONE GREEN_WOOL"
-    - "AIR ARMOR_STAND AIR"
-    - "GREEN_WOOL REDSTONE GREEN_WOOL"
+    - "AIR AIR AIR"
+    - "AIR GREEN_WOOL AIR"
+    - "AIR AIR AIR"
   mini_sus_purple:
     item_model: mini_sus:mini_sus_purple
     name: Mini Sus Purple
     lore:
     - A tiny suspicious companion.
     recipe:
-    - "PURPLE_WOOL REDSTONE PURPLE_WOOL"
-    - "AIR ARMOR_STAND AIR"
-    - "PURPLE_WOOL REDSTONE PURPLE_WOOL"
+    - "AIR AIR AIR"
+    - "AIR PURPLE_WOOL AIR"
+    - "AIR AIR AIR"
   mini_sus_red:
     item_model: mini_sus:mini_sus_red
     name: Mini Sus Red
     lore:
     - A tiny suspicious companion.
     recipe:
-    - "RED_WOOL REDSTONE RED_WOOL"
-    - "AIR ARMOR_STAND AIR"
-    - "RED_WOOL REDSTONE RED_WOOL"
+    - "AIR AIR AIR"
+    - "AIR RED_WOOL AIR"
+    - "AIR AIR AIR"
   mini_sus_white:
     item_model: mini_sus:mini_sus_white
     name: Mini Sus White
     lore:
     - A tiny suspicious companion.
     recipe:
-    - "WHITE_WOOL REDSTONE WHITE_WOOL"
-    - "AIR ARMOR_STAND AIR"
-    - "WHITE_WOOL REDSTONE WHITE_WOOL"
+    - "AIR AIR AIR"
+    - "AIR WHITE_WOOL AIR"
+    - "AIR AIR AIR"
   mini_sus_yellow:
     item_model: mini_sus:mini_sus_yellow
     name: Mini Sus Yellow
     lore:
     - A tiny suspicious companion.
     recipe:
-    - "YELLOW_WOOL REDSTONE YELLOW_WOOL"
-    - "AIR ARMOR_STAND AIR"
-    - "YELLOW_WOOL REDSTONE YELLOW_WOOL"
+    - "AIR AIR AIR"
+    - "AIR YELLOW_WOOL AIR"
+    - "AIR AIR AIR"
   angel_wings:
     item_model: ax_wings_pack:angel_wings
     name: Angel Wings
     lore:
-    - Wings that let you soar.
+    - Radiant feathers from above...
     recipe:
-    - "FEATHER BLAZE_ROD FEATHER"
+    - "FEATHER DIAMOND FEATHER"
     - "GHAST_TEAR ELYTRA GHAST_TEAR"
-    - "PHANTOM_MEMBRANE AIR PHANTOM_MEMBRANE"
+    - "PHANTOM_MEMBRANE QUARTZ PHANTOM_MEMBRANE"
   astronaut_wings:
     item_model: ax_wings_pack:astronaut_wings
     name: Astronaut Wings
     lore:
-    - Wings that let you soar.
+    - Engineered for zero gravity...
     recipe:
-    - "FEATHER BLAZE_ROD FEATHER"
-    - "GHAST_TEAR ELYTRA GHAST_TEAR"
-    - "PHANTOM_MEMBRANE AIR PHANTOM_MEMBRANE"
+    - "IRON_BLOCK GLASS IRON_BLOCK"
+    - "NETHER_STAR ELYTRA NETHER_STAR"
+    - "REDSTONE_BLOCK QUARTZ_BLOCK REDSTONE_BLOCK"
   bluefire_wings:
     item_model: ax_wings_pack:bluefire_wings
     name: Bluefire Wings
     lore:
-    - Wings that let you soar.
+    - Burn colder than ice...
     recipe:
-    - "FEATHER BLAZE_ROD FEATHER"
-    - "GHAST_TEAR ELYTRA GHAST_TEAR"
-    - "PHANTOM_MEMBRANE AIR PHANTOM_MEMBRANE"
+    - "SOUL_TORCH BLUE_ICE SOUL_TORCH"
+    - "SOUL_FIRE_CHARGE ELYTRA SOUL_FIRE_CHARGE"
+    - "BLAZE_POWDER SOUL_SAND BLAZE_POWDER"
   brown_wings:
     item_model: ax_wings_pack:brown_wings
     name: Brown Wings
     lore:
-    - Wings that let you soar.
+    - Earthy feathers from deep roots...
     recipe:
-    - "FEATHER BLAZE_ROD FEATHER"
-    - "GHAST_TEAR ELYTRA GHAST_TEAR"
-    - "PHANTOM_MEMBRANE AIR PHANTOM_MEMBRANE"
+    - "COARSE_DIRT OAK_LEAVES COARSE_DIRT"
+    - "LEATHER ELYTRA LEATHER"
+    - "BROWN_DYE MUD BROWN_DYE"
   butterfly_wings:
     item_model: ax_wings_pack:butterfly_wings
     name: Butterfly Wings
     lore:
-    - Wings that let you soar.
+    - Flutter in vibrant silence...
     recipe:
-    - "FEATHER BLAZE_ROD FEATHER"
-    - "GHAST_TEAR ELYTRA GHAST_TEAR"
-    - "PHANTOM_MEMBRANE AIR PHANTOM_MEMBRANE"
+    - "PINK_DYE YELLOW_DYE BLUE_DYE"
+    - "GLASS_PANE ELYTRA GLASS_PANE"
+    - "FLOWER_POT HONEY_BLOCK FLOWER_POT"
   demon_wings:
     item_model: ax_wings_pack:demon_wings
     name: Demon Wings
     lore:
-    - Wings that let you soar.
+    - Forged in shadows below...
     recipe:
-    - "FEATHER BLAZE_ROD FEATHER"
-    - "GHAST_TEAR ELYTRA GHAST_TEAR"
-    - "PHANTOM_MEMBRANE AIR PHANTOM_MEMBRANE"
+    - "NETHER_BRICK LAVA_BUCKET NETHER_BRICK"
+    - "WITHER_ROSE ELYTRA WITHER_ROSE"
+    - "MAGMA_CREAM OBSIDIAN MAGMA_CREAM"
   dragon_wings:
     item_model: ax_wings_pack:dragon_wings
     name: Dragon Wings
     lore:
-    - Wings that let you soar.
+    - From scales to sky...
     recipe:
-    - "FEATHER BLAZE_ROD FEATHER"
-    - "GHAST_TEAR ELYTRA GHAST_TEAR"
-    - "PHANTOM_MEMBRANE AIR PHANTOM_MEMBRANE"
+    - "OBSIDIAN EMERALD OBSIDIAN"
+    - "DRAGON_HEAD ELYTRA DRAGON_HEAD"
+    - "OBSIDIAN NETHER_STAR OBSIDIAN"
   eagle_wings:
     item_model: ax_wings_pack:eagle_wings
     name: Eagle Wings
     lore:
-    - Wings that let you soar.
+    - Swoop from towering cliffs...
     recipe:
-    - "FEATHER BLAZE_ROD FEATHER"
-    - "GHAST_TEAR ELYTRA GHAST_TEAR"
-    - "PHANTOM_MEMBRANE AIR PHANTOM_MEMBRANE"
+    - "FEATHER HAY_BLOCK FEATHER"
+    - "GOLD_BLOCK ELYTRA GOLD_BLOCK"
+    - "LEATHER CHICKEN LEATHER"
   golden_wings:
     item_model: ax_wings_pack:golden_wings
     name: Golden Wings
     lore:
-    - Wings that let you soar.
+    - Gleam in sunlight’s glory...
     recipe:
-    - "FEATHER BLAZE_ROD FEATHER"
-    - "GHAST_TEAR ELYTRA GHAST_TEAR"
-    - "PHANTOM_MEMBRANE AIR PHANTOM_MEMBRANE"
+    - "GOLD_BLOCK SUNFLOWER GOLD_BLOCK"
+    - "GOLDEN_CARROT ELYTRA GOLDEN_CARROT"
+    - "GOLD_INGOT HONEYCOMB GOLD_INGOT"
   ocean_wings:
     item_model: ax_wings_pack:ocean_wings
     name: Ocean Wings
     lore:
-    - Wings that let you soar.
+    - Carried by the tide...
     recipe:
-    - "FEATHER BLAZE_ROD FEATHER"
-    - "GHAST_TEAR ELYTRA GHAST_TEAR"
-    - "PHANTOM_MEMBRANE AIR PHANTOM_MEMBRANE"
+    - "PRISMARINE CRYSTALS PRISMARINE"
+    - "HEART_OF_THE_SEA ELYTRA HEART_OF_THE_SEA"
+    - "SEA_LANTERN KELP SEA_LANTERN"
   phoenix_wings:
     item_model: ax_wings_pack:phoenix_wings
     name: Phoenix Wings
     lore:
-    - Wings that let you soar.
+    - Ashes mark rebirth...
     recipe:
-    - "FEATHER BLAZE_ROD FEATHER"
-    - "GHAST_TEAR ELYTRA GHAST_TEAR"
-    - "PHANTOM_MEMBRANE AIR PHANTOM_MEMBRANE"
+    - "MAGMA_BLOCK FIRE_CHARGE MAGMA_BLOCK"
+    - "BLAZE_ROD ELYTRA BLAZE_ROD"
+    - "GHAST_TEAR REDSTONE_BLOCK GHAST_TEAR"
   purple_wings:
     item_model: ax_wings_pack:purple_wings
     name: Purple Wings
     lore:
-    - Wings that let you soar.
+    - Twilight dreams awaken...
     recipe:
-    - "FEATHER BLAZE_ROD FEATHER"
-    - "GHAST_TEAR ELYTRA GHAST_TEAR"
-    - "PHANTOM_MEMBRANE AIR PHANTOM_MEMBRANE"
+    - "PURPLE_DYE AMETHYST_SHARD PURPLE_DYE"
+    - "SHULKER_SHELL ELYTRA SHULKER_SHELL"
+    - "CHORUS_FRUIT ENDER_PEARL CHORUS_FRUIT"

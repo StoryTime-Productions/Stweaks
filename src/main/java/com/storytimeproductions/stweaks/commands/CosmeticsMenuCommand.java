@@ -207,13 +207,22 @@ public class CosmeticsMenuCommand implements CommandExecutor, Listener {
   private static ItemStack createCosmeticItem(Cosmetic cosmetic, int returnPage) {
     ItemStack item = new ItemStack(Material.CARVED_PUMPKIN); // Assuming model overrides this
     ItemMeta meta = item.getItemMeta();
-    meta.displayName(Component.text(cosmetic.getDisplayName(), NamedTextColor.GREEN));
+    // Name: not italic
+    meta.displayName(
+        Component.text(cosmetic.getDisplayName(), NamedTextColor.GREEN)
+            .decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false));
+    // Lore: italic
     meta.lore(
         cosmetic.getLore().stream()
             .flatMap(
                 line ->
                     wrapLoreLine(line, 50).stream()
-                        .map(wrapped -> Component.text(wrapped, NamedTextColor.WHITE)))
+                        .map(
+                            wrapped ->
+                                Component.text(wrapped, NamedTextColor.WHITE)
+                                    .decoration(
+                                        net.kyori.adventure.text.format.TextDecoration.ITALIC,
+                                        true)))
             .toList());
 
     String itemModel = cosmetic.getItemModel();

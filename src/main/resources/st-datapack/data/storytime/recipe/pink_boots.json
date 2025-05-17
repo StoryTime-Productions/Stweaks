@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "A C",
+        "C A",
+        "   "
+    ],
+    "key": {
+        "A": "minecraft:pink_dye",
+        "C": "minecraft:diamond"
+    },
+    "result": {
+        "id": "minecraft:diamond_boots",
+        "components": {
+            "minecraft:item_model": "storytime:pink_boots",
+            "minecraft:item_name": "{\"text\":\"Rose Quartz Boots\"}"
+        },
+        "count": 1
+    }
+}

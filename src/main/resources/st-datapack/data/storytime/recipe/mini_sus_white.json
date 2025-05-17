@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        " B "
+    ],
+    "key": {
+        "B": "minecraft:white_wool"
+    },
+    "result": {
+        "id": "minecraft:paper",
+        "components": {
+            "minecraft:item_model": "mini_sus:mini_sus_white",
+            "minecraft:item_name": "{\"text\":\"White Crewmate\"}",
+            "minecraft:equippable": {
+                "slot": "head"
+            }
+        },
+        "count": 1
+    }
+}

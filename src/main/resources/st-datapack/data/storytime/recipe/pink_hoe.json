@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "AA ",
+        " C ",
+        " C "
+    ],
+    "key": {
+        "A": "minecraft:pink_dye",
+        "C": "minecraft:diamond"
+    },
+    "result": {
+        "id": "minecraft:diamond_hoe",
+        "components": {
+            "minecraft:item_model": "storytime:pink_hoe",
+            "minecraft:item_name": "{\"text\":\"Rose Quartz Hoe\"}"
+        },
+        "count": 1
+    }
+}

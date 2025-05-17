@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "AAA",
+        "ABA",
+        "AAA"
+    ],
+    "key": {
+        "A": "minecraft:pink_dye",
+        "B": "minecraft:ender_pearl"
+    },
+    "result": {
+        "id": "minecraft:ender_pearl",
+        "components": {
+            "minecraft:item_model": "storytime:pink_enderpearl",
+            "minecraft:item_name": "{\"text\":\"Rose Quartz Enderpearl\"}"
+        },
+        "count": 1
+    }
+}

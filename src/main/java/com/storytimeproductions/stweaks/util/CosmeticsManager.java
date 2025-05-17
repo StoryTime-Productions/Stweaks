@@ -44,6 +44,10 @@ public class CosmeticsManager {
    * are skipped.
    */
   public void loadCosmetics() {
+    cosmetics.clear();
+
+    loadCosmeticsConfig();
+
     for (String id : config.getConfigurationSection("cosmetics").getKeys(false)) {
       String path = "cosmetics." + id;
 

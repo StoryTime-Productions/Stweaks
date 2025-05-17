@@ -1,0 +1,21 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "BBB",
+        "B B"
+    ],
+    "key": {
+        "B": "minecraft:purple_wool"
+    },
+    "result": {
+        "id": "minecraft:paper",
+        "components": {
+            "minecraft:item_model": "repohats:repohatpurple",
+            "minecraft:item_name": "{\"text\":\"Purple Repo Hat\"}",
+            "minecraft:equippable": {
+                "slot": "head"
+            }
+        },
+        "count": 1
+    }
+}

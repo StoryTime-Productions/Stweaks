@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "ABA",
+        "B B",
+        "A B"
+    ],
+    "key": {
+        "A": "minecraft:pink_dye",
+        "B": "minecraft:diamond"
+    },
+    "result": {
+        "id": "minecraft:diamond_leggings",
+        "components": {
+            "minecraft:item_model": "storytime:pink_leggings",
+            "minecraft:item_name": "{\"text\":\"Rose Quartz Leggings\"}"
+        },
+        "count": 1
+    }
+}

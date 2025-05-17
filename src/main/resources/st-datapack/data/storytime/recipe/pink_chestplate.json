@@ -1,0 +1,21 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "A A",
+        "CAC",
+        "ADA"
+    ],
+    "key": {
+        "A": "minecraft:pink_dye",
+        "C": "minecraft:diamond",
+        "D": "minecraft:diamond"
+    },
+    "result": {
+        "id": "minecraft:diamond_chestplate",
+        "components": {
+            "minecraft:item_model": "storytime:pink_chestplate",
+            "minecraft:item_name": "{\"text\":\"Rose Quartz Chestplate\"}"
+        },
+        "count": 1
+    }
+}
