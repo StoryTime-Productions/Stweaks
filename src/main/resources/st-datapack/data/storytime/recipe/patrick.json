@@ -1,0 +1,24 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "KPK",
+        "SQS",
+        "KPK"
+    ],
+    "key": {
+        "K": "minecraft:kelp",
+        "P": "minecraft:pink_dye",
+        "S": "minecraft:sand",
+        "Q": "minecraft:sea_pickle"
+    },
+    "result": {
+        "item": "hotbar_pets:patrick",
+        "id": "kelp",
+        "components": {
+            "minecraft:item_model": "hotbar_pets:patrick",
+            "minecraft:item_name": "{\"text\":\"Patrick Pet\"}"
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

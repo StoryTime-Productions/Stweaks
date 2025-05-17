@@ -1,0 +1,22 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "BBB",
+        "BGB"
+    ],
+    "key": {
+        "B": "minecraft:white_wool",
+        "G": "minecraft:gold_block"
+    },
+    "result": {
+        "id": "minecraft:paper",
+        "components": {
+            "minecraft:item_model": "repohats:repohatwhitecrown",
+            "minecraft:item_name": "{\"text\":\"White Crown Repo Hat\"}",
+            "minecraft:equippable": {
+                "slot": "head"
+            }
+        },
+        "count": 1
+    }
+}

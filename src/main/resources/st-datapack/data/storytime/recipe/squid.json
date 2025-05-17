@@ -1,0 +1,24 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "IKI",
+        "WBW",
+        "IKI"
+    ],
+    "key": {
+        "I": "minecraft:ink_sac",
+        "K": "minecraft:kelp",
+        "W": "minecraft:water_bucket",
+        "B": "minecraft:black_dye"
+    },
+    "result": {
+        "item": "hotbar_pets:squid",
+        "id": "ink_sac",
+        "components": {
+            "minecraft:item_model": "hotbar_pets:squid",
+            "minecraft:item_name": "{\"text\":\"Squid Pet\"}"
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

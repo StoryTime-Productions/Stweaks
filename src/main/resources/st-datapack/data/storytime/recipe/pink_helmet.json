@@ -1,0 +1,19 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "ABA",
+        "B B"
+    ],
+    "key": {
+        "A": "minecraft:pink_dye",
+        "B": "minecraft:diamond"
+    },
+    "result": {
+        "id": "minecraft:diamond_helmet",
+        "components": {
+            "minecraft:item_model": "storytime:pink_helmet",
+            "minecraft:item_name": "{\"text\":\"Rose Quartz Helmet\"}"
+        },
+        "count": 1
+    }
+}

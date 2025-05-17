@@ -59,6 +59,22 @@ public class PlaytimeTracker {
   }
 
   /**
+   * Resets the recorded playtime for a specific player.
+   *
+   * <p>This method retrieves the {@link PlaytimeData} associated with the given player's UUID and,
+   * if available, resets their tracked playtime back to zero. It has no effect if no playtime data
+   * is currently stored for the player.
+   *
+   * @param playerUuid The UUID of the player whose playtime should be reset.
+   */
+  public static void resetPlaytime(UUID playerUuid) {
+    PlaytimeData data = getData(playerUuid);
+    if (data != null) {
+      data.reset();
+    }
+  }
+
+  /**
    * Sets the AFK status for a specific player.
    *
    * <p>This method updates the AFK status for a player, marking them as either AFK or not AFK. If

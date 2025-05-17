@@ -30,6 +30,16 @@ public class PlaytimeData {
   }
 
   /**
+   * Resets the total tracked playtime to zero.
+   *
+   * <p>This method clears the recorded number of seconds the player has played, effectively
+   * resetting their playtime progress for the current tracking period.
+   */
+  public void reset() {
+    this.secondsPlayed = 0;
+  }
+
+  /**
    * Adds seconds to the player's total time played.
    *
    * @param seconds The seconds played to add.

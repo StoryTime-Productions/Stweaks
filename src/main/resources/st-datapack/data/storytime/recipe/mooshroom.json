@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "RBR",
+        "MMM",
+        "RBR"
+    ],
+    "key": {
+        "R": "minecraft:red_mushroom",
+        "B": "minecraft:bowl",
+        "M": "minecraft:brown_mushroom"
+    },
+    "result": {
+        "item": "hotbar_pets:mooshroom",
+        "id": "red_mushroom",
+        "components": {
+            "minecraft:item_model": "hotbar_pets:mooshroom",
+            "minecraft:item_name": "{\"text\":\"Mooshroom Pet\"}"
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

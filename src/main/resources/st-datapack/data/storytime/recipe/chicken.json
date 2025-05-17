@@ -1,0 +1,25 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "FEF",
+        "WHY",
+        "FEF"
+    ],
+    "key": {
+        "F": "minecraft:feather",
+        "E": "minecraft:egg",
+        "W": "minecraft:wheat_seeds",
+        "H": "minecraft:hay_block",
+        "Y": "minecraft:egg"
+    },
+    "result": {
+        "item": "hotbar_pets:chicken",
+        "id": "wheat_seeds",
+        "components": {
+            "minecraft:item_model": "hotbar_pets:chicken",
+            "minecraft:item_name": "{\"text\":\"Chicken Pet\"}"
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

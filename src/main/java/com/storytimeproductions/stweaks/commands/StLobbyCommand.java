@@ -74,9 +74,8 @@ public class StLobbyCommand implements CommandExecutor {
               Location location = new Location(world, x, y, z, yaw, pitch);
               player.teleport(location);
             },
-            10L);
+            5L);
 
-    player.sendMessage("Teleporting you to the lobby...");
     return true;
   }
 }

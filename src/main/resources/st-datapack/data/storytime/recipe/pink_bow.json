@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        " BC",
+        "B C",
+        " BC"
+    ],
+    "key": {
+        "B": "minecraft:pink_dye",
+        "C": "minecraft:diamond"
+    },
+    "result": {
+        "id": "minecraft:bow",
+        "components": {
+            "minecraft:item_model": "storytime:pink_bow",
+            "minecraft:item_name": "{\"text\":\"Rose Quartz Bow\"}"
+        },
+        "count": 1
+    }
+}

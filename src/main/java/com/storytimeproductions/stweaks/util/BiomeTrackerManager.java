@@ -139,7 +139,7 @@ public class BiomeTrackerManager {
    * @param key The biome key (e.g., "minecraft/desert").
    * @return The formatted biome name (e.g., "Desert").
    */
-  private String formatBiomeName(String key) {
+  public static String formatBiomeName(String key) {
     String rawName = key.toLowerCase();
 
     // Use the part after '/' if present, otherwise after ':'

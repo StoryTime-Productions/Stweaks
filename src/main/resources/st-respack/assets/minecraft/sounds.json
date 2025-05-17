@@ -1,10 +1,257 @@
 {
 	"you_are_my_sunshine": {
 		"sounds": [
-		{
-			"name": "themes/you_are_my_sunshine",
-			"stream": "true"
-		}
+			{
+				"name": "themes/you_are_my_sunshine",
+				"stream": "true"
+			}
+		]
+	},
+	"gible": {
+		"sounds": [
+			{
+				"name": "hotbar_pets:gible/gible_burp1"
+			},
+			{
+				"name": "hotbar_pets:gible/gible_burp2"
+			},
+			{
+				"name": "hotbar_pets:gible/gible_burp3"
+			}
+		]
+	},
+	"husky": {
+		"sounds": [
+			{
+				"name": "hotbar_pets:husky/husky_burp1"
+			},
+			{
+				"name": "hotbar_pets:husky/husky_burp2"
+			},
+			{
+				"name": "hotbar_pets:husky/husky_burp3"
+			}
+		]
+	},
+	"kfc": {
+		"sounds": [
+			{
+				"name": "hotbar_pets:kfc/kfc_burp1"
+			},
+			{
+				"name": "hotbar_pets:kfc/kfc_burp2"
+			},
+			{
+				"name": "hotbar_pets:kfc/kfc_burp3"
+			}
+		]
+	},
+	"mcdonalds": {
+		"sounds": [
+			{
+				"name": "hotbar_pets:mcdonalds/mcdonalds_burp1"
+			},
+			{
+				"name": "hotbar_pets:mcdonalds/mcdonalds_burp2"
+			},
+			{
+				"name": "hotbar_pets:mcdonalds/mcdonalds_burp3"
+			}
+		]
+	},
+	"nautilus": {
+		"sounds": [
+			{
+				"name": "hotbar_pets:nautilus/nautilus_burp1"
+			},
+			{
+				"name": "hotbar_pets:nautilus/nautilus_burp2"
+			},
+			{
+				"name": "hotbar_pets:nautilus/nautilus_burp3"
+			}
+		]
+	},
+	"patrick": {
+		"sounds": [
+			{
+				"name": "hotbar_pets:patrick/patrick_burp1"
+			},
+			{
+				"name": "hotbar_pets:patrick/patrick_burp2"
+			},
+			{
+				"name": "hotbar_pets:patrick/patrick_burp3"
+			}
+		]
+	},
+	"seal": {
+		"sounds": [
+			{
+				"name": "hotbar_pets:seal/seal_burp1"
+			},
+			{
+				"name": "hotbar_pets:seal/seal_burp2"
+			},
+			{
+				"name": "hotbar_pets:seal/seal_burp3"
+			}
+		]
+	},
+	"spider": {
+		"sounds": [
+			{
+				"name": "hotbar_pets:spider/spider_burp1"
+			},
+			{
+				"name": "hotbar_pets:spider/spider_burp2"
+			},
+			{
+				"name": "hotbar_pets:spider/spider_burp3"
+			}
+		]
+	},
+	"swablu": {
+		"sounds": [
+			{
+				"name": "hotbar_pets:swablu/swablu_burp1"
+			},
+			{
+				"name": "hotbar_pets:swablu/swablu_burp2"
+			},
+			{
+				"name": "hotbar_pets:swablu/swablu_burp3"
+			}
+		]
+	},
+	"train": {
+		"sounds": [
+			{
+				"name": "hotbar_pets:train/train_burp1"
+			},
+			{
+				"name": "hotbar_pets:train/train_burp2"
+			},
+			{
+				"name": "hotbar_pets:train/train_burp3"
+			}
+		]
+	},
+	"shark": {
+		"sounds": [
+			{
+				"name": "hotbar_pets:shark/shark_burp1"
+			},
+			{
+				"name": "hotbar_pets:shark/shark_burp2"
+			},
+			{
+				"name": "hotbar_pets:shark/shark_burp3"
+			}
+		]
+	},
+	"chick": {
+		"sounds": [
+			{
+				"name": "hotbar_pets:chick/chick_burp1"
+			},
+			{
+				"name": "hotbar_pets:chick/chick_burp2"
+			},
+			{
+				"name": "hotbar_pets:chick/chick_burp3"
+			}
+		]
+	},
+	"squid": {
+		"sounds": [
+			{
+				"name": "hotbar_pets:squid/squid_burp1"
+			},
+			{
+				"name": "hotbar_pets:squid/squid_burp2"
+			},
+			{
+				"name": "hotbar_pets:squid/squid_burp3"
+			}
+		]
+	},
+	"pig": {
+		"sounds": [
+			{
+				"name": "hotbar_pets:pig/pig_burp1"
+			},
+			{
+				"name": "hotbar_pets:pig/pig_burp2"
+			},
+			{
+				"name": "hotbar_pets:pig/pig_burp3"
+			}
+		]
+	},
+	"sheep": {
+		"sounds": [
+			{
+				"name": "hotbar_pets:sheep/sheep_burp1"
+			},
+			{
+				"name": "hotbar_pets:sheep/sheep_burp2"
+			},
+			{
+				"name": "hotbar_pets:sheep/sheep_burp3"
+			}
+		]
+	},
+	"lavender": {
+		"sounds": [
+			{
+				"name": "hotbar_pets:lavender/lavender_burp1"
+			},
+			{
+				"name": "hotbar_pets:lavender/lavender_burp2"
+			},
+			{
+				"name": "hotbar_pets:lavender/lavender_burp3"
+			}
+		]
+	},
+	"chicken": {
+		"sounds": [
+			{
+				"name": "hotbar_pets:chicken/chicken_burp1"
+			},
+			{
+				"name": "hotbar_pets:chicken/chicken_burp2"
+			},
+			{
+				"name": "hotbar_pets:chicken/chicken_burp3"
+			}
+		]
+	},
+	"iron_golem": {
+		"sounds": [
+			{
+				"name": "iron_golem/iron_golem_burp1"
+			},
+			{
+				"name": "iron_golem/iron_golem_burp2"
+			},
+			{
+				"name": "iron_golem/iron_golem_burp3"
+			}
+		]
+	},
+	"mooshroom": {
+		"sounds": [
+			{
+				"name": "hotbar_pets:mooshroom/mooshroom_burp1"
+			},
+			{
+				"name": "hotbar_pets:mooshroom/mooshroom_burp2"
+			},
+			{
+				"name": "hotbar_pets:mooshroom/mooshroom_burp3"
+			}
 		]
 	}
 }

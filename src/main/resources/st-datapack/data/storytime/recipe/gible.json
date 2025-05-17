@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "SCS",
+        "CDC",
+        "SCS"
+    ],
+    "key": {
+        "S": "minecraft:stone",
+        "C": "minecraft:cod",
+        "D": "minecraft:diamond"
+    },
+    "result": {
+        "item": "hotbar_pets:gible",
+        "id": "paper",
+        "components": {
+            "minecraft:item_model": "hotbar_pets:gible",
+            "minecraft:item_name": "{\"text\":\"Gible Pet\"}"
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

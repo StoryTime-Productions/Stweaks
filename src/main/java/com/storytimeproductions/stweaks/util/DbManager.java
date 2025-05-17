@@ -49,9 +49,20 @@ public class DbManager {
         );
         """;
 
+    String questCompletionSql =
+        """
+        CREATE TABLE IF NOT EXISTS completed_quests (
+            uuid TEXT NOT NULL,
+            quest_id TEXT NOT NULL,
+            completion_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (uuid, quest_id)
+        );
+        """;
+
     try (Statement stmt = connection.createStatement()) {
       stmt.execute(playtimeSql);
       stmt.execute(biomeSql);
+      stmt.execute(questCompletionSql);
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -63,6 +74,14 @@ public class DbManager {
    * @return The active Connection object.
    */
   public Connection getConnection() {
+    try {
+      if (connection == null || connection.isClosed()) {
+        connection = DriverManager.getConnection(DATABASE_URL);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
     return connection;
   }
 

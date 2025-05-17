@@ -43,13 +43,14 @@ public class PlayerActivityListener implements Listener {
       public void run() {
         long now = System.currentTimeMillis();
         for (Player player : Bukkit.getOnlinePlayers()) {
+          TablistManager.updateTablist(player, SettingsManager.getWeekendMultiplier());
           UUID uuid = player.getUniqueId();
           long lastActive = lastMovement.getOrDefault(uuid, now);
           boolean afk = (now - lastActive) > AFK_THRESHOLD_MILLIS;
           PlaytimeTracker.setAfk(uuid, afk);
         }
       }
-    }.runTaskTimer(plugin, 0L, 20 * 30); // Check every 30 seconds
+    }.runTaskTimer(plugin, 0L, 20); // Check every 30 seconds
   }
 
   /**

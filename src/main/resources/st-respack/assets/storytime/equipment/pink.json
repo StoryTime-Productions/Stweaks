@@ -1,0 +1,19 @@
+{
+    "layers": {
+        "humanoid": [
+            {
+                "texture": "storytime:pink_armor_layer_1"
+            }
+        ],
+        "humanoid_leggings": [
+            {
+                "texture": "storytime:pink_armor_layer_2"
+            }
+        ],
+        "horse_body": [
+            {   
+                "texture": "storytime:horse_armor_diamond"
+            }
+        ]
+    }
+}

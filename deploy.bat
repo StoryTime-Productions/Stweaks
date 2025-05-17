@@ -98,12 +98,22 @@ for %%f in ("!PLUGINS_PATH!\*Stweaks*.jar") do (
 
 REM === Step 3: Move latest JAR to plugins ===
 echo [INFO] Searching for most recent jar in !LIBS_PATH!...
+
 set latestJar=
 for /f "delims=" %%f in ('dir "!LIBS_PATH!\*.jar" /b /o-d') do (
     set latestJar=%%f
     goto :foundJar
 )
+
 :foundJar
+
+REM Now delete all other JAR files except the latest one
+echo [INFO] Deleting all JAR files except the latest: !latestJar!
+for /f "delims=" %%f in ('dir "!LIBS_PATH!\*.jar" /b') do (
+    if "%%f" neq "!latestJar!" del /q "!LIBS_PATH!\%%f"
+)
+
+echo [INFO] Finished deleting old JAR files.
 
 if not defined latestJar (
     echo [ERROR] No jar found in !LIBS_PATH!

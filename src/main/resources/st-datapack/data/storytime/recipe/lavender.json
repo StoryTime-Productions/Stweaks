@@ -1,0 +1,24 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "GPG",
+        "FAF",
+        "GPG"
+    ],
+    "key": {
+        "G": "minecraft:glass_bottle",
+        "P": "minecraft:purple_dye",
+        "F": "minecraft:flower_pot",
+        "A": "minecraft:allium"
+    },
+    "result": {
+        "item": "hotbar_pets:lavender",
+        "id": "flower_pot",
+        "components": {
+            "minecraft:item_model": "hotbar_pets:lavender",
+            "minecraft:item_name": "{\"text\":\"Lavender Pet\"}"
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

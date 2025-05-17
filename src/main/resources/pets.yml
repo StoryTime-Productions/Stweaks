@@ -1,0 +1,231 @@
+pets:
+  gible:
+    subtitle: "Tiny land shark"
+    perk: "effect:speed"
+    burp_sounds: [ "hotbar_pets:gible_burp1", "hotbar_pets:gible_burp2", "hotbar_pets:gible_burp3" ]
+    quotes: [ "Chomp!", "Gible gible!", "Snack time!" ]
+    food: "minecraft:cod"
+    recipe:
+    - [ "minecraft:stone", "minecraft:cod", "minecraft:stone" ]
+    - [ "minecraft:cod", "minecraft:diamond", "minecraft:cod" ]
+    - [ "minecraft:stone", "minecraft:cod", "minecraft:stone" ]
+
+  hamster:
+    subtitle: "Cute wheel spinner"
+    perk: "effect:speed"
+    burp_sounds: [ "hotbar_pets:hamster_burp1", "hotbar_pets:hamster_burp2", "hotbar_pets:hamster_burp3" ]
+    quotes: [ "Squeak squeak!", "Nom nom!", "I'm so fluffy!" ]
+    food: "minecraft:wheat_seeds"
+    recipe:
+    - [ "minecraft:wheat_seeds", "minecraft:string", "minecraft:wheat_seeds" ]
+    - [ "minecraft:hay_block", "minecraft:carrot", "minecraft:hay_block" ]
+    - [ "minecraft:wheat_seeds", "minecraft:string", "minecraft:wheat_seeds" ]
+
+  husky:
+    subtitle: "Loyal winter pup"
+    perk: "effect:resistance"
+    burp_sounds: [ "hotbar_pets:husky_burp1", "hotbar_pets:husky_burp2", "hotbar_pets:husky_burp3" ]
+    quotes: [ "Awooga!", "Woof!", "I will never leave your side!" ]
+    food: "minecraft:bone"
+    recipe:
+    - [ "minecraft:snowball", "minecraft:bone", "minecraft:snowball" ]
+    - [ "minecraft:ice", "minecraft:lead", "minecraft:ice" ]
+    - [ "minecraft:snowball", "minecraft:bone", "minecraft:snowball" ]
+
+  kfc:
+    subtitle: "Fast food chicken"
+    perk: "item:cooked_chicken"
+    burp_sounds: [ "hotbar_pets:kfc_burp1", "hotbar_pets:kfc_burp2", "hotbar_pets:kfc_burp3" ]
+    quotes: [ "Crispy!", "Extra spicy!", "It’s finger-lickin’ good!" ]
+    food: "minecraft:raw_chicken"
+    recipe:
+    - [ "minecraft:bread", "minecraft:raw_chicken", "minecraft:bread" ]
+    - [ "minecraft:coal", "minecraft:furnace", "minecraft:coal" ]
+    - [ "minecraft:bread", "minecraft:raw_chicken", "minecraft:bread" ]
+
+  mcdonalds:
+    subtitle: "Golden arches snack"
+    perk: "effect:saturation"
+    burp_sounds: [ "hotbar_pets:mcd_burp1", "hotbar_pets:mcd_burp2", "hotbar_pets:mcd_burp3" ]
+    quotes: [ "I’m lovin’ it!", "Big Back energy.", "Minecraft Happy Meal Toy!" ]
+    food: "minecraft:golden_apple"
+    recipe:
+    - [ "minecraft:bread", "minecraft:gold_nugget", "minecraft:bread" ]
+    - [ "minecraft:beef", "minecraft:golden_apple", "minecraft:beef" ]
+    - [ "minecraft:bread", "minecraft:gold_nugget", "minecraft:bread" ]
+
+  nautilus:
+    subtitle: "Spiral sea dweller"
+    perk: "effect:water_breathing"
+    burp_sounds: [ "hotbar_pets:nautilus_burp1", "hotbar_pets:nautilus_burp2", "hotbar_pets:nautilus_burp3" ]
+    quotes: [ "Blub blub...", "I'm doing my best.", "Current’s strong today." ]
+    food: "minecraft:nautilus_shell"
+    recipe:
+    - [ "minecraft:prismarine", "minecraft:nautilus_shell", "minecraft:prismarine" ]
+    - [ "minecraft:kelp", "minecraft:water_bucket", "minecraft:kelp" ]
+    - [ "minecraft:prismarine", "minecraft:nautilus_shell", "minecraft:prismarine" ]
+
+  patrick:
+    subtitle: "Pink sea buddy"
+    perk: "effect:night_vision"
+    burp_sounds: [ "hotbar_pets:patrick_burp1", "hotbar_pets:patrick_burp2", "hotbar_pets:patrick_burp3" ]
+    quotes: [ "Is mayonnaise an instrument?", "I'm ready!", "Under the rock again." ]
+    food: "minecraft:kelp"
+    recipe:
+    - [ "minecraft:kelp", "minecraft:pink_dye", "minecraft:kelp" ]
+    - [ "minecraft:sand", "minecraft:sea_pickle", "minecraft:sand" ]
+    - [ "minecraft:kelp", "minecraft:pink_dye", "minecraft:kelp" ]
+
+  seal:
+    subtitle: "Fishy flopper"
+    perk: "effect:dolphins_grace"
+    burp_sounds: [ "hotbar_pets:seal_burp1", "hotbar_pets:seal_burp2", "hotbar_pets:seal_burp3" ]
+    quotes: [ "Er, er, er!", "Seal of approval!", "Seal or no seal!" ]
+    food: "minecraft:salmon"
+    recipe:
+    - [ "minecraft:snow_block", "minecraft:salmon", "minecraft:snow_block" ]
+    - [ "minecraft:ice", "minecraft:lead", "minecraft:ice" ]
+    - [ "minecraft:snow_block", "minecraft:salmon", "minecraft:snow_block" ]
+
+  spider:
+    subtitle: "Wall crawler"
+    perk: "effect:jump_boost"
+    burp_sounds: [ "hotbar_pets:spider_burp1", "hotbar_pets:spider_burp2", "hotbar_pets:spider_burp3" ]
+    quotes: [ "Creepy crawly!", "Hang in there!", "Eight legs, no problem." ]
+    food: "minecraft:beef"
+    recipe:
+    - [ "minecraft:string", "minecraft:beef", "minecraft:string" ]
+    - [ "minecraft:cobweb", "minecraft:spider_eye", "minecraft:cobweb" ]
+    - [ "minecraft:string", "minecraft:beef", "minecraft:string" ]
+
+  swablu:
+    subtitle: "Cloud-winged chirper"
+    perk: "effect:slow_falling"
+    burp_sounds: [ "hotbar_pets:swablu_burp1", "hotbar_pets:swablu_burp2", "hotbar_pets:swablu_burp3" ]
+    quotes: [ "Fluff time!", "Chirp chirp!", "Light as air." ]
+    food: "minecraft:sweet_berries"
+    recipe:
+    - [ "minecraft:white_wool", "minecraft:sweet_berries", "minecraft:white_wool" ]
+    - [ "minecraft:feather", "minecraft:phantom_membrane", "minecraft:feather" ]
+    - [ "minecraft:white_wool", "minecraft:sweet_berries", "minecraft:white_wool" ]
+
+  train:
+    subtitle: "Steam-powered ride"
+    perk: "effect:knockback_resistance"
+    burp_sounds: [ "hotbar_pets:train_burp1", "hotbar_pets:train_burp2", "hotbar_pets:train_burp3" ]
+    quotes: [ "All aboard!", "Next stop: Narnia!", "Choo choo!" ]
+    food: "minecraft:coal"
+    recipe:
+    - [ "minecraft:iron_ingot", "minecraft:coal", "minecraft:iron_ingot" ]
+    - [ "minecraft:minecart", "minecraft:redstone", "minecraft:minecart" ]
+    - [ "minecraft:iron_ingot", "minecraft:coal", "minecraft:iron_ingot" ]
+
+  shark:
+    subtitle: "Ocean predator"
+    perk: "effect:strength"
+    burp_sounds: [ "hotbar_pets:shark_burp1", "hotbar_pets:shark_burp2", "hotbar_pets:shark_burp3" ]
+    quotes: [ "Dun dun dun dun dun dun...", "Bite mode!", "Top of the food chain." ]
+    food: "minecraft:tropical_fish"
+    recipe:
+    - [ "minecraft:prismarine_shard", "minecraft:salmon", "minecraft:prismarine_shard" ]
+    - [ "minecraft:trident", "minecraft:blue_dye", "minecraft:trident" ]
+    - [ "minecraft:prismarine_shard", "minecraft:salmon", "minecraft:prismarine_shard" ]
+
+  chick:
+    subtitle: "Tiny peeper"
+    perk: "effect:luck"
+    burp_sounds: [ "hotbar_pets:chick_burp1", "hotbar_pets:chick_burp2", "hotbar_pets:chick_burp3" ]
+    quotes: [ "Peep!", "So smol.", "Cluck luck!" ]
+    food: "minecraft:seeds"
+    recipe:
+    - [ "minecraft:feather", "minecraft:seeds", "minecraft:feather" ]
+    - [ "minecraft:egg", "minecraft:yellow_dye", "minecraft:egg" ]
+    - [ "minecraft:feather", "minecraft:seeds", "minecraft:feather" ]
+
+  squid:
+    subtitle: "Inky swimmer"
+    perk: "effect:invisibility"
+    burp_sounds: [ "hotbar_pets:squid_burp1", "hotbar_pets:squid_burp2", "hotbar_pets:squid_burp3" ]
+    quotes: [ "Poof!", "Can’t catch me!", "Squiddy style." ]
+    food: "minecraft:ink_sac"
+    recipe:
+    - [ "minecraft:ink_sac", "minecraft:kelp", "minecraft:ink_sac" ]
+    - [ "minecraft:water_bucket", "minecraft:black_dye", "minecraft:water_bucket" ]
+    - [ "minecraft:ink_sac", "minecraft:kelp", "minecraft:ink_sac" ]
+
+  pig:
+    subtitle: "Pink oinker"
+    perk: "effect:saturation"
+    burp_sounds: [ "hotbar_pets:pig_burp1", "hotbar_pets:pig_burp2", "hotbar_pets:pig_burp3" ]
+    quotes: [ "Oink!", "I smell carrots!", "Snort snort!" ]
+    food: "minecraft:carrot"
+    recipe:
+    - [ "minecraft:carrot", "minecraft:hay_block", "minecraft:carrot" ]
+    - [ "minecraft:leather", "minecraft:porkchop", "minecraft:leather" ]
+    - [ "minecraft:carrot", "minecraft:hay_block", "minecraft:carrot" ]
+
+  sheep:
+    subtitle: "Wooly buddy"
+    perk: "effect:fire_resistance"
+    burp_sounds: [ "hotbar_pets:sheep_burp1", "hotbar_pets:sheep_burp2", "hotbar_pets:sheep_burp3" ]
+    quotes: [ "Baaah!", "Skin the cows...", "Wool ya be mine?" ]
+    food: "minecraft:wheat"
+    recipe:
+    - [ "minecraft:white_wool", "minecraft:wheat", "minecraft:white_wool" ]
+    - [ "minecraft:shears", "minecraft:lead", "minecraft:shears" ]
+    - [ "minecraft:white_wool", "minecraft:wheat", "minecraft:white_wool" ]
+
+  lavender_jar:
+    subtitle: "Peaceful scent"
+    perk: "effect:regeneration"
+    burp_sounds: [ "hotbar_pets:lavender_burp1", "hotbar_pets:lavender_burp2", "hotbar_pets:lavender_burp3" ]
+    quotes: [ "Breathe in...", "Breathe out...", "Don't you love smelling lavenders?" ]
+    food: "minecraft:flower_pot"
+    recipe:
+    - [ "minecraft:glass_bottle", "minecraft:purple_dye", "minecraft:glass_bottle" ]
+    - [ "minecraft:flower_pot", "minecraft:allium", "minecraft:flower_pot" ]
+    - [ "minecraft:glass_bottle", "minecraft:purple_dye", "minecraft:glass_bottle" ]
+
+  chicken:
+    subtitle: "Clucky companion"
+    perk: "effect:feather_falling"
+    burp_sounds: [ "hotbar_pets:chicken_burp1", "hotbar_pets:chicken_burp2", "hotbar_pets:chicken_burp3" ]
+    quotes: [ "Bawk!", "Don’t drop me!", "I’m not food..." ]
+    food: "minecraft:seeds"
+    recipe:
+    - [ "minecraft:feather", "minecraft:egg", "minecraft:feather" ]
+    - [ "minecraft:seeds", "minecraft:hay_block", "minecraft:seeds" ]
+    - [ "minecraft:feather", "minecraft:egg", "minecraft:feather" ]
+
+  iron_block:
+    subtitle: "Chunk of power"
+    perk: "effect:resistance"
+    burp_sounds: [ "hotbar_pets:iron_burp1", "hotbar_pets:iron_burp2", "hotbar_pets:iron_burp3" ]
+    quotes: [ "Heavy duty!", "Ironclad!", "TheyCallMeSu is my dad!" ]
+    food: "minecraft:iron_ingot"
+    recipe:
+    - [ "minecraft:iron_ingot", "minecraft:anvil", "minecraft:iron_ingot" ]
+    - [ "minecraft:piston", "minecraft:iron_block", "minecraft:piston" ]
+    - [ "minecraft:iron_ingot", "minecraft:anvil", "minecraft:iron_ingot" ]
+
+  mooshroom:
+    subtitle: "Mushroom cow"
+    perk: "effect:saturation"
+    burp_sounds: [ "hotbar_pets:mooshroom_burp1", "hotbar_pets:mooshroom_burp2", "hotbar_pets:mooshroom_burp3" ]
+    quotes: [ "Moo!", "Shroom boom!", "Spores incoming!" ]
+    food: "minecraft:red_mushroom"
+    recipe:
+    - [ "minecraft:red_mushroom", "minecraft:bowl", "minecraft:brown_mushroom" ]
+    - [ "minecraft:mycelium", "minecraft:milk_bucket", "minecraft:mycelium" ]
+    - [ "minecraft:red_mushroom", "minecraft:bowl", "minecraft:brown_mushroom" ]
+
+config:
+  minimum_time: 3
+  maximum_time: 10
+  levels:
+    level1:
+      perk_frequency: 1
+    level2:
+      perk_frequency: 2
+    level3:
+      perk_frequency: 3
