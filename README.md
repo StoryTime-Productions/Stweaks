@@ -1,4 +1,5 @@
 <!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
+
 <a id="readme-top"></a>
 
 <!-- PROJECT SHIELDS -->
@@ -66,13 +67,16 @@
 </details>
 
 <!-- ABOUT THE PROJECT -->
+
 ## About The Project
+
 **Stweaks** is a Minecraft plugin developed for <a href="https://papermc.io/">PaperMC</a> servers. This plugin introduces various silly custom items, mechanic modifications and additional add-ons to make playing Vanilla a bit more fun.
 
 ### Why Stweaks?
-* We're looking to balance game time and promote more social gameplay through time-based mechanic implementations.
-* We're looking to make our users laugh with inside-joke custom recipes that still add practical value to the game.
-* We're looking to express ourselves both creatively through custom texturing, programming through datapacks, and scripting through plugin implementation.
+
+- We're looking to balance game time and promote more social gameplay through time-based mechanic implementations.
+- We're looking to make our users laugh with inside-joke custom recipes that still add practical value to the game.
+- We're looking to express ourselves both creatively through custom texturing, programming through datapacks, and scripting through plugin implementation.
 
 Contributions, ideas, or feature requests are always welcome!
 
@@ -82,7 +86,6 @@ Contributions, ideas, or feature requests are always welcome!
 
 - [![Java 17](https://img.shields.io/badge/Java-17-007396?style=flat&logo=openjdk&logoColor=white)](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
   — Core language used to develop the plugin.
-  
 - [![Spigot API](https://img.shields.io/badge/Spigot-API-FABF2D?style=flat&logo=minecraft&logoColor=black)](https://www.spigotmc.org/wiki/spigot-plugin-development/)
   — Minecraft server API used for plugin development.
 
@@ -101,6 +104,7 @@ Contributions, ideas, or feature requests are always welcome!
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
+
 ## Getting Started
 
 This is an example of how you may give instructions on setting up your project locally.
@@ -110,16 +114,15 @@ To get a local copy up and running follow these simple example steps.
 
 To build and deploy ks locally, ensure the following tools are installed:
 
-* [Java 21+](https://adoptium.net/en-GB/temurin/releases/)
+- [Java 21+](https://adoptium.net/en-GB/temurin/releases/)
   Required to compile and run the plugin.
-  
-* [Gradle](https://gradle.org/install/) *(or use the included `gradlew` wrapper)*  
+- [Gradle](https://gradle.org/install/) _(or use the included `gradlew` wrapper)_  
   Used to build the project and apply formatting.
 
-* [PowerShell 5.1+](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell) *(for Windows users)*  
+- [PowerShell 5.1+](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell) _(for Windows users)_  
   Required for deployment zip compression.
 
-* `.env` file in the project root  
+- `.env` file in the project root  
   Must define:
   ```env
   SERVER_PATH=path\to\your\server
@@ -138,9 +141,15 @@ To build and deploy ks locally, ensure the following tools are installed:
 
 5. The `deploy.bat` script, located in root, can be used to update the plugin, resource pack, and datapack respectively, assuming correct paths are provided in the `.env` file.
 
+6. Run the following command in your terminal to enable project-specific Git hooks:
+   ```sh
+   ./set-hooks-path.sh
+   ```
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- ROADMAP -->
+
 ## Roadmap
 
 - [x] Add Illegal Water
@@ -155,6 +164,7 @@ See the [open issues](https://github.com/StoryTime-Productions/ks/issues) for a 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- CONTRIBUTING -->
+
 ## Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
@@ -177,6 +187,7 @@ Don't forget to give the project a star! Thanks again!
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- LICENSE -->
+
 ## License
 
 See `LICENSE.txt` for more information.
@@ -184,6 +195,7 @@ See `LICENSE.txt` for more information.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- CONTACT -->
+
 ## Contact
 
 Nirav Patel - [@Niravanaa](https://github.com/Niravanaa) - niravp0703@gmail.com
