@@ -38,19 +38,34 @@ public class PlaytimeTracker {
     new BukkitRunnable() {
       @Override
       public void run() {
+        LocalDate today = LocalDate.now();
+        int currentHour = java.time.LocalTime.now().getHour();
+
+        for (UUID uuid : playtimeMap.keySet()) {
+          PlaytimeData data = playtimeMap.get(uuid);
+
+          // Grant 1 hour at 1 AM if not already granted today
+          if (currentHour >= 1) {
+            LocalDate lastGrant = data.getLastHourGrantDate();
+            if (lastGrant == null || !lastGrant.isEqual(today)) {
+              data.addAvailableSeconds(3600);
+              data.setLastHourGrantDate(today);
+            }
+          }
+        }
+
         for (Player player : Bukkit.getOnlinePlayers()) {
-          PlaytimeData data =
-              PlaytimeTracker.playtimeMap.computeIfAbsent(
-                  player.getUniqueId(), k -> new PlaytimeData());
+          PlaytimeData playerData =
+              playtimeMap.computeIfAbsent(player.getUniqueId(), k -> new PlaytimeData());
           if ("lobby".equalsIgnoreCase(player.getWorld().getName())) {
             continue;
           }
-          if (!data.isAfk()) {
-            data.addSeconds(1);
+          if (!playerData.isAfk()) {
+            playerData.addAvailableSeconds(-1);
           } else {
-            Long afkStart = data.getAfkSince();
+            Long afkStart = playerData.getAfkSince();
             if (afkStart != null && System.currentTimeMillis() - afkStart <= 3 * 60 * 1000) {
-              data.addSeconds(1);
+              playerData.addAvailableSeconds(-1);
             }
           }
         }
@@ -59,13 +74,13 @@ public class PlaytimeTracker {
   }
 
   /**
-   * Resets the recorded playtime for a specific player.
+   * Resets the recorded available seconds for a specific player.
    *
    * <p>This method retrieves the {@link PlaytimeData} associated with the given player's UUID and,
-   * if available, resets their tracked playtime back to zero. It has no effect if no playtime data
-   * is currently stored for the player.
+   * if available, resets their tracked available seconds back to zero. It has no effect if no
+   * playtime data is currently stored for the player.
    *
-   * @param playerUuid The UUID of the player whose playtime should be reset.
+   * @param playerUuid The UUID of the player whose available seconds should be reset.
    */
   public static void resetPlaytime(UUID playerUuid) {
     PlaytimeData data = getData(playerUuid);
@@ -98,7 +113,7 @@ public class PlaytimeTracker {
   }
 
   /**
-   * Retrieves the remaining time in minutes for a player to complete their daily required playtime.
+   * Retrieves the remaining time in minutes for a player.
    *
    * @param uuid The player's unique identifier.
    * @return The remaining minutes, or 60 if the player has no tracked data.
@@ -108,12 +123,12 @@ public class PlaytimeTracker {
     if (data == null) {
       return 60;
     }
-    long totalMinutes = 60 - data.getMinutesPlayed();
+    long totalMinutes = data.getAvailableSeconds() / 60;
     return Math.max(totalMinutes, 0);
   }
 
   /**
-   * Retrieves the remaining time in seconds for a player to complete their daily required playtime.
+   * Retrieves the remaining time in seconds for a player.
    *
    * @param uuid The player's unique identifier.
    * @return The remaining seconds, or 0 if no time is required.
@@ -123,7 +138,7 @@ public class PlaytimeTracker {
     if (data == null) {
       return 3600;
     }
-    long totalSeconds = 3600 - data.getTotalSecondsPlayed();
+    long totalSeconds = data.getAvailableSeconds();
     return Math.max(totalSeconds, 0);
   }
 
@@ -131,7 +146,7 @@ public class PlaytimeTracker {
    * Gets the total remaining time for a player as a {@link Duration}.
    *
    * @param uuid The player's unique identifier.
-   * @return A Duration representing how much time is left to fulfill daily playtime.
+   * @return A Duration representing how much time is left.
    */
   public static Duration getTimeLeft(UUID uuid) {
     long secondsLeft = getSeconds(uuid);
@@ -142,28 +157,25 @@ public class PlaytimeTracker {
    * Sets or replaces the current playtime data for a player.
    *
    * @param uuid The player's unique identifier.
-   * @param seconds The playtime data to associate with the player.
+   * @param data The playtime data to associate with the player.
    */
-  public static void setPlaytime(UUID uuid, PlaytimeData seconds) {
-    playtimeMap.put(uuid, seconds);
+  public static void setPlaytime(UUID uuid, PlaytimeData data) {
+    playtimeMap.put(uuid, data);
   }
 
   /**
-   * Gets the total playtime in seconds for a player.
+   * Gets the total available time in seconds for a player.
    *
    * @param uuid The player's unique identifier.
-   * @return Total playtime in seconds, or 0 if not found.
+   * @return Total available time in seconds, or 0 if not found.
    */
   public static long getPlaytime(UUID uuid) {
     PlaytimeData data = playtimeMap.get(uuid);
-    return data != null ? data.getTotalSecondsPlayed() : 0L;
+    return data != null ? data.getAvailableSeconds() : 0L;
   }
 
   /**
    * Loads player playtime data from the SQLite database into memory.
-   *
-   * <p>If the stored `updated_last` date is not equal to the current date, the player's playtime is
-   * reset to 0.
    *
    * @param conn A valid database connection.
    */
@@ -171,18 +183,17 @@ public class PlaytimeTracker {
     try (Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery("SELECT * FROM playtime")) {
 
-      LocalDate today = LocalDate.now();
-
       while (rs.next()) {
         UUID uuid = UUID.fromString(rs.getString("uuid"));
-        double seconds = rs.getDouble("seconds_played");
-        LocalDate lastUpdated = rs.getDate("updated_last").toLocalDate();
-
-        if (!lastUpdated.isEqual(today)) {
-          playtimeMap.put(uuid, new PlaytimeData(0));
-        } else {
-          playtimeMap.put(uuid, new PlaytimeData(seconds));
+        long availableSeconds = rs.getLong("available_seconds");
+        LocalDate lastHourGrant = null;
+        Date grantDateSql = rs.getDate("last_hour_grant");
+        if (grantDateSql != null) {
+          lastHourGrant = grantDateSql.toLocalDate();
         }
+        PlaytimeData data = new PlaytimeData(availableSeconds);
+        data.setLastHourGrantDate(lastHourGrant);
+        playtimeMap.put(uuid, data);
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -193,25 +204,30 @@ public class PlaytimeTracker {
    * Saves the in-memory playtime data to the SQLite database.
    *
    * <p>Uses upsert logic: if the player's UUID already exists, the record is updated; otherwise, a
-   * new row is inserted. The update includes the current date as `updated_last`.
+   * new row is inserted.
    *
    * @param conn A valid database connection.
    */
   public static void saveToDatabase(Connection conn) {
     String sql =
         """
-        INSERT INTO playtime (uuid, seconds_played, updated_last)
+        INSERT INTO playtime (uuid, available_seconds, last_hour_grant)
         VALUES (?, ?, ?)
         ON CONFLICT(uuid) DO UPDATE SET
-          seconds_played = excluded.seconds_played,
-          updated_last = excluded.updated_last
+          available_seconds = excluded.available_seconds,
+          last_hour_grant = excluded.last_hour_grant
         """;
 
     try (PreparedStatement ps = conn.prepareStatement(sql)) {
       for (var entry : playtimeMap.entrySet()) {
         ps.setString(1, entry.getKey().toString());
-        ps.setLong(2, entry.getValue().getTotalSecondsPlayed());
-        ps.setDate(3, Date.valueOf(LocalDate.now()));
+        ps.setLong(2, entry.getValue().getAvailableSeconds());
+        LocalDate grantDate = entry.getValue().getLastHourGrantDate();
+        if (grantDate != null) {
+          ps.setDate(3, Date.valueOf(grantDate));
+        } else {
+          ps.setNull(3, java.sql.Types.DATE);
+        }
         ps.addBatch();
       }
       ps.executeBatch();

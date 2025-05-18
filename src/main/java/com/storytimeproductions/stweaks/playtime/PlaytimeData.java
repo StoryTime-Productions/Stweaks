@@ -1,78 +1,66 @@
 package com.storytimeproductions.stweaks.playtime;
 
+import java.time.LocalDate;
+
 /**
- * Represents the playtime data for a player. Stores the total number of seconds a player has
- * actively played and their AFK (away-from-keyboard) status.
+ * Represents the playtime data for a player. Stores the available seconds a player has and their
+ * AFK (away-from-keyboard) status.
  */
 public class PlaytimeData {
-
-  /** Total number of seconds the player has played. */
-  private double secondsPlayed;
 
   private Long afkSince;
 
   /** Indicates whether the player is currently AFK (away from keyboard). */
   private boolean isAfk;
 
+  private LocalDate lastHourGrantDate;
+  private long availableSeconds;
+
   /**
-   * Constructs a PlaytimeData object with a predefined number of seconds played.
+   * Constructs a PlaytimeData object with a predefined number of available seconds.
    *
-   * @param seconds The initial amount of seconds played.
+   * @param availableSeconds The initial amount of available seconds.
    */
-  public PlaytimeData(double seconds) {
-    secondsPlayed = seconds;
+  public PlaytimeData(long availableSeconds) {
+    this.availableSeconds = availableSeconds;
   }
 
-  /** Constructs a PlaytimeData object with zero seconds played and not AFK. */
+  /** Constructs a PlaytimeData object with zero available seconds and not AFK. */
   public PlaytimeData() {
-    secondsPlayed = 0;
+    availableSeconds = 0;
     isAfk = false;
   }
 
-  /**
-   * Resets the total tracked playtime to zero.
-   *
-   * <p>This method clears the recorded number of seconds the player has played, effectively
-   * resetting their playtime progress for the current tracking period.
-   */
+  /** Resets the available seconds to zero. */
   public void reset() {
-    this.secondsPlayed = 0;
+    this.availableSeconds = 0;
   }
 
   /**
-   * Adds seconds to the player's total time played.
+   * Adds or subtracts seconds from the player's available time.
    *
-   * @param seconds The seconds played to add.
+   * @param seconds The seconds to add (can be negative).
    */
-  public void addSeconds(double seconds) {
-    this.secondsPlayed += seconds;
+  public void addAvailableSeconds(long seconds) {
+    this.availableSeconds += seconds;
   }
 
   /**
-   * Retrieves the total seconds played by the player (rounded down).
+   * Retrieves the total available seconds for the player.
    *
-   * @return The total seconds played as a long.
+   * @return The total available seconds as a long.
    */
-  public long getTotalSecondsPlayed() {
-    return (long) secondsPlayed;
+  public long getAvailableSeconds() {
+    return availableSeconds;
   }
 
   /**
-   * Retrieves the number of full minutes played.
+   * Retrieves the number of full minutes available.
    *
-   * @return The total minutes played.
+   * @return The total available minutes.
    */
-  public long getMinutesPlayed() {
-    return (long) (secondsPlayed / 60);
-  }
-
-  /**
-   * Retrieves the remaining seconds after full minutes.
-   *
-   * @return The seconds part after converting to full minutes.
-   */
-  public long getRemainingSeconds() {
-    return (long) secondsPlayed % 60;
+  public long getAvailableMinutes() {
+    return availableSeconds / 60;
   }
 
   /**
@@ -96,14 +84,23 @@ public class PlaytimeData {
   /**
    * Gets the time in milliseconds since the player was last marked as AFK.
    *
-   * <p>This method returns the time that has passed since the player was last considered AFK. It
-   * can be used to determine how long the player has been inactive. If the player is currently not
-   * AFK, it may return {@code null} or a default value indicating no AFK status.
-   *
    * @return The time in milliseconds since the player was last marked AFK, or {@code null} if the
    *     player is not currently AFK.
    */
   public Long getAfkSince() {
     return afkSince;
+  }
+
+  public LocalDate getLastHourGrantDate() {
+    return lastHourGrantDate;
+  }
+
+  /**
+   * Sets the date when the player was last granted an hour of playtime.
+   *
+   * @param date The date to set as the last hour grant date.
+   */
+  public void setLastHourGrantDate(LocalDate date) {
+    this.lastHourGrantDate = date;
   }
 }

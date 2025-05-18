@@ -90,7 +90,7 @@ public class Stweaks extends JavaPlugin {
     getServer().getPluginManager().registerEvents(new CosmeticsListener(), this);
 
     // Register commands
-    getCommand("ststatus").setExecutor(new StStatusCommand());
+    getCommand("ststatus").setExecutor(new StStatusCommand(this));
     getCommand("stboost").setExecutor(new StBoostCommand());
     getCommand("stlobby").setExecutor(new StLobbyCommand(getConfig()));
     getCommand("spawn").setExecutor(new StSpawnCommand(getConfig()));

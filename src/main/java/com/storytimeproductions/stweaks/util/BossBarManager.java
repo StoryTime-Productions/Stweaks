@@ -4,6 +4,7 @@ import com.storytimeproductions.stweaks.playtime.PlaytimeTracker;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.bossbar.BossBar.Color;
 import net.kyori.adventure.bossbar.BossBar.Overlay;
@@ -25,6 +26,8 @@ public class BossBarManager {
 
   private static JavaPlugin plugin;
   private static final Map<UUID, BossBar> playerBars = new HashMap<>();
+  // Track each player's baseline seconds when they join
+  private static final Map<UUID, Long> playerBaselineSeconds = new ConcurrentHashMap<>();
 
   /**
    * Initializes the BossBarManager and starts periodic updates for all online players.
@@ -42,6 +45,26 @@ public class BossBarManager {
         }
       }
     }.runTaskTimer(plugin, 0L, 20L);
+  }
+
+  /**
+   * Call this when a player joins the server.
+   *
+   * @param player The player who joined.
+   */
+  public static void onPlayerJoin(Player player) {
+    long currentSeconds = PlaytimeTracker.getSeconds(player.getUniqueId());
+    playerBaselineSeconds.put(player.getUniqueId(), currentSeconds);
+  }
+
+  /**
+   * Call this when a player quits the server.
+   *
+   * @param player The player who quit.
+   */
+  public static void onPlayerQuit(Player player) {
+    playerBaselineSeconds.remove(player.getUniqueId());
+    removeBossBar(player);
   }
 
   /**
@@ -75,29 +98,34 @@ public class BossBarManager {
     }
 
     // Get total remaining seconds
-    long totalSecondsLeft = PlaytimeTracker.getSeconds(uuid);
-    totalSecondsLeft = Math.max(totalSecondsLeft, 0);
+    long totalSecondsLeftRaw = PlaytimeTracker.getSeconds(uuid);
+    final long totalSecondsLeft = Math.max(totalSecondsLeftRaw, 0);
 
-    // Break down into minutes and remaining seconds
-    long minutesLeft = totalSecondsLeft / 60;
-    long secondsLeft = totalSecondsLeft % 60;
+    // Get or set baseline for this session
+    long baseline = playerBaselineSeconds.computeIfAbsent(uuid, k -> totalSecondsLeft);
 
-    if (secondsLeft == 0 && (minutesLeft == 10 || minutesLeft == 5 || minutesLeft == 1)) {
-      TablistManager.sendPlaytimeWarningTitle(player, (int) minutesLeft);
-    }
-
-    // Calculate progress as a percentage of 60 minutes (3600 seconds)
-    double progress = (3600 - totalSecondsLeft) / 3600.0;
-    progress = Math.min(1.0, Math.max(0.0, progress));
-
-    if (progress >= 1.0) {
+    // If player has 0 or less seconds, kick them
+    if (totalSecondsLeft <= 0) {
       Component kickMessage =
           Component.text("Your daily hour is up! Come back tomorrow.")
               .color(NamedTextColor.RED)
               .decorate(TextDecoration.BOLD);
 
       player.kick(kickMessage);
+      return;
     }
+
+    // Break down into hours, minutes, and remaining seconds
+    long minutesLeft = (totalSecondsLeft % 3600) / 60;
+    long secondsLeft = totalSecondsLeft % 60;
+
+    if (secondsLeft == 0 && (minutesLeft == 10 || minutesLeft == 5 || minutesLeft == 1)) {
+      TablistManager.sendPlaytimeWarningTitle(player, (int) minutesLeft);
+    }
+
+    // Progress is based on baseline for this session
+    double progress = (double) (baseline - totalSecondsLeft) / Math.max(1, baseline);
+    progress = Math.min(1.0, Math.max(0.0, progress));
 
     // AFK check
     boolean isAfk = false;
@@ -105,7 +133,13 @@ public class BossBarManager {
       isAfk = PlaytimeTracker.getData(uuid).isAfk();
     }
 
-    String timeFormatted = String.format("%02d:%02d", minutesLeft, secondsLeft);
+    String timeFormatted;
+    long hoursLeft = totalSecondsLeft / 3600;
+    if (hoursLeft > 0) {
+      timeFormatted = String.format("%02d:%02d:%02d", hoursLeft, minutesLeft, secondsLeft);
+    } else {
+      timeFormatted = String.format("%02d:%02d", minutesLeft, secondsLeft);
+    }
     String status = "Your remaining time: " + timeFormatted + (isAfk ? " (AFK)" : "");
 
     final float finalProgress = (float) progress;
