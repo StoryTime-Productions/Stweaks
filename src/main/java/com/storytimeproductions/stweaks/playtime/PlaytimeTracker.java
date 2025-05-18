@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.UUID;
 import org.bukkit.Bukkit;
@@ -38,13 +40,16 @@ public class PlaytimeTracker {
     new BukkitRunnable() {
       @Override
       public void run() {
-        LocalDate today = LocalDate.now();
-        int currentHour = java.time.LocalTime.now().getHour();
+        // Use America/New_York for Eastern Time
+        ZoneId easternZone = ZoneId.of("America/New_York");
+        ZonedDateTime nowEastern = ZonedDateTime.now(easternZone);
+        LocalDate today = nowEastern.toLocalDate();
+        int currentHour = nowEastern.getHour();
 
         for (UUID uuid : playtimeMap.keySet()) {
           PlaytimeData data = playtimeMap.get(uuid);
 
-          // Grant 1 hour at 1 AM if not already granted today
+          // Grant 1 hour at 1 AM Eastern if not already granted today
           if (currentHour >= 1) {
             LocalDate lastGrant = data.getLastHourGrantDate();
             if (lastGrant == null || !lastGrant.isEqual(today)) {
