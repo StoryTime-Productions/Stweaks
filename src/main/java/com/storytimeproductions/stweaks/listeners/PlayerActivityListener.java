@@ -1,6 +1,5 @@
 package com.storytimeproductions.stweaks.listeners;
 
-import com.storytimeproductions.stweaks.config.SettingsManager;
 import com.storytimeproductions.stweaks.playtime.PlaytimeTracker;
 import com.storytimeproductions.stweaks.util.BossBarManager;
 import com.storytimeproductions.stweaks.util.TablistManager;
@@ -41,7 +40,7 @@ public class PlayerActivityListener implements Listener {
       public void run() {
         long now = System.currentTimeMillis();
         for (Player player : Bukkit.getOnlinePlayers()) {
-          TablistManager.updateTablist(player, SettingsManager.getWeekendMultiplier());
+          TablistManager.updateTablist(player, PlaytimeTracker.getTotalMultiplier());
           UUID uuid = player.getUniqueId();
           long lastActive = lastMovement.getOrDefault(uuid, now);
           boolean afk = (now - lastActive) > AFK_THRESHOLD_MILLIS;
@@ -80,7 +79,7 @@ public class PlayerActivityListener implements Listener {
 
     lastMovement.put(uuid, System.currentTimeMillis()); // Initialize last movement
     BossBarManager.updateBossBar(player);
-    TablistManager.updateTablist(player, SettingsManager.getWeekendMultiplier());
+    TablistManager.updateTablist(player, PlaytimeTracker.getTotalMultiplier());
 
     // Make the player execute /lobby on join
     Bukkit.getScheduler()
@@ -143,7 +142,7 @@ public class PlayerActivityListener implements Listener {
         // Only allow if after banking, available seconds will be > 600
         if (secondsLeft - 300 > 600) {
           data.setBankedTickets(data.getBankedTickets() + 1);
-          data.addAvailableSeconds(-300);
+          data.addAvailableSeconds(-300, false);
           player.sendMessage("Added a 5-minute chunk to your bank!");
         } else {
           player.sendMessage(
@@ -165,7 +164,7 @@ public class PlayerActivityListener implements Listener {
         int banked = data.getBankedTickets();
         if (banked > 0) {
           data.setBankedTickets(banked - 1);
-          data.addAvailableSeconds(300); // Use addAvailableSeconds
+          data.addAvailableSeconds(300, false); // Use addAvailableSeconds
           player.sendMessage("Removed a 5-minute chunk from your bank!");
         } else {
           player.sendMessage("You have no banked chunks to remove.");

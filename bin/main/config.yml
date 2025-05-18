@@ -6,7 +6,7 @@ spawn:
   z: 864
 lobby:
   world: lobby
-  x: -117.0
+  x: -117
   y: 223.0
   z: 184.0
   yaw: -135.7298
@@ -14,3 +14,8 @@ lobby:
 required_minutes: 60
 afk_threshold_seconds: 300
 weekend_multiplier: 2.0
+multipliers:
+  base: 1.0
+  weekend: 1.0
+  social: 0.1
+  social-distance: 40.0

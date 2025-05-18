@@ -76,7 +76,7 @@ public class BossBarManager {
     }
 
     // Get total remaining seconds
-    long totalSecondsLeftRaw = PlaytimeTracker.getSeconds(uuid);
+    long totalSecondsLeftRaw = PlaytimeTracker.getData(uuid).getAvailableSeconds();
     final long totalSecondsLeft = Math.max(totalSecondsLeftRaw, 0);
 
     // Get or set baseline for this session
