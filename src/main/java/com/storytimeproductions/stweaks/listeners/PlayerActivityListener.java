@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -24,10 +25,7 @@ import org.bukkit.scheduler.BukkitRunnable;
  */
 public class PlayerActivityListener implements Listener {
 
-  /** Stores the last recorded movement timestamp (in milliseconds) for each player. */
   private static final HashMap<UUID, Long> lastMovement = new HashMap<>();
-
-  /** Threshold (in milliseconds) after which a player is considered AFK (default: 1 minutes). */
   private static final long AFK_THRESHOLD_MILLIS = 1 * 60 * 1000;
 
   /**
@@ -90,6 +88,9 @@ public class PlayerActivityListener implements Listener {
             Bukkit.getPluginManager().getPlugin("Stweaks"),
             () -> player.performCommand("lobby"),
             10L);
+
+    long currentSeconds = PlaytimeTracker.getSeconds(player.getUniqueId());
+    BossBarManager.playerBaselineSeconds.put(player.getUniqueId(), currentSeconds);
   }
 
   /**
@@ -102,7 +103,76 @@ public class PlayerActivityListener implements Listener {
   @EventHandler
   public void onPlayerQuit(PlayerQuitEvent event) {
     UUID uuid = event.getPlayer().getUniqueId();
-    lastMovement.remove(uuid); // Clean up
+    lastMovement.remove(uuid);
+    BossBarManager.playerBaselineSeconds.remove(uuid);
     BossBarManager.removeBossBar(event.getPlayer());
+  }
+
+  /**
+   * Prevents users from moving items in the "Your Playtime Status" inventory.
+   *
+   * @param event The {@link InventoryClickEvent} containing inventory click information.
+   */
+  @EventHandler
+  public void onInventoryClick(InventoryClickEvent event) {
+    if (event.getView() == null) {
+      return;
+    }
+    String title = event.getView().title().toString();
+    if (title != null && title.contains("Your Playtime Status")) {
+      event.setCancelled(true);
+
+      // Handle add/remove banked chunk buttons
+      if (event.getCurrentItem() == null || event.getCurrentItem().getItemMeta() == null) {
+        return;
+      }
+      var meta = event.getCurrentItem().getItemMeta();
+      var pdc = meta.getPersistentDataContainer();
+      Player player = (Player) event.getWhoClicked();
+
+      // Add banked chunk
+      if (pdc.has(
+          new org.bukkit.NamespacedKey("stweaks", "add_banked"),
+          org.bukkit.persistence.PersistentDataType.STRING)) {
+        var data =
+            com.storytimeproductions.stweaks.playtime.PlaytimeTracker.getData(player.getUniqueId());
+        if (data == null) {
+          return;
+        }
+        long secondsLeft = data.getAvailableSeconds();
+        // Only allow if after banking, available seconds will be > 600
+        if (secondsLeft - 300 > 600) {
+          data.setBankedTickets(data.getBankedTickets() + 1);
+          data.addAvailableSeconds(-300);
+          player.sendMessage("Added a 5-minute chunk to your bank!");
+        } else {
+          player.sendMessage(
+              "You cannot bank more chunks (must keep more than 10 minutes remaining).");
+        }
+        player.performCommand("status");
+        return;
+      }
+
+      // Remove banked chunk
+      if (pdc.has(
+          new org.bukkit.NamespacedKey("stweaks", "remove_banked"),
+          org.bukkit.persistence.PersistentDataType.STRING)) {
+        var data =
+            com.storytimeproductions.stweaks.playtime.PlaytimeTracker.getData(player.getUniqueId());
+        if (data == null) {
+          return;
+        }
+        int banked = data.getBankedTickets();
+        if (banked > 0) {
+          data.setBankedTickets(banked - 1);
+          data.addAvailableSeconds(300); // Use addAvailableSeconds
+          player.sendMessage("Removed a 5-minute chunk from your bank!");
+        } else {
+          player.sendMessage("You have no banked chunks to remove.");
+        }
+        player.performCommand("status");
+        return;
+      }
+    }
   }
 }

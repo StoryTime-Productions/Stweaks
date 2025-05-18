@@ -15,6 +15,7 @@ public class PlaytimeData {
 
   private LocalDate lastHourGrantDate;
   private long availableSeconds;
+  private int bankedTickets = 0;
 
   /**
    * Constructs a PlaytimeData object with a predefined number of available seconds.
@@ -102,5 +103,23 @@ public class PlaytimeData {
    */
   public void setLastHourGrantDate(LocalDate date) {
     this.lastHourGrantDate = date;
+  }
+
+  /**
+   * Gets the number of banked 5-minute tickets for the player.
+   *
+   * @return The number of banked tickets.
+   */
+  public int getBankedTickets() {
+    return bankedTickets;
+  }
+
+  /**
+   * Sets the number of banked 5-minute tickets for the player.
+   *
+   * @param tickets The number of tickets to set.
+   */
+  public void setBankedTickets(int tickets) {
+    this.bankedTickets = tickets;
   }
 }

@@ -182,10 +182,14 @@ public class PlaytimeTracker {
   public static void loadFromDatabase(Connection conn) {
     try (Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery("SELECT * FROM playtime")) {
-
       while (rs.next()) {
-        UUID uuid = UUID.fromString(rs.getString("uuid"));
         long availableSeconds = rs.getLong("available_seconds");
+        int bankedTickets = 0;
+        try {
+          bankedTickets = rs.getInt("banked_tickets");
+        } catch (SQLException ex) {
+          ex.printStackTrace();
+        }
         LocalDate lastHourGrant = null;
         Date grantDateSql = rs.getDate("last_hour_grant");
         if (grantDateSql != null) {
@@ -193,6 +197,9 @@ public class PlaytimeTracker {
         }
         PlaytimeData data = new PlaytimeData(availableSeconds);
         data.setLastHourGrantDate(lastHourGrant);
+        data.setBankedTickets(bankedTickets);
+
+        UUID uuid = UUID.fromString(rs.getString("uuid"));
         playtimeMap.put(uuid, data);
       }
     } catch (SQLException e) {
@@ -211,11 +218,12 @@ public class PlaytimeTracker {
   public static void saveToDatabase(Connection conn) {
     String sql =
         """
-        INSERT INTO playtime (uuid, available_seconds, last_hour_grant)
-        VALUES (?, ?, ?)
+        INSERT INTO playtime (uuid, available_seconds, last_hour_grant, banked_tickets)
+        VALUES (?, ?, ?, ?)
         ON CONFLICT(uuid) DO UPDATE SET
           available_seconds = excluded.available_seconds,
-          last_hour_grant = excluded.last_hour_grant
+          last_hour_grant = excluded.last_hour_grant,
+          banked_tickets = excluded.banked_tickets
         """;
 
     try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -228,6 +236,7 @@ public class PlaytimeTracker {
         } else {
           ps.setNull(3, java.sql.Types.DATE);
         }
+        ps.setInt(4, entry.getValue().getBankedTickets());
         ps.addBatch();
       }
       ps.executeBatch();

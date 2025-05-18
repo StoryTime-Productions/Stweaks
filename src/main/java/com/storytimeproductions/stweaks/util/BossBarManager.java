@@ -23,11 +23,9 @@ import org.bukkit.scheduler.BukkitRunnable;
  * reflecting how close the player is to reaching the daily 60-minute playtime requirement.
  */
 public class BossBarManager {
-
   private static JavaPlugin plugin;
   private static final Map<UUID, BossBar> playerBars = new HashMap<>();
-  // Track each player's baseline seconds when they join
-  private static final Map<UUID, Long> playerBaselineSeconds = new ConcurrentHashMap<>();
+  public static final Map<UUID, Long> playerBaselineSeconds = new ConcurrentHashMap<>();
 
   /**
    * Initializes the BossBarManager and starts periodic updates for all online players.
@@ -45,26 +43,6 @@ public class BossBarManager {
         }
       }
     }.runTaskTimer(plugin, 0L, 20L);
-  }
-
-  /**
-   * Call this when a player joins the server.
-   *
-   * @param player The player who joined.
-   */
-  public static void onPlayerJoin(Player player) {
-    long currentSeconds = PlaytimeTracker.getSeconds(player.getUniqueId());
-    playerBaselineSeconds.put(player.getUniqueId(), currentSeconds);
-  }
-
-  /**
-   * Call this when a player quits the server.
-   *
-   * @param player The player who quit.
-   */
-  public static void onPlayerQuit(Player player) {
-    playerBaselineSeconds.remove(player.getUniqueId());
-    removeBossBar(player);
   }
 
   /**
