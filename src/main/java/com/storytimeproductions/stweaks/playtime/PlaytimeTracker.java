@@ -11,6 +11,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,11 +53,18 @@ public class PlaytimeTracker {
         for (UUID uuid : playtimeMap.keySet()) {
           PlaytimeData data = playtimeMap.get(uuid);
 
-          // Grant 1 hour at 1 AM Eastern if not already granted today
+          // Grant 1 hour per missed day at 1 AM Eastern if not already granted today
           if (currentHour >= 1) {
             LocalDate lastGrant = data.getLastHourGrantDate();
+            long daysMissed = 0;
+            if (lastGrant == null) {
+              daysMissed = 1;
+            } else {
+              daysMissed = ChronoUnit.DAYS.between(lastGrant, today);
+              if (daysMissed < 1) daysMissed = 1;
+            }
             if (lastGrant == null || !lastGrant.isEqual(today)) {
-              data.addAvailableSeconds(3600, false);
+              data.addAvailableSeconds(daysMissed * 3600, false);
               data.setLastHourGrantDate(today);
             }
           }
