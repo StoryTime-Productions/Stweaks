@@ -17,5 +17,5 @@ weekend_multiplier: 2.0
 multipliers:
   base: 1.0
   weekend: 1.0
-  social: 0.1
+  social: 1.11
   social-distance: 40.0

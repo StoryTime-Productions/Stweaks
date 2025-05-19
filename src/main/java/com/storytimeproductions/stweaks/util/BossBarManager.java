@@ -69,7 +69,7 @@ public class BossBarManager {
                 return newBar;
               });
 
-      bar.name(Component.text("Your timer is pause. :)"));
+      bar.name(Component.text("Your timer is paused. :)"));
       bar.progress(0.0f);
       bar.color(Color.WHITE);
       return;
@@ -94,10 +94,14 @@ public class BossBarManager {
     }
 
     // Break down into hours, minutes, and remaining seconds
+    long hoursLeft = totalSecondsLeft / 3600;
     long minutesLeft = (totalSecondsLeft % 3600) / 60;
     long secondsLeft = totalSecondsLeft % 60;
 
-    if (secondsLeft == 0 && (minutesLeft == 10 || minutesLeft == 5 || minutesLeft == 1)) {
+    // Only show warning if hoursLeft is 0
+    if (hoursLeft == 0
+        && secondsLeft == 0
+        && (minutesLeft == 10 || minutesLeft == 5 || minutesLeft == 1)) {
       TablistManager.sendPlaytimeWarningTitle(player, (int) minutesLeft);
     }
 
@@ -112,7 +116,6 @@ public class BossBarManager {
     }
 
     String timeFormatted;
-    long hoursLeft = totalSecondsLeft / 3600;
     if (hoursLeft > 0) {
       timeFormatted = String.format("%02d:%02d:%02d", hoursLeft, minutesLeft, secondsLeft);
     } else {

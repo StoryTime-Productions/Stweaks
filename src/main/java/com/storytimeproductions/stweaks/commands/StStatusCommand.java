@@ -226,11 +226,13 @@ public class StStatusCommand implements CommandExecutor {
         if (sender instanceof BlockCommandSender blockSender) {
           double minDist = Double.MAX_VALUE;
           for (Player p : Bukkit.getOnlinePlayers()) {
-            double dist =
-                p.getLocation().distance(blockSender.getBlock().getLocation().add(0.5, 0.5, 0.5));
-            if (dist < minDist) {
-              minDist = dist;
-              nearest = p;
+            if (p.getWorld().equals(blockSender.getBlock().getWorld())) {
+              double dist =
+                  p.getLocation().distance(blockSender.getBlock().getLocation().add(0.5, 0.5, 0.5));
+              if (dist < minDist) {
+                minDist = dist;
+                nearest = p;
+              }
             }
           }
         } else if (sender instanceof Player playerSender) {
