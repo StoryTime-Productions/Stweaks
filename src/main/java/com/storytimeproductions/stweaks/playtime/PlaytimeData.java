@@ -42,8 +42,17 @@ public class PlaytimeData {
    *
    * @param seconds The seconds to add (can be negative).
    */
-  public void addAvailableSeconds(long seconds) {
-    this.availableSeconds += seconds;
+  public boolean addAvailableSeconds(long seconds, boolean manual) {
+    if (seconds < 0 && manual) {
+      if (this.availableSeconds + seconds >= 600) {
+        this.availableSeconds += seconds;
+        return true;
+      }
+      return false;
+    } else {
+      this.availableSeconds += seconds;
+      return true;
+    }
   }
 
   /**

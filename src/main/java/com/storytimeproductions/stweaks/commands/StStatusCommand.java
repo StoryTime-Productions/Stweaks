@@ -10,7 +10,9 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -75,26 +77,154 @@ public class StStatusCommand implements CommandExecutor {
         return true;
       }
       String targetName = args[1];
-      OfflinePlayer target = Bukkit.getOfflinePlayer(targetName);
-      UUID targetIdentifer = target.getUniqueId();
-
-      if (targetIdentifer == null) {
-        sender.sendMessage("Could not find player: " + targetName);
-        return true;
-      }
-
-      PlaytimeData data = PlaytimeTracker.getData(targetIdentifer);
-      if (data == null) {
-        data = new PlaytimeData();
-        PlaytimeTracker.setPlaytime(targetIdentifer, data);
-      }
-
+      long secondsToAdd;
       try {
-        long secondsToAdd = Long.parseLong(args[2]);
-        data.addAvailableSeconds(secondsToAdd);
-        sender.sendMessage("Added " + secondsToAdd + " seconds to " + targetName + ".");
+        secondsToAdd = Long.parseLong(args[2]);
       } catch (NumberFormatException e) {
         sender.sendMessage("Invalid number of seconds: " + args[2]);
+        return false;
+      }
+
+      List<Player> targets = new ArrayList<>();
+      if (targetName.equalsIgnoreCase("@a")) {
+        targets.addAll(Bukkit.getOnlinePlayers());
+      } else if (targetName.equalsIgnoreCase("@p")) {
+        Player nearest = null;
+        if (sender instanceof BlockCommandSender blockSender) {
+          // Find nearest player to the command block
+          double minDist = Double.MAX_VALUE;
+          for (Player p : Bukkit.getOnlinePlayers()) {
+            double dist =
+                p.getLocation().distance(blockSender.getBlock().getLocation().add(0.5, 0.5, 0.5));
+            if (dist < minDist) {
+              minDist = dist;
+              nearest = p;
+            }
+          }
+        } else if (sender instanceof Player playerSender) {
+          nearest = playerSender;
+        } else {
+          // Console fallback: pick a random online player
+          nearest = Bukkit.getOnlinePlayers().stream().findFirst().orElse(null);
+        }
+        if (nearest != null) {
+          targets.add(nearest);
+        }
+      } else {
+        Player player = Bukkit.getPlayerExact(targetName);
+        if (player != null) {
+          targets.add(player);
+        } else {
+          sender.sendMessage("Could not find player: " + targetName);
+          return false;
+        }
+      }
+
+      boolean anySuccess = false;
+      for (Player target : targets) {
+        UUID targetIdentifer = target.getUniqueId();
+        PlaytimeData data = PlaytimeTracker.getData(targetIdentifer);
+        boolean success;
+        if (data == null) {
+          data = new PlaytimeData();
+          PlaytimeTracker.setPlaytime(targetIdentifer, data);
+        }
+
+        success = data.addAvailableSeconds(secondsToAdd, true);
+        sender.sendMessage("Added " + secondsToAdd + " seconds to " + target.getName() + ".");
+
+        if (!success) {
+          sender.sendMessage(
+              "Failed to add seconds. The player must have at least 10 minutes of playtime.");
+        }
+      }
+      return anySuccess;
+    }
+
+    // /ststatus ticket <player>
+    if (args.length == 2 && args[0].equalsIgnoreCase("ticket")) {
+      if (!sender.hasPermission("stweaks.ststatus.ticket")) {
+        sender.sendMessage("You don't have permission to use this command.");
+        return true;
+      }
+      String targetName = args[1];
+      Player target = Bukkit.getPlayerExact(targetName);
+      if (target == null) {
+        sender.sendMessage("Could not find player: " + targetName);
+        return false;
+      }
+      PlaytimeData data = PlaytimeTracker.getData(target.getUniqueId());
+      if (data == null) {
+        sender.sendMessage("No playtime data found for " + targetName + ".");
+        return false;
+      }
+      // Only allow if after removing 5 minutes, available seconds will be > 600
+      if (data.getAvailableSeconds() - 300 >= 600) {
+        data.addAvailableSeconds(-300, false);
+        // Give the player a nametag named "5-minute ticket" with custom model data
+        ItemStack ticket = new ItemStack(Material.NAME_TAG);
+        ItemMeta meta = ticket.getItemMeta();
+        meta.displayName(Component.text("5-minute ticket").color(NamedTextColor.GOLD));
+        // Set custom item_model using PersistentDataContainer
+        meta.setItemModel(new NamespacedKey("storytime", "time_ticket"));
+        ticket.setItemMeta(meta);
+        target.getInventory().addItem(ticket);
+        target.sendMessage("You received a 5-minute ticket!");
+        return true;
+      } else {
+        sender.sendMessage(
+            "Player must have more than 10 minutes remaining after removing 5 minutes.");
+        target.sendMessage("Ticketing failed. You must have more than 10 minutes remaining.");
+        return false;
+      }
+    }
+
+    // /ststatus cash <player>
+    if (args.length == 2 && args[0].equalsIgnoreCase("cash")) {
+      if (!sender.hasPermission("stweaks.ststatus.cash")) {
+        sender.sendMessage("You don't have permission to use this command.");
+        return true;
+      }
+      String targetName = args[1];
+      Player target = Bukkit.getPlayerExact(targetName);
+      if (target == null) {
+        sender.sendMessage("Could not find player: " + targetName);
+        return false;
+      }
+      PlaytimeData data = PlaytimeTracker.getData(target.getUniqueId());
+      if (data == null) {
+        sender.sendMessage("No playtime data found for " + targetName + ".");
+        return false;
+      }
+      // Search for a ticket with the correct item_model in the player's inventory
+      ItemStack[] contents = target.getInventory().getContents();
+      boolean found = false;
+      for (int i = 0; i < contents.length; i++) {
+        ItemStack item = contents[i];
+        if (item != null && item.getType() == Material.NAME_TAG && item.hasItemMeta()) {
+          ItemMeta meta = item.getItemMeta();
+          NamespacedKey key = new NamespacedKey("storytime", "time_ticket");
+          NamespacedKey model = meta.getItemModel();
+          if (key.equals(model)) {
+            // Remove one ticket
+            if (item.getAmount() > 1) {
+              item.setAmount(item.getAmount() - 1);
+            } else {
+              target.getInventory().setItem(i, null);
+            }
+            // Add 5 minutes (300 seconds)
+            data.addAvailableSeconds(300, false);
+            target.sendMessage("You cashed in a 5-minute ticket!");
+            sender.sendMessage("Cashed a 5-minute ticket for " + target.getName() + ".");
+            found = true;
+            break;
+          }
+        }
+      }
+      if (!found) {
+        sender.sendMessage(target.getName() + " does not have a 5-minute ticket to cash.");
+        target.sendMessage("You do not have a 5-minute ticket to cash.");
+        return false;
       }
       return true;
     }
@@ -163,7 +293,7 @@ public class StStatusCommand implements CommandExecutor {
     inv.setItem(20, timeLeft);
 
     // Info item: Server multiplier (slot 22)
-    double baseMultiplier = 1.0;
+    double baseMultiplier = PlaytimeTracker.getBaseMultiplier();
 
     ItemStack multiplierItem = new ItemStack(Material.EXPERIENCE_BOTTLE);
     ItemMeta multiplierMeta = multiplierItem.getItemMeta();
@@ -175,16 +305,20 @@ public class StStatusCommand implements CommandExecutor {
     multiplierLoreRaw.add("Base Multiplier: " + baseMultiplier + "x");
     multiplierLoreRaw.add(" ");
 
-    double weekendMultiplier = getWeekendMultiplier();
+    double weekendMultiplier = PlaytimeTracker.getWeekendMultiplier();
     boolean isWeekend = isWeekend();
     if (isWeekend) {
       multiplierLoreRaw.add("Weekend Multiplier: " + weekendMultiplier + "x (active)");
     } else {
       multiplierLoreRaw.add("Weekend Multiplier: " + weekendMultiplier + "x (inactive)");
     }
-
     multiplierLoreRaw.add(" ");
-    double totalMultiplier = baseMultiplier * (isWeekend ? weekendMultiplier : 1.0);
+
+    double socialMultiplier = PlaytimeTracker.computeGlobalSocialMultiplier();
+    multiplierLoreRaw.add("Social Multiplier: " + socialMultiplier + "x");
+    multiplierLoreRaw.add(" ");
+
+    double totalMultiplier = PlaytimeTracker.getTotalMultiplier();
     multiplierLoreRaw.add("Total Multiplier: " + totalMultiplier + "x");
     List<Component> multiplierLore = new ArrayList<>();
     for (String line : multiplierLoreRaw) {
@@ -210,7 +344,8 @@ public class StStatusCommand implements CommandExecutor {
     socialLoreInfoRaw.add(
         "If you remain in proximity to other players, the social multiplier may increase!");
     socialLoreInfoRaw.add(" ");
-    socialLoreInfoRaw.add("This feature is optional and will be implemented soon.");
+    socialLoreInfoRaw.add(
+        "The activation distance is " + ((int) PlaytimeTracker.getSocialDistance()) + " blocks.");
     List<Component> socialLoreInfo = new ArrayList<>();
     for (String line : socialLoreInfoRaw) {
       wrapLoreLine(line, 25)
@@ -383,10 +518,6 @@ public class StStatusCommand implements CommandExecutor {
         player.getOpenInventory().setItem(20, timeLeft);
       }
     }.runTaskTimer(plugin, 20L, 20L);
-  }
-
-  private double getWeekendMultiplier() {
-    return 2.0;
   }
 
   private boolean isWeekend() {

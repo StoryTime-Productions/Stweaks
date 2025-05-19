@@ -11,7 +11,10 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -53,7 +56,7 @@ public class PlaytimeTracker {
           if (currentHour >= 1) {
             LocalDate lastGrant = data.getLastHourGrantDate();
             if (lastGrant == null || !lastGrant.isEqual(today)) {
-              data.addAvailableSeconds(3600);
+              data.addAvailableSeconds(3600, false);
               data.setLastHourGrantDate(today);
             }
           }
@@ -66,16 +69,123 @@ public class PlaytimeTracker {
             continue;
           }
           if (!playerData.isAfk()) {
-            playerData.addAvailableSeconds(-1);
+            playerData.addAvailableSeconds(-1, false);
           } else {
             Long afkStart = playerData.getAfkSince();
             if (afkStart != null && System.currentTimeMillis() - afkStart <= 3 * 60 * 1000) {
-              playerData.addAvailableSeconds(-1);
+              playerData.addAvailableSeconds(-1, false);
             }
           }
         }
       }
-    }.runTaskTimer(plugin, 0L, 20L * (long) SettingsManager.getWeekendMultiplier());
+    }.runTaskTimer(plugin, 0L, 20L * (long) getTotalMultiplier());
+  }
+
+  // --- Multiplier Getters using SettingsManager ---
+  public static double getBaseMultiplier() {
+    return SettingsManager.getBaseMultiplier();
+  }
+
+  public static double getWeekendMultiplier() {
+    return SettingsManager.getWeekendMultiplier();
+  }
+
+  public static double getSocialMultiplier() {
+    return SettingsManager.getSocialMultiplier();
+  }
+
+  public static double getSocialDistance() {
+    return SettingsManager.getSocialDistance();
+  }
+
+  /**
+   * Computes the social multiplier using dynamic "party" regions. Each party is a group of players
+   * where every member is within the social distance of at least one other member. For each party,
+   * the multiplier is raised to the power of (partySize * (partySize - 1) / 2). The final global
+   * multiplier is the base raised to the sum of all party exponents.
+   */
+  public static double computeGlobalSocialMultiplier() {
+    double distance = getSocialDistance();
+    // Only include players in the main worlds
+    List<Player> players = new ArrayList<>();
+    for (Player p : Bukkit.getOnlinePlayers()) {
+      String worldName = p.getWorld().getName();
+      if (worldName.startsWith("world")) {
+        players.add(p);
+      }
+    }
+
+    // Find parties using union-find (disjoint set)
+    int n = players.size();
+    int[] parent = new int[n];
+    for (int i = 0; i < n; i++) {
+      parent[i] = i;
+    }
+
+    // Union players that are within distance
+    for (int i = 0; i < n; i++) {
+      Player p1 = players.get(i);
+      for (int j = i + 1; j < n; j++) {
+        Player p2 = players.get(j);
+        if (p1.getWorld().equals(p2.getWorld())
+            && p1.getLocation().distance(p2.getLocation()) <= distance) {
+          // Union i and j
+          int rootI = find(parent, i);
+          int rootJ = find(parent, j);
+          if (rootI != rootJ) {
+            parent[rootJ] = rootI;
+          }
+        }
+      }
+    }
+
+    // Count party sizes
+    Map<Integer, Integer> partySizes = new HashMap<>();
+    for (int i = 0; i < n; i++) {
+      int root = find(parent, i);
+      partySizes.put(root, partySizes.getOrDefault(root, 0) + 1);
+    }
+
+    // Calculate the total exponent sum
+    int totalExponent = 0;
+    for (int size : partySizes.values()) {
+      if (size > 1) {
+        totalExponent += (size * (size - 1)) / 2;
+      }
+    }
+
+    // Compute the final multiplier
+    double socialMultiplier = getSocialMultiplier();
+    double result = Math.pow(socialMultiplier, totalExponent);
+    result = Math.floor(result * 100) / 100.0;
+
+    return result == 1 ? 0 : result;
+  }
+
+  // Helper for union-find
+  private static int find(int[] parent, int i) {
+    if (parent[i] != i) {
+      parent[i] = find(parent, parent[i]);
+    }
+    return parent[i];
+  }
+
+  /** Computes the total multiplier for a player. Includes base, weekend, and social multipliers. */
+  public static double getTotalMultiplier() {
+    double total = getBaseMultiplier();
+    if (isWeekend()) {
+      total += getWeekendMultiplier();
+    }
+    total += computeGlobalSocialMultiplier();
+    return Math.floor(total * 100) / 100.0;
+  }
+
+  /** Checks if it is currently the weekend (Saturday or Sunday) in Eastern Time. */
+  public static boolean isWeekend() {
+    ZoneId easternZone = ZoneId.of("America/New_York");
+    ZonedDateTime nowEastern = ZonedDateTime.now(easternZone);
+    int day = nowEastern.getDayOfWeek().getValue();
+    return day == 6 || day == 7; // Saturday or Sunday
   }
 
   /**

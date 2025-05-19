@@ -1,0 +1,22 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "misc",
+    "pattern": [
+        "PC",
+        "SM"
+    ],
+    "key": {
+        "P": "minecraft:cooked_porkchop",
+        "C": "minecraft:cooked_chicken",
+        "S": "minecraft:stick",
+        "M": "minecraft:cooked_mutton"
+    },
+    "result": {
+        "id": "minecraft:cooked_porkchop",
+        "components": {
+            "minecraft:item_model": "storytime:kebab",
+            "minecraft:item_name": "\"Kebab\""
+        },
+        "count": 1
+    }
+}

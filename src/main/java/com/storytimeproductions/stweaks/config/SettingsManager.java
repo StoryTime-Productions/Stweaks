@@ -34,6 +34,19 @@ public class SettingsManager {
   }
 
   /**
+   * Reloads the plugin's configuration file.
+   *
+   * <p>This method reloads the configuration by getting the config from the provided JavaPlugin
+   * instance. This must be called to refresh the configuration values.
+   *
+   * @param plugin The plugin instance from which the configuration is reloaded.
+   */
+  public static void reload(JavaPlugin plugin) {
+    plugin.reloadConfig();
+    config = plugin.getConfig();
+  }
+
+  /**
    * Retrieves the required playtime for a specific player.
    *
    * <p>This method fetches the "required_minutes" setting from the configuration file. If the
@@ -70,7 +83,43 @@ public class SettingsManager {
    * @return The global weekend playtime multiplier for all players.
    */
   public static double getWeekendMultiplier() {
-    return config.getDouble("weekend_multiplier", 2.0);
+    return config.getDouble("multipliers.weekend", 1.0);
+  }
+
+  /**
+   * Retrieves the base multiplier for all players.
+   *
+   * <p>This method fetches the "multipliers.base" setting from the configuration file. If the
+   * setting is not found, the default value of 1.0 is returned.
+   *
+   * @return The base playtime multiplier for all players.
+   */
+  public static double getBaseMultiplier() {
+    return config.getDouble("multipliers.base", 1.0);
+  }
+
+  /**
+   * Retrieves the social multiplier for all players.
+   *
+   * <p>This method fetches the "multipliers.social" setting from the configuration file. If the
+   * setting is not found, the default value of 0.0 is returned.
+   *
+   * @return The social playtime multiplier for all players.
+   */
+  public static double getSocialMultiplier() {
+    return config.getDouble("multipliers.social", 0.0);
+  }
+
+  /**
+   * Retrieves the social distance for all players.
+   *
+   * <p>This method fetches the "multipliers.social-distance" setting from the configuration file.
+   * If the setting is not found, the default value of 10.0 is returned.
+   *
+   * @return The social distance for all players.
+   */
+  public static double getSocialDistance() {
+    return config.getDouble("multipliers.social-distance", 10.0);
   }
 
   /**

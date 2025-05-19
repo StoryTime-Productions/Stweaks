@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "storytime:item/quest_menu_2"
+        "layer0": "storytime:item/kebab"
     }
 }

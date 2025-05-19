@@ -1,0 +1,25 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "misc",
+    "pattern": [
+        "HMB",
+        "SES",
+        "WWW"
+    ],
+    "key": {
+        "H": "minecraft:honey_bottle",
+        "M": "minecraft:milk_bucket",
+        "B": "minecraft:sweet_berries",
+        "S": "minecraft:sugar",
+        "E": "minecraft:egg",
+        "W": "minecraft:wheat"
+    },
+    "result": {
+        "id": "minecraft:cooked_porkchop",
+        "components": {
+            "minecraft:item_model": "storytime:pancake",
+            "minecraft:item_name": "\"Pancakes\""
+        },
+        "count": 2
+    }
+}
