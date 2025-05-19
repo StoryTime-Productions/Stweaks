@@ -54,14 +54,14 @@ public class BossBarManager {
     UUID uuid = player.getUniqueId();
 
     // If the player is in the lobby, show that their timer is paused
-    if ("lobby".equalsIgnoreCase(player.getWorld().getName())) {
+    if (!player.getWorld().getName().startsWith("world")) {
       BossBar bar =
           playerBars.computeIfAbsent(
               uuid,
               id -> {
                 BossBar newBar =
                     BossBar.bossBar(
-                        Component.text("Your timer is paused in the lobby. :)"),
+                        Component.text("Your timer is paused. :)"),
                         0.0f,
                         Color.WHITE,
                         Overlay.PROGRESS);
@@ -69,7 +69,7 @@ public class BossBarManager {
                 return newBar;
               });
 
-      bar.name(Component.text("Your timer is paused in the lobby. :)"));
+      bar.name(Component.text("Your timer is pause. :)"));
       bar.progress(0.0f);
       bar.color(Color.WHITE);
       return;
