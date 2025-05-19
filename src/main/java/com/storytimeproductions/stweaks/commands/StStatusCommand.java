@@ -130,7 +130,7 @@ public class StStatusCommand implements CommandExecutor {
           PlaytimeTracker.setPlaytime(targetIdentifer, data);
         }
 
-        success = data.addAvailableSeconds(secondsToAdd, true);
+        success = data.addAvailableSeconds(secondsToAdd);
         sender.sendMessage("Added " + secondsToAdd + " seconds to " + target.getName() + ".");
 
         if (!success) {
@@ -190,7 +190,7 @@ public class StStatusCommand implements CommandExecutor {
         }
         // Only allow if after removing 5 minutes, available seconds will be > 600
         if (data.getAvailableSeconds() - 300 >= 600) {
-          data.addAvailableSeconds(-300, false);
+          data.addAvailableSeconds(-300);
           // Give the player a nametag named "5-minute ticket" with custom model data
           ItemStack ticket = new ItemStack(Material.NAME_TAG);
           ItemMeta meta = ticket.getItemMeta();
@@ -260,35 +260,42 @@ public class StStatusCommand implements CommandExecutor {
           sender.sendMessage("No playtime data found for " + target.getName() + ".");
           continue;
         }
-        // Search for a ticket with the correct item_model in the player's inventory
-        ItemStack[] contents = target.getInventory().getContents();
-        boolean found = false;
-        for (int i = 0; i < contents.length; i++) {
-          ItemStack item = contents[i];
-          if (item != null && item.getType() == Material.NAME_TAG && item.hasItemMeta()) {
-            ItemMeta meta = item.getItemMeta();
-            NamespacedKey key = new NamespacedKey("storytime", "time_ticket");
-            NamespacedKey model = meta.getItemModel();
-            if (key.equals(model)) {
-              // Remove one ticket
-              if (item.getAmount() > 1) {
-                item.setAmount(item.getAmount() - 1);
-              } else {
-                target.getInventory().setItem(i, null);
+        if (data.getAvailableSeconds() <= 3300) {
+          ItemStack[] contents = target.getInventory().getContents();
+          boolean found = false;
+          for (int i = 0; i < contents.length; i++) {
+            ItemStack item = contents[i];
+            if (item != null && item.getType() == Material.NAME_TAG && item.hasItemMeta()) {
+              ItemMeta meta = item.getItemMeta();
+              NamespacedKey key = new NamespacedKey("storytime", "time_ticket");
+              NamespacedKey model = meta.getItemModel();
+              if (key.equals(model)) {
+                // Remove one ticket
+                if (item.getAmount() > 1) {
+                  item.setAmount(item.getAmount() - 1);
+                } else {
+                  target.getInventory().setItem(i, null);
+                }
+                // Add 5 minutes (300 seconds)
+                data.addAvailableSeconds(300);
+                target.sendMessage("You cashed in a 5-minute ticket!");
+                sender.sendMessage("Cashed a 5-minute ticket for " + target.getName() + ".");
+                found = true;
+                anySuccess = true;
+                break;
               }
-              // Add 5 minutes (300 seconds)
-              data.addAvailableSeconds(300, false);
-              target.sendMessage("You cashed in a 5-minute ticket!");
-              sender.sendMessage("Cashed a 5-minute ticket for " + target.getName() + ".");
-              found = true;
-              anySuccess = true;
-              break;
             }
           }
-        }
-        if (!found) {
-          sender.sendMessage(target.getName() + " does not have a 5-minute ticket to cash.");
-          target.sendMessage("You do not have a 5-minute ticket to cash.");
+          if (!found) {
+            sender.sendMessage(target.getName() + " does not have a 5-minute ticket to cash.");
+            target.sendMessage("You do not have a 5-minute ticket to cash.");
+          }
+        } else {
+          sender.sendMessage(
+              target.getName()
+                  + " cannot cash a ticket unless they have 55 minutes or less remaining.");
+          target.sendMessage(
+              "You can only cash a ticket if you have 55 minutes or less remaining.");
         }
       }
       return anySuccess;
@@ -428,13 +435,13 @@ public class StStatusCommand implements CommandExecutor {
     ItemStack dailyHour = new ItemStack(Material.SLIME_BALL);
     ItemMeta dailyMeta = dailyHour.getItemMeta();
     dailyMeta.displayName(
-        Component.text("Daily Hour Grant")
+        Component.text("Daily Hour Reset")
             .decoration(TextDecoration.ITALIC, false)
             .color(NamedTextColor.WHITE));
     List<String> dailyLoreRaw = new ArrayList<>();
-    dailyLoreRaw.add("Every day at 1 AM, all players are granted an additional hour of gametime.");
+    dailyLoreRaw.add("Every day at 1 AM, playtime is reset back to an hour.");
     dailyLoreRaw.add(" ");
-    dailyLoreRaw.add("Any unused time is carried over to the next day!");
+    dailyLoreRaw.add("You can use tickets to fill your playtime bar back up!");
     List<Component> dailyLore = new ArrayList<>();
     for (String line : dailyLoreRaw) {
       wrapLoreLine(line, 25)
@@ -451,8 +458,9 @@ public class StStatusCommand implements CommandExecutor {
     // Info item: 5-minute tickets (minus 10 minutes)
     int tickets = 0;
     if (secondsLeft > 600) {
-      tickets = (int) ((secondsLeft - 600) / 300);
+      tickets = (int) ((secondsLeft - 900) / 300);
     }
+
     ItemStack ticketItem = new ItemStack(Material.PAPER);
     ItemMeta ticketMeta = ticketItem.getItemMeta();
     ticketMeta.displayName(
@@ -480,7 +488,7 @@ public class StStatusCommand implements CommandExecutor {
 
     int maxBankable = 0;
     if (secondsLeft > 600) {
-      maxBankable = (int) ((secondsLeft - 600) / 300);
+      maxBankable = (int) ((secondsLeft - 900) / 300);
     }
 
     // Bottom row, middle slot (slot 49): Banked 5-Minute Chunks

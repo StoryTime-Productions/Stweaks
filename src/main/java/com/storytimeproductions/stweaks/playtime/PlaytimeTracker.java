@@ -2,16 +2,13 @@ package com.storytimeproductions.stweaks.playtime;
 
 import com.storytimeproductions.stweaks.config.SettingsManager;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,32 +41,27 @@ public class PlaytimeTracker {
     new BukkitRunnable() {
       @Override
       public void run() {
-        // Use America/New_York for Eastern Time
         ZoneId easternZone = ZoneId.of("America/New_York");
         ZonedDateTime nowEastern = ZonedDateTime.now(easternZone);
-        LocalDate today = nowEastern.toLocalDate();
         int currentHour = nowEastern.getHour();
 
         for (UUID uuid : playtimeMap.keySet()) {
           PlaytimeData data = playtimeMap.get(uuid);
 
-          // Grant 1 hour per missed day at 1 AM Eastern if not already granted today
-          if (currentHour >= 1) {
-            LocalDate lastGrant = data.getLastHourGrantDate();
-            long daysMissed = 0;
-            if (lastGrant == null) {
-              daysMissed = 1;
-            } else {
-              daysMissed = ChronoUnit.DAYS.between(lastGrant, today);
-              if (daysMissed < 1) {
-                daysMissed = 1;
-              }
-            }
-            if (lastGrant == null || !lastGrant.isEqual(today)) {
-              data.addAvailableSeconds(daysMissed * 3600, false);
-              data.setLastHourGrantDate(today);
+          Integer lastHourChecked = data.getLastHourChecked();
+          if (lastHourChecked == null) {
+            data.setLastHourChecked(currentHour);
+            continue;
+          }
+
+          // If we have crossed from before 1 AM to 1 AM or later
+          if (lastHourChecked < 1 && currentHour >= 1) {
+            if (data.getAvailableSeconds() <= 3600) {
+              data.setAvailableSeconds(3600);
             }
           }
+
+          data.setLastHourChecked(currentHour);
         }
 
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -79,11 +71,11 @@ public class PlaytimeTracker {
             continue;
           }
           if (!playerData.isAfk()) {
-            playerData.addAvailableSeconds(-1, false);
+            playerData.addAvailableSeconds(-1);
           } else {
             Long afkStart = playerData.getAfkSince();
             if (afkStart != null && System.currentTimeMillis() - afkStart <= 3 * 60 * 1000) {
-              playerData.addAvailableSeconds(-1, false);
+              playerData.addAvailableSeconds(-1);
             }
           }
         }
@@ -231,10 +223,10 @@ public class PlaytimeTracker {
    * Retrieves the playtime data for a specific player.
    *
    * @param uuid The unique identifier of the player.
-   * @return The playtime data for the player, or null if no data exists.
+   * @return The playtime data for the player, or a new PlaytimeData if none exists.
    */
   public static PlaytimeData getData(UUID uuid) {
-    return playtimeMap.get(uuid);
+    return playtimeMap.computeIfAbsent(uuid, k -> new PlaytimeData());
   }
 
   /**
@@ -315,13 +307,7 @@ public class PlaytimeTracker {
         } catch (SQLException ex) {
           ex.printStackTrace();
         }
-        LocalDate lastHourGrant = null;
-        Date grantDateSql = rs.getDate("last_hour_grant");
-        if (grantDateSql != null) {
-          lastHourGrant = grantDateSql.toLocalDate();
-        }
         PlaytimeData data = new PlaytimeData(availableSeconds);
-        data.setLastHourGrantDate(lastHourGrant);
         data.setBankedTickets(bankedTickets);
 
         UUID uuid = UUID.fromString(rs.getString("uuid"));
@@ -343,11 +329,10 @@ public class PlaytimeTracker {
   public static void saveToDatabase(Connection conn) {
     String sql =
         """
-        INSERT INTO playtime (uuid, available_seconds, last_hour_grant, banked_tickets)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO playtime (uuid, available_seconds, banked_tickets)
+        VALUES (?, ?, ?)
         ON CONFLICT(uuid) DO UPDATE SET
           available_seconds = excluded.available_seconds,
-          last_hour_grant = excluded.last_hour_grant,
           banked_tickets = excluded.banked_tickets
         """;
 
@@ -355,13 +340,7 @@ public class PlaytimeTracker {
       for (var entry : playtimeMap.entrySet()) {
         ps.setString(1, entry.getKey().toString());
         ps.setLong(2, entry.getValue().getAvailableSeconds());
-        LocalDate grantDate = entry.getValue().getLastHourGrantDate();
-        if (grantDate != null) {
-          ps.setDate(3, Date.valueOf(grantDate));
-        } else {
-          ps.setNull(3, java.sql.Types.DATE);
-        }
-        ps.setInt(4, entry.getValue().getBankedTickets());
+        ps.setInt(3, entry.getValue().getBankedTickets()); // <-- fix index from 4 to 3
         ps.addBatch();
       }
       ps.executeBatch();
