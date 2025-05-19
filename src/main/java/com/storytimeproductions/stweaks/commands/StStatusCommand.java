@@ -148,35 +148,67 @@ public class StStatusCommand implements CommandExecutor {
         return true;
       }
       String targetName = args[1];
-      Player target = Bukkit.getPlayerExact(targetName);
-      if (target == null) {
-        sender.sendMessage("Could not find player: " + targetName);
-        return false;
-      }
-      PlaytimeData data = PlaytimeTracker.getData(target.getUniqueId());
-      if (data == null) {
-        sender.sendMessage("No playtime data found for " + targetName + ".");
-        return false;
-      }
-      // Only allow if after removing 5 minutes, available seconds will be > 600
-      if (data.getAvailableSeconds() - 300 >= 600) {
-        data.addAvailableSeconds(-300, false);
-        // Give the player a nametag named "5-minute ticket" with custom model data
-        ItemStack ticket = new ItemStack(Material.NAME_TAG);
-        ItemMeta meta = ticket.getItemMeta();
-        meta.displayName(Component.text("5-minute ticket").color(NamedTextColor.GOLD));
-        // Set custom item_model using PersistentDataContainer
-        meta.setItemModel(new NamespacedKey("storytime", "time_ticket"));
-        ticket.setItemMeta(meta);
-        target.getInventory().addItem(ticket);
-        target.sendMessage("You received a 5-minute ticket!");
-        return true;
+      List<Player> targets = new ArrayList<>();
+      if (targetName.equalsIgnoreCase("@a")) {
+        targets.addAll(Bukkit.getOnlinePlayers());
+      } else if (targetName.equalsIgnoreCase("@p")) {
+        Player nearest = null;
+        if (sender instanceof BlockCommandSender blockSender) {
+          double minDist = Double.MAX_VALUE;
+          for (Player p : Bukkit.getOnlinePlayers()) {
+            double dist =
+                p.getLocation().distance(blockSender.getBlock().getLocation().add(0.5, 0.5, 0.5));
+            if (dist < minDist) {
+              minDist = dist;
+              nearest = p;
+            }
+          }
+        } else if (sender instanceof Player playerSender) {
+          nearest = playerSender;
+        } else {
+          nearest = Bukkit.getOnlinePlayers().stream().findFirst().orElse(null);
+        }
+        if (nearest != null) {
+          targets.add(nearest);
+        }
       } else {
-        sender.sendMessage(
-            "Player must have more than 10 minutes remaining after removing 5 minutes.");
-        target.sendMessage("Ticketing failed. You must have more than 10 minutes remaining.");
-        return false;
+        Player player = Bukkit.getPlayerExact(targetName);
+        if (player != null) {
+          targets.add(player);
+        } else {
+          sender.sendMessage("Could not find player: " + targetName);
+          return false;
+        }
       }
+
+      boolean anySuccess = false;
+      for (Player target : targets) {
+        PlaytimeData data = PlaytimeTracker.getData(target.getUniqueId());
+        if (data == null) {
+          sender.sendMessage("No playtime data found for " + target.getName() + ".");
+          continue;
+        }
+        // Only allow if after removing 5 minutes, available seconds will be > 600
+        if (data.getAvailableSeconds() - 300 >= 600) {
+          data.addAvailableSeconds(-300, false);
+          // Give the player a nametag named "5-minute ticket" with custom model data
+          ItemStack ticket = new ItemStack(Material.NAME_TAG);
+          ItemMeta meta = ticket.getItemMeta();
+          meta.displayName(Component.text("5-minute ticket").color(NamedTextColor.GOLD));
+          // Set custom item_model using PersistentDataContainer
+          meta.setItemModel(new NamespacedKey("storytime", "time_ticket"));
+          ticket.setItemMeta(meta);
+          target.getInventory().addItem(ticket);
+          target.sendMessage("You received a 5-minute ticket!");
+          anySuccess = true;
+        } else {
+          sender.sendMessage(
+              target.getName()
+                  + " must have more than 10 minutes remaining after removing 5 minutes.");
+          target.sendMessage("Ticketing failed. You must have more than 10 minutes remaining.");
+        }
+      }
+      return anySuccess;
     }
 
     // /ststatus cash <player>
@@ -186,47 +218,78 @@ public class StStatusCommand implements CommandExecutor {
         return true;
       }
       String targetName = args[1];
-      Player target = Bukkit.getPlayerExact(targetName);
-      if (target == null) {
-        sender.sendMessage("Could not find player: " + targetName);
-        return false;
-      }
-      PlaytimeData data = PlaytimeTracker.getData(target.getUniqueId());
-      if (data == null) {
-        sender.sendMessage("No playtime data found for " + targetName + ".");
-        return false;
-      }
-      // Search for a ticket with the correct item_model in the player's inventory
-      ItemStack[] contents = target.getInventory().getContents();
-      boolean found = false;
-      for (int i = 0; i < contents.length; i++) {
-        ItemStack item = contents[i];
-        if (item != null && item.getType() == Material.NAME_TAG && item.hasItemMeta()) {
-          ItemMeta meta = item.getItemMeta();
-          NamespacedKey key = new NamespacedKey("storytime", "time_ticket");
-          NamespacedKey model = meta.getItemModel();
-          if (key.equals(model)) {
-            // Remove one ticket
-            if (item.getAmount() > 1) {
-              item.setAmount(item.getAmount() - 1);
-            } else {
-              target.getInventory().setItem(i, null);
+      List<Player> targets = new ArrayList<>();
+      if (targetName.equalsIgnoreCase("@a")) {
+        targets.addAll(Bukkit.getOnlinePlayers());
+      } else if (targetName.equalsIgnoreCase("@p")) {
+        Player nearest = null;
+        if (sender instanceof BlockCommandSender blockSender) {
+          double minDist = Double.MAX_VALUE;
+          for (Player p : Bukkit.getOnlinePlayers()) {
+            double dist =
+                p.getLocation().distance(blockSender.getBlock().getLocation().add(0.5, 0.5, 0.5));
+            if (dist < minDist) {
+              minDist = dist;
+              nearest = p;
             }
-            // Add 5 minutes (300 seconds)
-            data.addAvailableSeconds(300, false);
-            target.sendMessage("You cashed in a 5-minute ticket!");
-            sender.sendMessage("Cashed a 5-minute ticket for " + target.getName() + ".");
-            found = true;
-            break;
           }
+        } else if (sender instanceof Player playerSender) {
+          nearest = playerSender;
+        } else {
+          nearest = Bukkit.getOnlinePlayers().stream().findFirst().orElse(null);
+        }
+        if (nearest != null) {
+          targets.add(nearest);
+        }
+      } else {
+        Player player = Bukkit.getPlayerExact(targetName);
+        if (player != null) {
+          targets.add(player);
+        } else {
+          sender.sendMessage("Could not find player: " + targetName);
+          return false;
         }
       }
-      if (!found) {
-        sender.sendMessage(target.getName() + " does not have a 5-minute ticket to cash.");
-        target.sendMessage("You do not have a 5-minute ticket to cash.");
-        return false;
+
+      boolean anySuccess = false;
+      for (Player target : targets) {
+        PlaytimeData data = PlaytimeTracker.getData(target.getUniqueId());
+        if (data == null) {
+          sender.sendMessage("No playtime data found for " + target.getName() + ".");
+          continue;
+        }
+        // Search for a ticket with the correct item_model in the player's inventory
+        ItemStack[] contents = target.getInventory().getContents();
+        boolean found = false;
+        for (int i = 0; i < contents.length; i++) {
+          ItemStack item = contents[i];
+          if (item != null && item.getType() == Material.NAME_TAG && item.hasItemMeta()) {
+            ItemMeta meta = item.getItemMeta();
+            NamespacedKey key = new NamespacedKey("storytime", "time_ticket");
+            NamespacedKey model = meta.getItemModel();
+            if (key.equals(model)) {
+              // Remove one ticket
+              if (item.getAmount() > 1) {
+                item.setAmount(item.getAmount() - 1);
+              } else {
+                target.getInventory().setItem(i, null);
+              }
+              // Add 5 minutes (300 seconds)
+              data.addAvailableSeconds(300, false);
+              target.sendMessage("You cashed in a 5-minute ticket!");
+              sender.sendMessage("Cashed a 5-minute ticket for " + target.getName() + ".");
+              found = true;
+              anySuccess = true;
+              break;
+            }
+          }
+        }
+        if (!found) {
+          sender.sendMessage(target.getName() + " does not have a 5-minute ticket to cash.");
+          target.sendMessage("You do not have a 5-minute ticket to cash.");
+        }
       }
-      return true;
+      return anySuccess;
     }
 
     if (sender instanceof Player player) {
