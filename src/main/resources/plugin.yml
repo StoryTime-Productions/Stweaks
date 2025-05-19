@@ -37,6 +37,10 @@ commands:
     description: Opens the cosmetics GUI
     usage: /stcosmetics
     aliases: cosmetics
+  stcasino:
+    description: Opens the casino GUI
+    usage: /stcasino
+    aliases: casino
 
 permissions:
   stweaks.stpets:

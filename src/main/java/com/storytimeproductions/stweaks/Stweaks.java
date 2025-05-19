@@ -4,7 +4,7 @@ import com.storytimeproductions.stweaks.commands.BiomeTrackerCommand;
 import com.storytimeproductions.stweaks.commands.CosmeticsMenuCommand;
 import com.storytimeproductions.stweaks.commands.PetsMenuCommand;
 import com.storytimeproductions.stweaks.commands.QuestMenuCommand;
-import com.storytimeproductions.stweaks.commands.StBoostCommand;
+import com.storytimeproductions.stweaks.commands.StCasinoCommand;
 import com.storytimeproductions.stweaks.commands.StLobbyCommand;
 import com.storytimeproductions.stweaks.commands.StSpawnCommand;
 import com.storytimeproductions.stweaks.commands.StStatusCommand;
@@ -91,7 +91,7 @@ public class Stweaks extends JavaPlugin {
 
     // Register commands
     getCommand("ststatus").setExecutor(new StStatusCommand(this));
-    getCommand("stboost").setExecutor(new StBoostCommand());
+    getCommand("stcasino").setExecutor(new StCasinoCommand());
     getCommand("stlobby").setExecutor(new StLobbyCommand(getConfig()));
     getCommand("spawn").setExecutor(new StSpawnCommand(getConfig()));
     getCommand("biometracker").setExecutor(new BiomeTrackerCommand(trackerManager, this));
