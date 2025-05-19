@@ -352,7 +352,7 @@ public class StStatusCommand implements CommandExecutor {
           .forEach(
               l ->
                   socialLoreInfo.add(
-                      Component.text(line, NamedTextColor.GREEN)
+                      Component.text(l, NamedTextColor.GREEN)
                           .decoration(TextDecoration.ITALIC, true)));
     }
     socialMetaInfo.lore(socialLoreInfo);
@@ -376,7 +376,7 @@ public class StStatusCommand implements CommandExecutor {
           .forEach(
               l ->
                   dailyLore.add(
-                      Component.text(line, NamedTextColor.GREEN)
+                      Component.text(l, NamedTextColor.GREEN)
                           .decoration(TextDecoration.ITALIC, true)));
     }
     dailyMeta.lore(dailyLore);
