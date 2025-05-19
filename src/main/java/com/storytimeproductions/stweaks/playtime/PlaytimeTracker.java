@@ -65,7 +65,7 @@ public class PlaytimeTracker {
         for (Player player : Bukkit.getOnlinePlayers()) {
           PlaytimeData playerData =
               playtimeMap.computeIfAbsent(player.getUniqueId(), k -> new PlaytimeData());
-          if ("lobby".equalsIgnoreCase(player.getWorld().getName())) {
+          if (!player.getWorld().getName().startsWith("world")) {
             continue;
           }
           if (!playerData.isAfk()) {
