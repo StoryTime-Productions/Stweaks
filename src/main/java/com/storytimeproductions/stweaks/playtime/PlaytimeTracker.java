@@ -61,7 +61,9 @@ public class PlaytimeTracker {
               daysMissed = 1;
             } else {
               daysMissed = ChronoUnit.DAYS.between(lastGrant, today);
-              if (daysMissed < 1) daysMissed = 1;
+              if (daysMissed < 1) {
+                daysMissed = 1;
+              }
             }
             if (lastGrant == null || !lastGrant.isEqual(today)) {
               data.addAvailableSeconds(daysMissed * 3600, false);
