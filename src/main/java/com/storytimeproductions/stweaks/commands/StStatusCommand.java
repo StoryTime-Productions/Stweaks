@@ -76,6 +76,7 @@ public class StStatusCommand implements CommandExecutor {
         sender.sendMessage("You don't have permission to add playtime.");
         return true;
       }
+
       String targetName = args[1];
       long secondsToAdd;
       try {

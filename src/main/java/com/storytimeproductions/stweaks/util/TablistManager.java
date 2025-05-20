@@ -86,7 +86,7 @@ public class TablistManager {
     switch (minutesRemaining) {
       case 10:
         sendTitle(
-            player, "10 Minutes Left", "Finish up, you’re almost done!", NamedTextColor.YELLOW);
+            player, "10 Minutes Left", "Finish up, you're almost done!", NamedTextColor.YELLOW);
         break;
       case 5:
         sendTitle(player, "5 Minutes Left!", "Wrap things up quickly!", NamedTextColor.GOLD);

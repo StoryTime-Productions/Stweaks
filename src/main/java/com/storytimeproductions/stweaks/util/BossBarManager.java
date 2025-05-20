@@ -82,14 +82,13 @@ public class BossBarManager {
     // Get or set baseline for this session
     long baseline = playerBaselineSeconds.computeIfAbsent(uuid, k -> totalSecondsLeft);
 
-    // If player has 0 or less seconds, kick them
-    if (totalSecondsLeft <= 0) {
-      Component kickMessage =
+    // If player has 0 or less seconds, teleport them to the lobby world using
+    if (totalSecondsLeft <= 0 && player.getWorld().getName().startsWith("world")) {
+      Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mv tp " + player.getName() + " lobby");
+      player.sendMessage(
           Component.text("Your daily hour is up! Come back tomorrow.")
               .color(NamedTextColor.RED)
-              .decorate(TextDecoration.BOLD);
-
-      player.kick(kickMessage);
+              .decorate(TextDecoration.BOLD));
       return;
     }
 
