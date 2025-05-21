@@ -13,7 +13,11 @@
         "id": "minecraft:diamond_boots",
         "components": {
             "minecraft:item_model": "storytime:pink_boots",
-            "minecraft:item_name": "{\"text\":\"Rose Quartz Boots\"}"
+            "minecraft:item_name": "{\"text\":\"Rose Quartz Boots\"}",
+            "minecraft:equippable": {
+                "slot": "feet",
+                "asset_id": "storytime:pink"
+            }
         },
         "count": 1
     }

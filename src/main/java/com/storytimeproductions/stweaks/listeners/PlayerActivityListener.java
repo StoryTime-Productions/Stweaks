@@ -88,7 +88,7 @@ public class PlayerActivityListener implements Listener {
             () -> player.performCommand("lobby"),
             10L);
 
-    long currentSeconds = PlaytimeTracker.getSeconds(player.getUniqueId());
+    double currentSeconds = PlaytimeTracker.getSeconds(player.getUniqueId());
     BossBarManager.playerBaselineSeconds.put(player.getUniqueId(), currentSeconds);
   }
 
@@ -138,11 +138,10 @@ public class PlayerActivityListener implements Listener {
         if (data == null) {
           return;
         }
-        long secondsLeft = data.getAvailableSeconds();
-        // Only allow if after banking, available seconds will be > 600
+        double secondsLeft = data.getAvailableSeconds();
         if (secondsLeft - 300 > 600) {
           data.setBankedTickets(data.getBankedTickets() + 1);
-          data.addAvailableSeconds(-300, false);
+          data.addAvailableSeconds(-300);
           player.sendMessage("Added a 5-minute chunk to your bank!");
         } else {
           player.sendMessage(
@@ -163,9 +162,13 @@ public class PlayerActivityListener implements Listener {
         }
         int banked = data.getBankedTickets();
         if (banked > 0) {
-          data.setBankedTickets(banked - 1);
-          data.addAvailableSeconds(300, false); // Use addAvailableSeconds
-          player.sendMessage("Removed a 5-minute chunk from your bank!");
+          if (data.getAvailableSeconds() < 3600 - 300) {
+            data.setBankedTickets(banked - 1);
+            data.addAvailableSeconds(300);
+            player.sendMessage("Removed a 5-minute chunk from your bank!");
+          } else {
+            player.sendMessage("You can only add time if you have less than 55 minutes remaining.");
+          }
         } else {
           player.sendMessage("You have no banked chunks to remove.");
         }

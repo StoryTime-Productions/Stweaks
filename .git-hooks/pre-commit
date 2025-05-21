@@ -1,9 +1,15 @@
 #!/bin/sh
 
 ./gradlew spotlessApply
-if [ $? -eq 0 ]; then
-  git add .
-else
+if [ $? -ne 0 ]; then
   echo "spotlessApply failed. Commit aborted."
   exit 1
 fi
+
+./gradlew checkstyleMain
+if [ $? -ne 0 ]; then
+  echo "checkstyleMain failed. Commit aborted."
+  exit 1
+fi
+
+git add .

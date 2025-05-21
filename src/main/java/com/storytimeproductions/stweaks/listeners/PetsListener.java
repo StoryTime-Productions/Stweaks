@@ -226,7 +226,7 @@ public class PetsListener implements Listener {
    * @return true if the item is a pet, false otherwise.
    */
   private boolean isPetItem(ItemStack item) {
-    if (!item.hasItemMeta()) {
+    if (item == null || !item.hasItemMeta()) {
       return false;
     }
 
@@ -237,7 +237,12 @@ public class PetsListener implements Listener {
       return false;
     }
 
-    return itemModel.getNamespace().equals("hotbar_pets");
+    // Also check that the key (pet id) is a valid pet in the petsManager
+    if (!itemModel.getNamespace().equals("hotbar_pets")) {
+      return false;
+    }
+    String petId = itemModel.getKey();
+    return petsManager.getPetById(petId) != null;
   }
 
   /**

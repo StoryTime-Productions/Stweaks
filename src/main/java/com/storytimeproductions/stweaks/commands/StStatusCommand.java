@@ -76,6 +76,7 @@ public class StStatusCommand implements CommandExecutor {
         sender.sendMessage("You don't have permission to add playtime.");
         return true;
       }
+
       String targetName = args[1];
       long secondsToAdd;
       try {
@@ -130,7 +131,7 @@ public class StStatusCommand implements CommandExecutor {
           PlaytimeTracker.setPlaytime(targetIdentifer, data);
         }
 
-        success = data.addAvailableSeconds(secondsToAdd, true);
+        success = data.addAvailableSeconds(secondsToAdd);
         sender.sendMessage("Added " + secondsToAdd + " seconds to " + target.getName() + ".");
 
         if (!success) {
@@ -148,35 +149,67 @@ public class StStatusCommand implements CommandExecutor {
         return true;
       }
       String targetName = args[1];
-      Player target = Bukkit.getPlayerExact(targetName);
-      if (target == null) {
-        sender.sendMessage("Could not find player: " + targetName);
-        return false;
-      }
-      PlaytimeData data = PlaytimeTracker.getData(target.getUniqueId());
-      if (data == null) {
-        sender.sendMessage("No playtime data found for " + targetName + ".");
-        return false;
-      }
-      // Only allow if after removing 5 minutes, available seconds will be > 600
-      if (data.getAvailableSeconds() - 300 >= 600) {
-        data.addAvailableSeconds(-300, false);
-        // Give the player a nametag named "5-minute ticket" with custom model data
-        ItemStack ticket = new ItemStack(Material.NAME_TAG);
-        ItemMeta meta = ticket.getItemMeta();
-        meta.displayName(Component.text("5-minute ticket").color(NamedTextColor.GOLD));
-        // Set custom item_model using PersistentDataContainer
-        meta.setItemModel(new NamespacedKey("storytime", "time_ticket"));
-        ticket.setItemMeta(meta);
-        target.getInventory().addItem(ticket);
-        target.sendMessage("You received a 5-minute ticket!");
-        return true;
+      List<Player> targets = new ArrayList<>();
+      if (targetName.equalsIgnoreCase("@a")) {
+        targets.addAll(Bukkit.getOnlinePlayers());
+      } else if (targetName.equalsIgnoreCase("@p")) {
+        Player nearest = null;
+        if (sender instanceof BlockCommandSender blockSender) {
+          double minDist = Double.MAX_VALUE;
+          for (Player p : Bukkit.getOnlinePlayers()) {
+            double dist =
+                p.getLocation().distance(blockSender.getBlock().getLocation().add(0.5, 0.5, 0.5));
+            if (dist < minDist) {
+              minDist = dist;
+              nearest = p;
+            }
+          }
+        } else if (sender instanceof Player playerSender) {
+          nearest = playerSender;
+        } else {
+          nearest = Bukkit.getOnlinePlayers().stream().findFirst().orElse(null);
+        }
+        if (nearest != null) {
+          targets.add(nearest);
+        }
       } else {
-        sender.sendMessage(
-            "Player must have more than 10 minutes remaining after removing 5 minutes.");
-        target.sendMessage("Ticketing failed. You must have more than 10 minutes remaining.");
-        return false;
+        Player player = Bukkit.getPlayerExact(targetName);
+        if (player != null) {
+          targets.add(player);
+        } else {
+          sender.sendMessage("Could not find player: " + targetName);
+          return false;
+        }
       }
+
+      boolean anySuccess = false;
+      for (Player target : targets) {
+        PlaytimeData data = PlaytimeTracker.getData(target.getUniqueId());
+        if (data == null) {
+          sender.sendMessage("No playtime data found for " + target.getName() + ".");
+          continue;
+        }
+        // Only allow if after removing 5 minutes, available seconds will be > 600
+        if (data.getAvailableSeconds() - 300 >= 600) {
+          data.addAvailableSeconds(-300);
+          // Give the player a nametag named "5-minute ticket" with custom model data
+          ItemStack ticket = new ItemStack(Material.NAME_TAG);
+          ItemMeta meta = ticket.getItemMeta();
+          meta.displayName(Component.text("5-minute ticket").color(NamedTextColor.GOLD));
+          // Set custom item_model using PersistentDataContainer
+          meta.setItemModel(new NamespacedKey("storytime", "time_ticket"));
+          ticket.setItemMeta(meta);
+          target.getInventory().addItem(ticket);
+          target.sendMessage("You received a 5-minute ticket!");
+          anySuccess = true;
+        } else {
+          sender.sendMessage(
+              target.getName()
+                  + " must have more than 10 minutes remaining after removing 5 minutes.");
+          target.sendMessage("Ticketing failed. You must have more than 10 minutes remaining.");
+        }
+      }
+      return anySuccess;
     }
 
     // /ststatus cash <player>
@@ -186,47 +219,87 @@ public class StStatusCommand implements CommandExecutor {
         return true;
       }
       String targetName = args[1];
-      Player target = Bukkit.getPlayerExact(targetName);
-      if (target == null) {
-        sender.sendMessage("Could not find player: " + targetName);
-        return false;
-      }
-      PlaytimeData data = PlaytimeTracker.getData(target.getUniqueId());
-      if (data == null) {
-        sender.sendMessage("No playtime data found for " + targetName + ".");
-        return false;
-      }
-      // Search for a ticket with the correct item_model in the player's inventory
-      ItemStack[] contents = target.getInventory().getContents();
-      boolean found = false;
-      for (int i = 0; i < contents.length; i++) {
-        ItemStack item = contents[i];
-        if (item != null && item.getType() == Material.NAME_TAG && item.hasItemMeta()) {
-          ItemMeta meta = item.getItemMeta();
-          NamespacedKey key = new NamespacedKey("storytime", "time_ticket");
-          NamespacedKey model = meta.getItemModel();
-          if (key.equals(model)) {
-            // Remove one ticket
-            if (item.getAmount() > 1) {
-              item.setAmount(item.getAmount() - 1);
-            } else {
-              target.getInventory().setItem(i, null);
+      List<Player> targets = new ArrayList<>();
+      if (targetName.equalsIgnoreCase("@a")) {
+        targets.addAll(Bukkit.getOnlinePlayers());
+      } else if (targetName.equalsIgnoreCase("@p")) {
+        Player nearest = null;
+        if (sender instanceof BlockCommandSender blockSender) {
+          double minDist = Double.MAX_VALUE;
+          for (Player p : Bukkit.getOnlinePlayers()) {
+            if (p.getWorld().equals(blockSender.getBlock().getWorld())) {
+              double dist =
+                  p.getLocation().distance(blockSender.getBlock().getLocation().add(0.5, 0.5, 0.5));
+              if (dist < minDist) {
+                minDist = dist;
+                nearest = p;
+              }
             }
-            // Add 5 minutes (300 seconds)
-            data.addAvailableSeconds(300, false);
-            target.sendMessage("You cashed in a 5-minute ticket!");
-            sender.sendMessage("Cashed a 5-minute ticket for " + target.getName() + ".");
-            found = true;
-            break;
           }
+        } else if (sender instanceof Player playerSender) {
+          nearest = playerSender;
+        } else {
+          nearest = Bukkit.getOnlinePlayers().stream().findFirst().orElse(null);
+        }
+        if (nearest != null) {
+          targets.add(nearest);
+        }
+      } else {
+        Player player = Bukkit.getPlayerExact(targetName);
+        if (player != null) {
+          targets.add(player);
+        } else {
+          sender.sendMessage("Could not find player: " + targetName);
+          return false;
         }
       }
-      if (!found) {
-        sender.sendMessage(target.getName() + " does not have a 5-minute ticket to cash.");
-        target.sendMessage("You do not have a 5-minute ticket to cash.");
-        return false;
+
+      boolean anySuccess = false;
+      for (Player target : targets) {
+        PlaytimeData data = PlaytimeTracker.getData(target.getUniqueId());
+        if (data == null) {
+          sender.sendMessage("No playtime data found for " + target.getName() + ".");
+          continue;
+        }
+        if (data.getAvailableSeconds() <= 3300) {
+          ItemStack[] contents = target.getInventory().getContents();
+          boolean found = false;
+          for (int i = 0; i < contents.length; i++) {
+            ItemStack item = contents[i];
+            if (item != null && item.getType() == Material.NAME_TAG && item.hasItemMeta()) {
+              ItemMeta meta = item.getItemMeta();
+              NamespacedKey key = new NamespacedKey("storytime", "time_ticket");
+              NamespacedKey model = meta.getItemModel();
+              if (key.equals(model)) {
+                // Remove one ticket
+                if (item.getAmount() > 1) {
+                  item.setAmount(item.getAmount() - 1);
+                } else {
+                  target.getInventory().setItem(i, null);
+                }
+                // Add 5 minutes (300 seconds)
+                data.addAvailableSeconds(300);
+                target.sendMessage("You cashed in a 5-minute ticket!");
+                sender.sendMessage("Cashed a 5-minute ticket for " + target.getName() + ".");
+                found = true;
+                anySuccess = true;
+                break;
+              }
+            }
+          }
+          if (!found) {
+            sender.sendMessage(target.getName() + " does not have a 5-minute ticket to cash.");
+            target.sendMessage("You do not have a 5-minute ticket to cash.");
+          }
+        } else {
+          sender.sendMessage(
+              target.getName()
+                  + " cannot cash a ticket unless they have 55 minutes or less remaining.");
+          target.sendMessage(
+              "You can only cash a ticket if you have 55 minutes or less remaining.");
+        }
       }
-      return true;
+      return anySuccess;
     }
 
     if (sender instanceof Player player) {
@@ -264,12 +337,12 @@ public class StStatusCommand implements CommandExecutor {
 
     // Get playtime data
     PlaytimeData data = PlaytimeTracker.getData(player.getUniqueId());
-    long secondsLeft = data != null ? data.getAvailableSeconds() : 0;
+    double secondsLeft = data != null ? data.getAvailableSeconds() : 0;
 
     // Format as HH:MM:SS
-    long hours = secondsLeft / 3600;
-    long minutes = (secondsLeft % 3600) / 60;
-    long seconds = secondsLeft % 60;
+    double hours = secondsLeft / 3600;
+    double minutes = (secondsLeft % 3600) / 60;
+    double seconds = secondsLeft % 60;
 
     // Format as "You have X hour(s), Y minute(s) and Z second(s) left"
     String formatted = formatTimeLeft(hours, minutes, seconds);
@@ -363,13 +436,13 @@ public class StStatusCommand implements CommandExecutor {
     ItemStack dailyHour = new ItemStack(Material.SLIME_BALL);
     ItemMeta dailyMeta = dailyHour.getItemMeta();
     dailyMeta.displayName(
-        Component.text("Daily Hour Grant")
+        Component.text("Daily Hour Reset")
             .decoration(TextDecoration.ITALIC, false)
             .color(NamedTextColor.WHITE));
     List<String> dailyLoreRaw = new ArrayList<>();
-    dailyLoreRaw.add("Every day at 1 AM, all players are granted an additional hour of gametime.");
+    dailyLoreRaw.add("Every day at 1 AM, playtime is reset back to an hour.");
     dailyLoreRaw.add(" ");
-    dailyLoreRaw.add("Any unused time is carried over to the next day!");
+    dailyLoreRaw.add("You can use tickets to fill your playtime bar back up!");
     List<Component> dailyLore = new ArrayList<>();
     for (String line : dailyLoreRaw) {
       wrapLoreLine(line, 25)
@@ -386,8 +459,9 @@ public class StStatusCommand implements CommandExecutor {
     // Info item: 5-minute tickets (minus 10 minutes)
     int tickets = 0;
     if (secondsLeft > 600) {
-      tickets = (int) ((secondsLeft - 600) / 300);
+      tickets = (int) ((secondsLeft - 900) / 300);
     }
+
     ItemStack ticketItem = new ItemStack(Material.PAPER);
     ItemMeta ticketMeta = ticketItem.getItemMeta();
     ticketMeta.displayName(
@@ -415,7 +489,7 @@ public class StStatusCommand implements CommandExecutor {
 
     int maxBankable = 0;
     if (secondsLeft > 600) {
-      maxBankable = (int) ((secondsLeft - 600) / 300);
+      maxBankable = (int) ((secondsLeft - 900) / 300);
     }
 
     // Bottom row, middle slot (slot 49): Banked 5-Minute Chunks
@@ -495,10 +569,10 @@ public class StStatusCommand implements CommandExecutor {
           return;
         }
         PlaytimeData data = PlaytimeTracker.getData(player.getUniqueId());
-        long secondsLeft = data != null ? data.getAvailableSeconds() : 0;
-        long hours = secondsLeft / 3600;
-        long minutes = (secondsLeft % 3600) / 60;
-        long seconds = secondsLeft % 60;
+        double secondsLeft = data != null ? data.getAvailableSeconds() : 0;
+        double hours = secondsLeft / 3600;
+        double minutes = (secondsLeft % 3600) / 60;
+        double seconds = secondsLeft % 60;
         String formatted = formatTimeLeft(hours, minutes, seconds);
         String loreText = formatted;
         ItemStack timeLeft = new ItemStack(Material.CLOCK);
@@ -551,26 +625,29 @@ public class StStatusCommand implements CommandExecutor {
   }
 
   /** Formats the time left as a human-readable string. */
-  private static String formatTimeLeft(long hours, long minutes, long seconds) {
+  private static String formatTimeLeft(double hours, double minutes, double seconds) {
+    int h = (int) hours;
+    int m = (int) minutes;
+    int s = (int) seconds;
     StringBuilder sb = new StringBuilder("You have ");
-    boolean hasHours = hours > 0;
-    boolean hasMinutes = minutes > 0;
-    boolean hasSeconds = seconds > 0;
+    boolean hasHours = h > 0;
+    boolean hasMinutes = m > 0;
+    boolean hasSeconds = s > 0;
 
     if (hasHours) {
-      sb.append(hours).append(" hour").append(hours == 1 ? "" : "s");
+      sb.append(h).append(" hour").append(h == 1 ? "" : "s");
     }
     if (hasMinutes) {
       if (hasHours) {
         sb.append(", ");
       }
-      sb.append(minutes).append(" minute").append(minutes == 1 ? "" : "s");
+      sb.append(m).append(" minute").append(m == 1 ? "" : "s");
     }
     if (hasSeconds) {
       if (hasHours || hasMinutes) {
         sb.append(" and ");
       }
-      sb.append(seconds).append(" second").append(seconds == 1 ? "" : "s");
+      sb.append(s).append(" second").append(s == 1 ? "" : "s");
     }
     sb.append(" left");
     return sb.toString();

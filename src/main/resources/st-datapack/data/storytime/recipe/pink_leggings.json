@@ -13,7 +13,11 @@
         "id": "minecraft:diamond_leggings",
         "components": {
             "minecraft:item_model": "storytime:pink_leggings",
-            "minecraft:item_name": "{\"text\":\"Rose Quartz Leggings\"}"
+            "minecraft:item_name": "{\"text\":\"Rose Quartz Leggings\"}",
+            "minecraft:equippable": {
+                "slot": "legs",
+                "asset_id": "storytime:pink"
+            }
         },
         "count": 1
     }

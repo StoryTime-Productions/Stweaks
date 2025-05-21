@@ -25,7 +25,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class BossBarManager {
   private static JavaPlugin plugin;
   private static final Map<UUID, BossBar> playerBars = new HashMap<>();
-  public static final Map<UUID, Long> playerBaselineSeconds = new ConcurrentHashMap<>();
+  public static final Map<UUID, Double> playerBaselineSeconds = new ConcurrentHashMap<>();
 
   /**
    * Initializes the BossBarManager and starts periodic updates for all online players.
@@ -54,14 +54,14 @@ public class BossBarManager {
     UUID uuid = player.getUniqueId();
 
     // If the player is in the lobby, show that their timer is paused
-    if ("lobby".equalsIgnoreCase(player.getWorld().getName())) {
+    if (!player.getWorld().getName().startsWith("world")) {
       BossBar bar =
           playerBars.computeIfAbsent(
               uuid,
               id -> {
                 BossBar newBar =
                     BossBar.bossBar(
-                        Component.text("Your timer is paused in the lobby. :)"),
+                        Component.text("Your timer is paused. :)"),
                         0.0f,
                         Color.WHITE,
                         Overlay.PROGRESS);
@@ -69,35 +69,38 @@ public class BossBarManager {
                 return newBar;
               });
 
-      bar.name(Component.text("Your timer is paused in the lobby. :)"));
+      bar.name(Component.text("Your timer is paused. :)"));
       bar.progress(0.0f);
       bar.color(Color.WHITE);
       return;
     }
 
     // Get total remaining seconds
-    long totalSecondsLeftRaw = PlaytimeTracker.getData(uuid).getAvailableSeconds();
-    final long totalSecondsLeft = Math.max(totalSecondsLeftRaw, 0);
+    double totalSecondsLeftRaw = PlaytimeTracker.getData(uuid).getAvailableSeconds();
+    final double totalSecondsLeft = Math.max(totalSecondsLeftRaw, 0);
 
     // Get or set baseline for this session
-    long baseline = playerBaselineSeconds.computeIfAbsent(uuid, k -> totalSecondsLeft);
+    double baseline = playerBaselineSeconds.computeIfAbsent(uuid, k -> totalSecondsLeft);
 
-    // If player has 0 or less seconds, kick them
-    if (totalSecondsLeft <= 0) {
-      Component kickMessage =
+    // If player has 0 or less seconds, teleport them to the lobby world using
+    if (totalSecondsLeft <= 0 && player.getWorld().getName().startsWith("world")) {
+      Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mv tp " + player.getName() + " lobby");
+      player.sendMessage(
           Component.text("Your daily hour is up! Come back tomorrow.")
               .color(NamedTextColor.RED)
-              .decorate(TextDecoration.BOLD);
-
-      player.kick(kickMessage);
+              .decorate(TextDecoration.BOLD));
       return;
     }
 
     // Break down into hours, minutes, and remaining seconds
-    long minutesLeft = (totalSecondsLeft % 3600) / 60;
-    long secondsLeft = totalSecondsLeft % 60;
+    double hoursLeft = totalSecondsLeft / 3600;
+    double minutesLeft = (totalSecondsLeft % 3600) / 60;
+    double secondsLeft = totalSecondsLeft % 60;
 
-    if (secondsLeft == 0 && (minutesLeft == 10 || minutesLeft == 5 || minutesLeft == 1)) {
+    // Only show warning if hoursLeft is 0
+    if (hoursLeft == 0
+        && secondsLeft == 0
+        && (minutesLeft == 10 || minutesLeft == 5 || minutesLeft == 1)) {
       TablistManager.sendPlaytimeWarningTitle(player, (int) minutesLeft);
     }
 
@@ -112,11 +115,11 @@ public class BossBarManager {
     }
 
     String timeFormatted;
-    long hoursLeft = totalSecondsLeft / 3600;
     if (hoursLeft > 0) {
-      timeFormatted = String.format("%02d:%02d:%02d", hoursLeft, minutesLeft, secondsLeft);
+      timeFormatted =
+          String.format("%02d:%02d:%02d", (int) hoursLeft, (int) minutesLeft, (int) secondsLeft);
     } else {
-      timeFormatted = String.format("%02d:%02d", minutesLeft, secondsLeft);
+      timeFormatted = String.format("%02d:%02d", (int) minutesLeft, (int) secondsLeft);
     }
     String status = "Your remaining time: " + timeFormatted + (isAfk ? " (AFK)" : "");
 

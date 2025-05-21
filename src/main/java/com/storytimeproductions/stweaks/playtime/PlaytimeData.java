@@ -1,7 +1,5 @@
 package com.storytimeproductions.stweaks.playtime;
 
-import java.time.LocalDate;
-
 /**
  * Represents the playtime data for a player. Stores the available seconds a player has and their
  * AFK (away-from-keyboard) status.
@@ -9,26 +7,23 @@ import java.time.LocalDate;
 public class PlaytimeData {
 
   private Long afkSince;
-
-  /** Indicates whether the player is currently AFK (away from keyboard). */
   private boolean isAfk;
-
-  private LocalDate lastHourGrantDate;
-  private long availableSeconds;
+  private double availableSeconds;
   private int bankedTickets = 0;
+  private Integer lastHourChecked = null;
 
   /**
    * Constructs a PlaytimeData object with a predefined number of available seconds.
    *
    * @param availableSeconds The initial amount of available seconds.
    */
-  public PlaytimeData(long availableSeconds) {
+  public PlaytimeData(double availableSeconds) {
     this.availableSeconds = availableSeconds;
   }
 
   /** Constructs a PlaytimeData object with zero available seconds and not AFK. */
   public PlaytimeData() {
-    availableSeconds = 0;
+    availableSeconds = 3600;
     isAfk = false;
   }
 
@@ -42,17 +37,21 @@ public class PlaytimeData {
    *
    * @param seconds The seconds to add (can be negative).
    */
-  public boolean addAvailableSeconds(long seconds, boolean manual) {
-    if (seconds < 0 && manual) {
-      if (this.availableSeconds + seconds >= 600) {
-        this.availableSeconds += seconds;
-        return true;
-      }
-      return false;
-    } else {
-      this.availableSeconds += seconds;
-      return true;
+  public boolean addAvailableSeconds(double seconds) {
+    this.availableSeconds += seconds;
+    if (this.availableSeconds < 0) {
+      this.availableSeconds = 0;
     }
+    return true;
+  }
+
+  /**
+   * Sets the total available seconds for the player.
+   *
+   * @param seconds The new total available seconds.
+   */
+  public void setAvailableSeconds(double seconds) {
+    this.availableSeconds = seconds;
   }
 
   /**
@@ -60,7 +59,7 @@ public class PlaytimeData {
    *
    * @return The total available seconds as a long.
    */
-  public long getAvailableSeconds() {
+  public double getAvailableSeconds() {
     return availableSeconds;
   }
 
@@ -69,7 +68,7 @@ public class PlaytimeData {
    *
    * @return The total available minutes.
    */
-  public long getAvailableMinutes() {
+  public double getAvailableMinutes() {
     return availableSeconds / 60;
   }
 
@@ -101,19 +100,6 @@ public class PlaytimeData {
     return afkSince;
   }
 
-  public LocalDate getLastHourGrantDate() {
-    return lastHourGrantDate;
-  }
-
-  /**
-   * Sets the date when the player was last granted an hour of playtime.
-   *
-   * @param date The date to set as the last hour grant date.
-   */
-  public void setLastHourGrantDate(LocalDate date) {
-    this.lastHourGrantDate = date;
-  }
-
   /**
    * Gets the number of banked 5-minute tickets for the player.
    *
@@ -130,5 +116,23 @@ public class PlaytimeData {
    */
   public void setBankedTickets(int tickets) {
     this.bankedTickets = tickets;
+  }
+
+  /**
+   * Gets the last hour checked for daily playtime reset.
+   *
+   * @return the last checked hour, or null if never set
+   */
+  public Integer getLastHourChecked() {
+    return lastHourChecked;
+  }
+
+  /**
+   * Sets the last hour checked for daily playtime reset.
+   *
+   * @param hour the hour to set
+   */
+  public void setLastHourChecked(Integer hour) {
+    this.lastHourChecked = hour;
   }
 }

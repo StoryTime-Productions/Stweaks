@@ -36,7 +36,6 @@ public class DbManager {
         CREATE TABLE IF NOT EXISTS playtime (
             uuid TEXT PRIMARY KEY,
             available_seconds INTEGER DEFAULT 0,
-            last_hour_grant DATE,
             banked_tickets INTEGER DEFAULT 0
         );
         """;

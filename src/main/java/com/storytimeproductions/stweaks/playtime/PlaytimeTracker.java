@@ -2,13 +2,11 @@ package com.storytimeproductions.stweaks.playtime;
 
 import com.storytimeproductions.stweaks.config.SettingsManager;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -43,42 +41,47 @@ public class PlaytimeTracker {
     new BukkitRunnable() {
       @Override
       public void run() {
-        // Use America/New_York for Eastern Time
         ZoneId easternZone = ZoneId.of("America/New_York");
         ZonedDateTime nowEastern = ZonedDateTime.now(easternZone);
-        LocalDate today = nowEastern.toLocalDate();
         int currentHour = nowEastern.getHour();
 
         for (UUID uuid : playtimeMap.keySet()) {
           PlaytimeData data = playtimeMap.get(uuid);
 
-          // Grant 1 hour at 1 AM Eastern if not already granted today
-          if (currentHour >= 1) {
-            LocalDate lastGrant = data.getLastHourGrantDate();
-            if (lastGrant == null || !lastGrant.isEqual(today)) {
-              data.addAvailableSeconds(3600, false);
-              data.setLastHourGrantDate(today);
+          Integer lastHourChecked = data.getLastHourChecked();
+          if (lastHourChecked == null) {
+            data.setLastHourChecked(currentHour);
+            continue;
+          }
+
+          // If we have crossed from before 1 AM to 1 AM or later
+          if (lastHourChecked < 1 && currentHour >= 1) {
+            if (data.getAvailableSeconds() <= 3600) {
+              data.setAvailableSeconds(3600);
             }
           }
+
+          data.setLastHourChecked(currentHour);
         }
 
         for (Player player : Bukkit.getOnlinePlayers()) {
           PlaytimeData playerData =
               playtimeMap.computeIfAbsent(player.getUniqueId(), k -> new PlaytimeData());
-          if ("lobby".equalsIgnoreCase(player.getWorld().getName())) {
+          if (!player.getWorld().getName().startsWith("world")) {
             continue;
           }
+          double secondsToRemove = 1.0 / Math.max(1.0, getTotalMultiplier());
           if (!playerData.isAfk()) {
-            playerData.addAvailableSeconds(-1, false);
+            playerData.addAvailableSeconds(-secondsToRemove);
           } else {
             Long afkStart = playerData.getAfkSince();
             if (afkStart != null && System.currentTimeMillis() - afkStart <= 3 * 60 * 1000) {
-              playerData.addAvailableSeconds(-1, false);
+              playerData.addAvailableSeconds(-secondsToRemove);
             }
           }
         }
       }
-    }.runTaskTimer(plugin, 0L, 20L * (long) getTotalMultiplier());
+    }.runTaskTimer(plugin, 0L, 20L);
   }
 
   // --- Multiplier Getters using SettingsManager ---
@@ -221,10 +224,10 @@ public class PlaytimeTracker {
    * Retrieves the playtime data for a specific player.
    *
    * @param uuid The unique identifier of the player.
-   * @return The playtime data for the player, or null if no data exists.
+   * @return The playtime data for the player, or a new PlaytimeData if none exists.
    */
   public static PlaytimeData getData(UUID uuid) {
-    return playtimeMap.get(uuid);
+    return playtimeMap.computeIfAbsent(uuid, k -> new PlaytimeData());
   }
 
   /**
@@ -233,12 +236,12 @@ public class PlaytimeTracker {
    * @param uuid The player's unique identifier.
    * @return The remaining minutes, or 60 if the player has no tracked data.
    */
-  public static long getMinutes(UUID uuid) {
+  public static double getMinutes(UUID uuid) {
     PlaytimeData data = playtimeMap.get(uuid);
     if (data == null) {
       return 60;
     }
-    long totalMinutes = data.getAvailableSeconds() / 60;
+    double totalMinutes = data.getAvailableSeconds() / 60;
     return Math.max(totalMinutes, 0);
   }
 
@@ -248,12 +251,12 @@ public class PlaytimeTracker {
    * @param uuid The player's unique identifier.
    * @return The remaining seconds, or 0 if no time is required.
    */
-  public static long getSeconds(UUID uuid) {
+  public static double getSeconds(UUID uuid) {
     PlaytimeData data = playtimeMap.get(uuid);
     if (data == null) {
       return 3600;
     }
-    long totalSeconds = data.getAvailableSeconds();
+    double totalSeconds = data.getAvailableSeconds();
     return Math.max(totalSeconds, 0);
   }
 
@@ -264,8 +267,8 @@ public class PlaytimeTracker {
    * @return A Duration representing how much time is left.
    */
   public static Duration getTimeLeft(UUID uuid) {
-    long secondsLeft = getSeconds(uuid);
-    return Duration.ofSeconds(secondsLeft);
+    double secondsLeft = getSeconds(uuid);
+    return Duration.ofSeconds((long) secondsLeft);
   }
 
   /**
@@ -284,7 +287,7 @@ public class PlaytimeTracker {
    * @param uuid The player's unique identifier.
    * @return Total available time in seconds, or 0 if not found.
    */
-  public static long getPlaytime(UUID uuid) {
+  public static double getPlaytime(UUID uuid) {
     PlaytimeData data = playtimeMap.get(uuid);
     return data != null ? data.getAvailableSeconds() : 0L;
   }
@@ -305,13 +308,7 @@ public class PlaytimeTracker {
         } catch (SQLException ex) {
           ex.printStackTrace();
         }
-        LocalDate lastHourGrant = null;
-        Date grantDateSql = rs.getDate("last_hour_grant");
-        if (grantDateSql != null) {
-          lastHourGrant = grantDateSql.toLocalDate();
-        }
         PlaytimeData data = new PlaytimeData(availableSeconds);
-        data.setLastHourGrantDate(lastHourGrant);
         data.setBankedTickets(bankedTickets);
 
         UUID uuid = UUID.fromString(rs.getString("uuid"));
@@ -333,25 +330,18 @@ public class PlaytimeTracker {
   public static void saveToDatabase(Connection conn) {
     String sql =
         """
-        INSERT INTO playtime (uuid, available_seconds, last_hour_grant, banked_tickets)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO playtime (uuid, available_seconds, banked_tickets)
+        VALUES (?, ?, ?)
         ON CONFLICT(uuid) DO UPDATE SET
           available_seconds = excluded.available_seconds,
-          last_hour_grant = excluded.last_hour_grant,
           banked_tickets = excluded.banked_tickets
         """;
 
     try (PreparedStatement ps = conn.prepareStatement(sql)) {
       for (var entry : playtimeMap.entrySet()) {
         ps.setString(1, entry.getKey().toString());
-        ps.setLong(2, entry.getValue().getAvailableSeconds());
-        LocalDate grantDate = entry.getValue().getLastHourGrantDate();
-        if (grantDate != null) {
-          ps.setDate(3, Date.valueOf(grantDate));
-        } else {
-          ps.setNull(3, java.sql.Types.DATE);
-        }
-        ps.setInt(4, entry.getValue().getBankedTickets());
+        ps.setDouble(2, entry.getValue().getAvailableSeconds());
+        ps.setInt(3, entry.getValue().getBankedTickets()); // <-- fix index from 4 to 3
         ps.addBatch();
       }
       ps.executeBatch();
