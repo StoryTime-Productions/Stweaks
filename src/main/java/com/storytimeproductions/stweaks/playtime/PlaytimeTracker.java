@@ -70,17 +70,18 @@ public class PlaytimeTracker {
           if (!player.getWorld().getName().startsWith("world")) {
             continue;
           }
+          double secondsToRemove = 1.0 / Math.max(1.0, getTotalMultiplier());
           if (!playerData.isAfk()) {
-            playerData.addAvailableSeconds(-1);
+            playerData.addAvailableSeconds(-secondsToRemove);
           } else {
             Long afkStart = playerData.getAfkSince();
             if (afkStart != null && System.currentTimeMillis() - afkStart <= 3 * 60 * 1000) {
-              playerData.addAvailableSeconds(-1);
+              playerData.addAvailableSeconds(-secondsToRemove);
             }
           }
         }
       }
-    }.runTaskTimer(plugin, 0L, 20L * (long) getTotalMultiplier());
+    }.runTaskTimer(plugin, 0L, 20L);
   }
 
   // --- Multiplier Getters using SettingsManager ---
@@ -235,12 +236,12 @@ public class PlaytimeTracker {
    * @param uuid The player's unique identifier.
    * @return The remaining minutes, or 60 if the player has no tracked data.
    */
-  public static long getMinutes(UUID uuid) {
+  public static double getMinutes(UUID uuid) {
     PlaytimeData data = playtimeMap.get(uuid);
     if (data == null) {
       return 60;
     }
-    long totalMinutes = data.getAvailableSeconds() / 60;
+    double totalMinutes = data.getAvailableSeconds() / 60;
     return Math.max(totalMinutes, 0);
   }
 
@@ -250,12 +251,12 @@ public class PlaytimeTracker {
    * @param uuid The player's unique identifier.
    * @return The remaining seconds, or 0 if no time is required.
    */
-  public static long getSeconds(UUID uuid) {
+  public static double getSeconds(UUID uuid) {
     PlaytimeData data = playtimeMap.get(uuid);
     if (data == null) {
       return 3600;
     }
-    long totalSeconds = data.getAvailableSeconds();
+    double totalSeconds = data.getAvailableSeconds();
     return Math.max(totalSeconds, 0);
   }
 
@@ -266,8 +267,8 @@ public class PlaytimeTracker {
    * @return A Duration representing how much time is left.
    */
   public static Duration getTimeLeft(UUID uuid) {
-    long secondsLeft = getSeconds(uuid);
-    return Duration.ofSeconds(secondsLeft);
+    double secondsLeft = getSeconds(uuid);
+    return Duration.ofSeconds((long) secondsLeft);
   }
 
   /**
@@ -286,7 +287,7 @@ public class PlaytimeTracker {
    * @param uuid The player's unique identifier.
    * @return Total available time in seconds, or 0 if not found.
    */
-  public static long getPlaytime(UUID uuid) {
+  public static double getPlaytime(UUID uuid) {
     PlaytimeData data = playtimeMap.get(uuid);
     return data != null ? data.getAvailableSeconds() : 0L;
   }
@@ -339,7 +340,7 @@ public class PlaytimeTracker {
     try (PreparedStatement ps = conn.prepareStatement(sql)) {
       for (var entry : playtimeMap.entrySet()) {
         ps.setString(1, entry.getKey().toString());
-        ps.setLong(2, entry.getValue().getAvailableSeconds());
+        ps.setDouble(2, entry.getValue().getAvailableSeconds());
         ps.setInt(3, entry.getValue().getBankedTickets()); // <-- fix index from 4 to 3
         ps.addBatch();
       }

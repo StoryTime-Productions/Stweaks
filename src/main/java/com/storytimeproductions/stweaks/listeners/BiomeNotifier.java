@@ -39,7 +39,8 @@ public class BiomeNotifier implements Listener {
 
   private final BiomeTrackerManager biomeTrackerManager;
   private final HashMap<UUID, BiomeMessageState> biomeMessages = new HashMap<>();
-  private final HashMap<UUID, Biome> lastKnownBiome = new HashMap<>();
+  private final HashMap<UUID, HashMap<String, Long>> recentBiomes = new HashMap<>();
+  private static final long BIOME_CACHE_LIFETIME_MILLIS = 5 * 60 * 1000; // 5 minutes
 
   /**
    * Constructs a new BiomeNotifier with a reference to the main plugin instance.
@@ -122,17 +123,22 @@ public class BiomeNotifier implements Listener {
 
     Location loc = player.getLocation();
     Biome currentBiome = loc.getBlock().getBiome();
+    String biomeKey = currentBiome.getKey().toString();
 
     UUID uuid = player.getUniqueId();
-    Biome previousBiome = lastKnownBiome.get(uuid);
 
-    // Show message if player enters a new biome
-    if (previousBiome != currentBiome) {
-      lastKnownBiome.put(uuid, currentBiome);
+    // Clean up expired biomes for this player
+    HashMap<String, Long> playerRecent = recentBiomes.computeIfAbsent(uuid, k -> new HashMap<>());
+    long now = System.currentTimeMillis();
+    playerRecent.entrySet().removeIf(e -> now - e.getValue() > BIOME_CACHE_LIFETIME_MILLIS);
+
+    // If biome is not in the set or expired, show action bar and add/update
+    if (!playerRecent.containsKey(biomeKey)) {
       sendBiomeActionBar(player, currentBiome);
-      String biomeKey = currentBiome.getKey().toString();
       biomeTrackerManager.markBiomeDiscovered(uuid, biomeKey);
     }
+    // Update or add the biome with new expiration
+    playerRecent.put(biomeKey, now);
   }
 
   /**

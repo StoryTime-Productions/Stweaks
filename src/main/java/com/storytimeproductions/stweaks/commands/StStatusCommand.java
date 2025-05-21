@@ -337,12 +337,12 @@ public class StStatusCommand implements CommandExecutor {
 
     // Get playtime data
     PlaytimeData data = PlaytimeTracker.getData(player.getUniqueId());
-    long secondsLeft = data != null ? data.getAvailableSeconds() : 0;
+    double secondsLeft = data != null ? data.getAvailableSeconds() : 0;
 
     // Format as HH:MM:SS
-    long hours = secondsLeft / 3600;
-    long minutes = (secondsLeft % 3600) / 60;
-    long seconds = secondsLeft % 60;
+    double hours = secondsLeft / 3600;
+    double minutes = (secondsLeft % 3600) / 60;
+    double seconds = secondsLeft % 60;
 
     // Format as "You have X hour(s), Y minute(s) and Z second(s) left"
     String formatted = formatTimeLeft(hours, minutes, seconds);
@@ -569,10 +569,10 @@ public class StStatusCommand implements CommandExecutor {
           return;
         }
         PlaytimeData data = PlaytimeTracker.getData(player.getUniqueId());
-        long secondsLeft = data != null ? data.getAvailableSeconds() : 0;
-        long hours = secondsLeft / 3600;
-        long minutes = (secondsLeft % 3600) / 60;
-        long seconds = secondsLeft % 60;
+        double secondsLeft = data != null ? data.getAvailableSeconds() : 0;
+        double hours = secondsLeft / 3600;
+        double minutes = (secondsLeft % 3600) / 60;
+        double seconds = secondsLeft % 60;
         String formatted = formatTimeLeft(hours, minutes, seconds);
         String loreText = formatted;
         ItemStack timeLeft = new ItemStack(Material.CLOCK);
@@ -625,26 +625,29 @@ public class StStatusCommand implements CommandExecutor {
   }
 
   /** Formats the time left as a human-readable string. */
-  private static String formatTimeLeft(long hours, long minutes, long seconds) {
+  private static String formatTimeLeft(double hours, double minutes, double seconds) {
+    int h = (int) hours;
+    int m = (int) minutes;
+    int s = (int) seconds;
     StringBuilder sb = new StringBuilder("You have ");
-    boolean hasHours = hours > 0;
-    boolean hasMinutes = minutes > 0;
-    boolean hasSeconds = seconds > 0;
+    boolean hasHours = h > 0;
+    boolean hasMinutes = m > 0;
+    boolean hasSeconds = s > 0;
 
     if (hasHours) {
-      sb.append(hours).append(" hour").append(hours == 1 ? "" : "s");
+      sb.append(h).append(" hour").append(h == 1 ? "" : "s");
     }
     if (hasMinutes) {
       if (hasHours) {
         sb.append(", ");
       }
-      sb.append(minutes).append(" minute").append(minutes == 1 ? "" : "s");
+      sb.append(m).append(" minute").append(m == 1 ? "" : "s");
     }
     if (hasSeconds) {
       if (hasHours || hasMinutes) {
         sb.append(" and ");
       }
-      sb.append(seconds).append(" second").append(seconds == 1 ? "" : "s");
+      sb.append(s).append(" second").append(s == 1 ? "" : "s");
     }
     sb.append(" left");
     return sb.toString();

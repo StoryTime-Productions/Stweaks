@@ -88,7 +88,7 @@ public class PlayerActivityListener implements Listener {
             () -> player.performCommand("lobby"),
             10L);
 
-    long currentSeconds = PlaytimeTracker.getSeconds(player.getUniqueId());
+    double currentSeconds = PlaytimeTracker.getSeconds(player.getUniqueId());
     BossBarManager.playerBaselineSeconds.put(player.getUniqueId(), currentSeconds);
   }
 
@@ -138,7 +138,7 @@ public class PlayerActivityListener implements Listener {
         if (data == null) {
           return;
         }
-        long secondsLeft = data.getAvailableSeconds();
+        double secondsLeft = data.getAvailableSeconds();
         if (secondsLeft - 300 > 600) {
           data.setBankedTickets(data.getBankedTickets() + 1);
           data.addAvailableSeconds(-300);

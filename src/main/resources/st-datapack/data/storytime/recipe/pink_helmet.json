@@ -12,7 +12,11 @@
         "id": "minecraft:diamond_helmet",
         "components": {
             "minecraft:item_model": "storytime:pink_helmet",
-            "minecraft:item_name": "{\"text\":\"Rose Quartz Helmet\"}"
+            "minecraft:item_name": "{\"text\":\"Rose Quartz Helmet\"}",
+            "minecraft:equippable": {
+                "slot": "head",
+                "asset_id": "storytime:pink"
+            }
         },
         "count": 1
     }

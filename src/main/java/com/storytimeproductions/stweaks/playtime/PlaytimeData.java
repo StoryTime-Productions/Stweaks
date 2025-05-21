@@ -8,7 +8,7 @@ public class PlaytimeData {
 
   private Long afkSince;
   private boolean isAfk;
-  private long availableSeconds;
+  private double availableSeconds;
   private int bankedTickets = 0;
   private Integer lastHourChecked = null;
 
@@ -17,7 +17,7 @@ public class PlaytimeData {
    *
    * @param availableSeconds The initial amount of available seconds.
    */
-  public PlaytimeData(long availableSeconds) {
+  public PlaytimeData(double availableSeconds) {
     this.availableSeconds = availableSeconds;
   }
 
@@ -37,7 +37,7 @@ public class PlaytimeData {
    *
    * @param seconds The seconds to add (can be negative).
    */
-  public boolean addAvailableSeconds(long seconds) {
+  public boolean addAvailableSeconds(double seconds) {
     this.availableSeconds += seconds;
     if (this.availableSeconds < 0) {
       this.availableSeconds = 0;
@@ -50,7 +50,7 @@ public class PlaytimeData {
    *
    * @param seconds The new total available seconds.
    */
-  public void setAvailableSeconds(long seconds) {
+  public void setAvailableSeconds(double seconds) {
     this.availableSeconds = seconds;
   }
 
@@ -59,7 +59,7 @@ public class PlaytimeData {
    *
    * @return The total available seconds as a long.
    */
-  public long getAvailableSeconds() {
+  public double getAvailableSeconds() {
     return availableSeconds;
   }
 
@@ -68,7 +68,7 @@ public class PlaytimeData {
    *
    * @return The total available minutes.
    */
-  public long getAvailableMinutes() {
+  public double getAvailableMinutes() {
     return availableSeconds / 60;
   }
 

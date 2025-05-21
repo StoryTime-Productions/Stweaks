@@ -25,7 +25,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class BossBarManager {
   private static JavaPlugin plugin;
   private static final Map<UUID, BossBar> playerBars = new HashMap<>();
-  public static final Map<UUID, Long> playerBaselineSeconds = new ConcurrentHashMap<>();
+  public static final Map<UUID, Double> playerBaselineSeconds = new ConcurrentHashMap<>();
 
   /**
    * Initializes the BossBarManager and starts periodic updates for all online players.
@@ -76,11 +76,11 @@ public class BossBarManager {
     }
 
     // Get total remaining seconds
-    long totalSecondsLeftRaw = PlaytimeTracker.getData(uuid).getAvailableSeconds();
-    final long totalSecondsLeft = Math.max(totalSecondsLeftRaw, 0);
+    double totalSecondsLeftRaw = PlaytimeTracker.getData(uuid).getAvailableSeconds();
+    final double totalSecondsLeft = Math.max(totalSecondsLeftRaw, 0);
 
     // Get or set baseline for this session
-    long baseline = playerBaselineSeconds.computeIfAbsent(uuid, k -> totalSecondsLeft);
+    double baseline = playerBaselineSeconds.computeIfAbsent(uuid, k -> totalSecondsLeft);
 
     // If player has 0 or less seconds, teleport them to the lobby world using
     if (totalSecondsLeft <= 0 && player.getWorld().getName().startsWith("world")) {
@@ -93,9 +93,9 @@ public class BossBarManager {
     }
 
     // Break down into hours, minutes, and remaining seconds
-    long hoursLeft = totalSecondsLeft / 3600;
-    long minutesLeft = (totalSecondsLeft % 3600) / 60;
-    long secondsLeft = totalSecondsLeft % 60;
+    double hoursLeft = totalSecondsLeft / 3600;
+    double minutesLeft = (totalSecondsLeft % 3600) / 60;
+    double secondsLeft = totalSecondsLeft % 60;
 
     // Only show warning if hoursLeft is 0
     if (hoursLeft == 0
@@ -116,9 +116,10 @@ public class BossBarManager {
 
     String timeFormatted;
     if (hoursLeft > 0) {
-      timeFormatted = String.format("%02d:%02d:%02d", hoursLeft, minutesLeft, secondsLeft);
+      timeFormatted =
+          String.format("%02d:%02d:%02d", (int) hoursLeft, (int) minutesLeft, (int) secondsLeft);
     } else {
-      timeFormatted = String.format("%02d:%02d", minutesLeft, secondsLeft);
+      timeFormatted = String.format("%02d:%02d", (int) minutesLeft, (int) secondsLeft);
     }
     String status = "Your remaining time: " + timeFormatted + (isAfk ? " (AFK)" : "");
 
