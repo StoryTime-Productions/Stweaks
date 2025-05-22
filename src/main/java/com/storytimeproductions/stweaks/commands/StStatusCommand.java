@@ -196,8 +196,9 @@ public class StStatusCommand implements CommandExecutor {
           ItemStack ticket = new ItemStack(Material.NAME_TAG);
           ItemMeta meta = ticket.getItemMeta();
           meta.displayName(Component.text("5-minute ticket").color(NamedTextColor.GOLD));
-          // Set custom item_model using PersistentDataContainer
           meta.setItemModel(new NamespacedKey("storytime", "time_ticket"));
+          meta.addEnchant(org.bukkit.enchantments.Enchantment.LUCK_OF_THE_SEA, 1, true);
+          meta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_ENCHANTS);
           ticket.setItemMeta(meta);
           target.getInventory().addItem(ticket);
           target.sendMessage("You received a 5-minute ticket!");

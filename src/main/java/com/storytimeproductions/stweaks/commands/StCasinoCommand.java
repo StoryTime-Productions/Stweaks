@@ -18,6 +18,16 @@ public class StCasinoCommand implements CommandExecutor {
   private FileConfiguration config;
 
   /**
+   * Constructs a new StCasinoCommand with access to the plugin's configuration.
+   *
+   * @param config The {@link FileConfiguration} instance used to retrieve casino coordinates and
+   *     settings.
+   */
+  public StCasinoCommand(FileConfiguration config) {
+    this.config = config;
+  }
+
+  /**
    * Executes the /casino command.
    *
    * @param sender The source of the command.
@@ -36,11 +46,11 @@ public class StCasinoCommand implements CommandExecutor {
     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mv tp " + player.getName() + " casino");
 
     // Get location from config (example path: casino-spawn.x, y, z, yaw, pitch)
-    double x = config.getDouble("casino-spawn.x", 0.5);
-    double y = config.getDouble("casino-spawn.y", 64.0);
-    double z = config.getDouble("casino-spawn.z", 0.5);
-    float yaw = (float) config.getDouble("casino-spawn.yaw", 0.0);
-    float pitch = (float) config.getDouble("casino-spawn.pitch", 0.0);
+    double x = config.getDouble("casino.x", -117);
+    double y = config.getDouble("casino.y", 223);
+    double z = config.getDouble("casino.z", 184);
+    float yaw = (float) config.getDouble("casino.yaw", 0.0);
+    float pitch = (float) config.getDouble("casino.pitch", 0.0);
 
     // Delay the teleport to ensure Multiverse has moved the player to the correct
     // world

@@ -91,7 +91,7 @@ public class Stweaks extends JavaPlugin {
 
     // Register commands
     getCommand("ststatus").setExecutor(new StStatusCommand(this));
-    getCommand("stcasino").setExecutor(new StCasinoCommand());
+    getCommand("stcasino").setExecutor(new StCasinoCommand(getConfig()));
     getCommand("stlobby").setExecutor(new StLobbyCommand(getConfig()));
     getCommand("spawn").setExecutor(new StSpawnCommand(getConfig()));
     getCommand("biometracker").setExecutor(new BiomeTrackerCommand(trackerManager, this));
