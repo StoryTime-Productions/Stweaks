@@ -102,14 +102,10 @@ public class PlaytimeTracker {
   }
 
   /**
-   * Computes the social multiplier using dynamic "party" regions. Each party is a group of players
-   * where every member is within the social distance of at least one other member. For each party,
-   * the multiplier is raised to the power of (partySize * (partySize - 1) / 2). The final global
-   * multiplier is the base raised to the sum of all party exponents.
+   * Computes the social multiplier as the socialMultiplier times the weighted average of all party
+   * sizes, with more weight attributed to larger parties.
    */
   public static double computeGlobalSocialMultiplier() {
-    double distance = getSocialDistance();
-    // Only include players in the main worlds
     List<Player> players = new ArrayList<>();
     for (Player p : Bukkit.getOnlinePlayers()) {
       String worldName = p.getWorld().getName();
@@ -118,21 +114,24 @@ public class PlaytimeTracker {
       }
     }
 
-    // Find parties using union-find (disjoint set)
+    // Union-find to find parties
     int n = players.size();
+    if (n == 1) {
+      return 0.0;
+    }
+
     int[] parent = new int[n];
     for (int i = 0; i < n; i++) {
       parent[i] = i;
     }
 
-    // Union players that are within distance
+    double distance = getSocialDistance();
     for (int i = 0; i < n; i++) {
       Player p1 = players.get(i);
       for (int j = i + 1; j < n; j++) {
         Player p2 = players.get(j);
         if (p1.getWorld().equals(p2.getWorld())
             && p1.getLocation().distance(p2.getLocation()) <= distance) {
-          // Union i and j
           int rootI = find(parent, i);
           int rootJ = find(parent, j);
           if (rootI != rootJ) {
@@ -149,20 +148,21 @@ public class PlaytimeTracker {
       partySizes.put(root, partySizes.getOrDefault(root, 0) + 1);
     }
 
-    // Calculate the total exponent sum
-    int totalExponent = 0;
+    // Weighted average: weight = size^2 (larger parties have more influence)
+    double weightedSum = 0.0;
+    double totalWeight = 0.0;
     for (int size : partySizes.values()) {
-      if (size > 1) {
-        totalExponent += (size * (size - 1)) / 2;
-      }
+      double weight = size * size;
+      weightedSum += size * weight;
+      totalWeight += weight;
     }
 
-    // Compute the final multiplier
+    double weightedAverage = totalWeight > 0 ? (weightedSum / totalWeight) : 0.0;
     double socialMultiplier = getSocialMultiplier();
-    double result = Math.pow(socialMultiplier, totalExponent);
+    double result = socialMultiplier * weightedAverage;
     result = Math.floor(result * 100) / 100.0;
 
-    return result == 1 ? 0 : result;
+    return result;
   }
 
   // Helper for union-find
