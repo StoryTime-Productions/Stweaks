@@ -1,11 +1,15 @@
 package com.storytimeproductions.stweaks.listeners;
 
+import com.storytimeproductions.stweaks.commands.StStatusCommand;
+import com.storytimeproductions.stweaks.playtime.PlaytimeData;
 import com.storytimeproductions.stweaks.playtime.PlaytimeTracker;
 import com.storytimeproductions.stweaks.util.BossBarManager;
 import com.storytimeproductions.stweaks.util.TablistManager;
 import java.util.HashMap;
 import java.util.UUID;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,6 +17,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -87,9 +92,6 @@ public class PlayerActivityListener implements Listener {
             Bukkit.getPluginManager().getPlugin("Stweaks"),
             () -> player.performCommand("lobby"),
             10L);
-
-    double currentSeconds = PlaytimeTracker.getSeconds(player.getUniqueId());
-    BossBarManager.playerBaselineSeconds.put(player.getUniqueId(), currentSeconds);
   }
 
   /**
@@ -103,7 +105,6 @@ public class PlayerActivityListener implements Listener {
   public void onPlayerQuit(PlayerQuitEvent event) {
     UUID uuid = event.getPlayer().getUniqueId();
     lastMovement.remove(uuid);
-    BossBarManager.playerBaselineSeconds.remove(uuid);
     BossBarManager.removeBossBar(event.getPlayer());
   }
 
@@ -118,6 +119,68 @@ public class PlayerActivityListener implements Listener {
       return;
     }
     String title = event.getView().title().toString();
+    Player player = (Player) event.getWhoClicked();
+
+    // Admin view: select player
+    if (title.contains("Admin: Player Status")) {
+      event.setCancelled(true);
+      ItemStack clicked = event.getCurrentItem();
+      if (clicked != null && clicked.getType() == Material.PLAYER_HEAD) {
+        String playerName =
+            PlainTextComponentSerializer.plainText().serialize(clicked.getItemMeta().displayName());
+        if (playerName == null || playerName.isEmpty()) {
+          player.sendMessage("Could not determine player name from head.");
+          return;
+        }
+        Player target = Bukkit.getPlayerExact(playerName);
+        if (target != null) {
+          StStatusCommand.openPlayerManageInventory(
+              player, target, Bukkit.getPluginManager().getPlugin("stweaks"));
+        }
+      }
+    }
+
+    // Player manage view: add/remove time, ticket/cash
+    if (title.contains("Manage: ")) {
+      String rawTitle = PlainTextComponentSerializer.plainText().serialize(event.getView().title());
+
+      event.setCancelled(true);
+      ItemStack clicked = event.getCurrentItem();
+      if (clicked == null) {
+        return;
+      }
+      String[] split = rawTitle.split(": ");
+      if (split.length < 2) {
+        return;
+      }
+      String playerName = split[1];
+      Player target = Bukkit.getPlayerExact(playerName);
+      if (target == null) {
+        return;
+      }
+      PlaytimeData data = PlaytimeTracker.getData(target.getUniqueId());
+      switch (event.getSlot()) {
+        case 12: // Add 5 minutes
+          data.addAvailableSeconds(300);
+          player.sendMessage("Added 5 minutes to " + playerName);
+          break;
+        case 10: // Remove 5 minutes
+          data.addAvailableSeconds(-300);
+          player.sendMessage("Removed 5 minutes from " + playerName);
+          break;
+        case 14: // Give ticket
+          player.performCommand("status ticket " + playerName);
+          break;
+        case 16: // Cash ticket
+          player.performCommand("status cash " + playerName);
+          break;
+        default:
+          break;
+      }
+      StStatusCommand.openPlayerManageInventory(
+          player, target, Bukkit.getPluginManager().getPlugin("stweaks"));
+    }
+
     if (title != null && title.contains("Your Playtime Status")) {
       event.setCancelled(true);
 
@@ -127,7 +190,6 @@ public class PlayerActivityListener implements Listener {
       }
       var meta = event.getCurrentItem().getItemMeta();
       var pdc = meta.getPersistentDataContainer();
-      Player player = (Player) event.getWhoClicked();
 
       // Add banked chunk
       if (pdc.has(

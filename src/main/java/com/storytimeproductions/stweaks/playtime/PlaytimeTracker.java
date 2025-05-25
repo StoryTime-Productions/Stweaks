@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -77,6 +79,14 @@ public class PlaytimeTracker {
             Long afkStart = playerData.getAfkSince();
             if (afkStart != null && System.currentTimeMillis() - afkStart <= 3 * 60 * 1000) {
               playerData.addAvailableSeconds(-secondsToRemove);
+            } else {
+              if (playerData.isKickOnAfkTimeout()) {
+                player.kick(
+                    Component.text(
+                        "You have been kicked for being AFK too long.", NamedTextColor.RED));
+              } else {
+                playerData.addAvailableSeconds(-secondsToRemove);
+              }
             }
           }
         }
