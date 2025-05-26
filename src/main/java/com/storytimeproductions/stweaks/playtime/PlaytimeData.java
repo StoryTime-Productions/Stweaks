@@ -11,6 +11,7 @@ public class PlaytimeData {
   private double availableSeconds;
   private int bankedTickets = 0;
   private Integer lastHourChecked = null;
+  private boolean kickOnAfkTimeout = false;
 
   /**
    * Constructs a PlaytimeData object with a predefined number of available seconds.
@@ -134,5 +135,23 @@ public class PlaytimeData {
    */
   public void setLastHourChecked(Integer hour) {
     this.lastHourChecked = hour;
+  }
+
+  /**
+   * Checks if the player should be kicked on AFK timeout.
+   *
+   * @return {@code true} if the player should be kicked on AFK timeout, {@code false} otherwise.
+   */
+  public boolean isKickOnAfkTimeout() {
+    return kickOnAfkTimeout;
+  }
+
+  /**
+   * Sets whether the player should be kicked on AFK timeout.
+   *
+   * @param kick {@code true} to kick the player on AFK timeout, {@code false}
+   */
+  public void setKickOnAfkTimeout(boolean kick) {
+    this.kickOnAfkTimeout = kick;
   }
 }

@@ -63,8 +63,22 @@ public class BiomeTrackerManager {
    *
    * @param uuid The UUID of the player.
    * @param biomeKey The biome key to mark as discovered.
+   * @return true if this is the first time the player has discovered this biome, false otherwise.
    */
-  public void markBiomeDiscovered(UUID uuid, String biomeKey) {
+  public boolean markBiomeDiscovered(UUID uuid, String biomeKey) {
+    boolean isFirstDiscovery = false;
+    String checkQuery = "SELECT 1 FROM discovered_biomes WHERE uuid = ? AND biome_key = ?";
+    try (PreparedStatement checkStmt = dbManager.getConnection().prepareStatement(checkQuery)) {
+      checkStmt.setString(1, uuid.toString());
+      checkStmt.setString(2, biomeKey);
+      ResultSet rs = checkStmt.executeQuery();
+      if (!rs.next()) {
+        isFirstDiscovery = true;
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
     String query = "INSERT OR IGNORE INTO discovered_biomes(uuid, biome_key) VALUES (?, ?)";
     try (PreparedStatement stmt = dbManager.getConnection().prepareStatement(query)) {
       stmt.setString(1, uuid.toString());
@@ -73,6 +87,7 @@ public class BiomeTrackerManager {
     } catch (SQLException e) {
       e.printStackTrace();
     }
+    return isFirstDiscovery;
   }
 
   /**

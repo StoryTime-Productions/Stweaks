@@ -20,6 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -157,11 +158,13 @@ public class StStatusCommand implements CommandExecutor {
         if (sender instanceof BlockCommandSender blockSender) {
           double minDist = Double.MAX_VALUE;
           for (Player p : Bukkit.getOnlinePlayers()) {
-            double dist =
-                p.getLocation().distance(blockSender.getBlock().getLocation().add(0.5, 0.5, 0.5));
-            if (dist < minDist) {
-              minDist = dist;
-              nearest = p;
+            if (p.getWorld().equals(blockSender.getBlock().getWorld())) {
+              double dist =
+                  p.getLocation().distance(blockSender.getBlock().getLocation().add(0.5, 0.5, 0.5));
+              if (dist < minDist) {
+                minDist = dist;
+                nearest = p;
+              }
             }
           }
         } else if (sender instanceof Player playerSender) {
@@ -196,8 +199,9 @@ public class StStatusCommand implements CommandExecutor {
           ItemStack ticket = new ItemStack(Material.NAME_TAG);
           ItemMeta meta = ticket.getItemMeta();
           meta.displayName(Component.text("5-minute ticket").color(NamedTextColor.GOLD));
-          // Set custom item_model using PersistentDataContainer
           meta.setItemModel(new NamespacedKey("storytime", "time_ticket"));
+          meta.addEnchant(org.bukkit.enchantments.Enchantment.LUCK_OF_THE_SEA, 1, true);
+          meta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_ENCHANTS);
           ticket.setItemMeta(meta);
           target.getInventory().addItem(ticket);
           target.sendMessage("You received a 5-minute ticket!");
@@ -302,11 +306,246 @@ public class StStatusCommand implements CommandExecutor {
       return anySuccess;
     }
 
-    if (sender instanceof Player player) {
-      openStatusInventory(player);
+    if (args.length == 1 && args[0].equalsIgnoreCase("afk")) {
+      if (!(sender instanceof Player player)) {
+        sender.sendMessage("Only players can use this command.");
+        return true;
+      }
+      PlaytimeData data = PlaytimeTracker.getData(player.getUniqueId());
+      boolean newValue = !data.isKickOnAfkTimeout();
+      data.setKickOnAfkTimeout(newValue);
+      player.sendMessage(
+          "AFK handling set to: "
+              + (newValue ? "Kick on AFK timeout" : "Timer decreases while AFK"));
       return true;
     }
+
+    if (sender instanceof Player player) {
+      if (player.isOp()) {
+        openAdminStatusInventory(player, 0);
+        return true;
+      } else {
+        openStatusInventory(player);
+        return true;
+      }
+    }
     return false;
+  }
+
+  private void openAdminStatusInventory(Player admin, int page) {
+    int maxItems = 14;
+    List<Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
+    int totalPages = (int) Math.ceil(onlinePlayers.size() / (double) maxItems);
+    if (page < 0) {
+      page = 0;
+    }
+    if (page >= totalPages) {
+      page = totalPages - 1;
+    }
+
+    final int currentPage = page;
+
+    Inventory inv =
+        Bukkit.createInventory(
+            null,
+            54,
+            Component.text(
+                "Admin: Player Status (Page "
+                    + (currentPage + 1)
+                    + "/"
+                    + Math.max(1, totalPages)
+                    + ")"));
+
+    // Border: Black panes
+    ItemStack borderPane = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
+    ItemMeta paneMeta = borderPane.getItemMeta();
+    paneMeta.displayName(Component.text(" "));
+    borderPane.setItemMeta(paneMeta);
+    for (int i = 0; i < 54; i++) {
+      if (i < 9 || i >= 45 || i % 9 == 0 || i % 9 == 8) {
+        inv.setItem(i, borderPane);
+      }
+    }
+
+    // Checkerboard skulls
+    final int[] itemsPlacedArr = {0};
+    int startIndex = page * maxItems;
+    int endIndex = Math.min(startIndex + maxItems, onlinePlayers.size());
+    for (int y = 1; y <= 4; y++) {
+      for (int x = 1; x <= 7; x++) {
+        if ((x + y) % 2 == 0 && startIndex + itemsPlacedArr[0] < endIndex) {
+          Player target = onlinePlayers.get(startIndex + itemsPlacedArr[0]);
+          ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
+          ItemMeta meta = skull.getItemMeta();
+          meta.displayName(Component.text(target.getName()).color(NamedTextColor.AQUA));
+          if (meta instanceof org.bukkit.inventory.meta.SkullMeta skullMeta) {
+            skullMeta.setOwningPlayer(target);
+          }
+          PlaytimeData data = PlaytimeTracker.getData(target.getUniqueId());
+          double secondsLeft = data != null ? data.getAvailableSeconds() : 0;
+          int h = (int) (secondsLeft / 3600);
+          int m = (int) ((secondsLeft % 3600) / 60);
+          int s = (int) (secondsLeft % 60);
+          String timeString = String.format("%02d:%02d:%02d", h, m, s);
+          meta.lore(List.of(Component.text("Time Left: " + timeString, NamedTextColor.GREEN)));
+          skull.setItemMeta(meta);
+          int slot = y * 9 + x;
+          inv.setItem(slot, skull);
+          itemsPlacedArr[0]++;
+        }
+      }
+    }
+
+    ItemStack grayPane = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+    ItemMeta grayMeta = grayPane.getItemMeta();
+    grayMeta.displayName(Component.text(" "));
+    grayPane.setItemMeta(grayMeta);
+
+    // Pagination controls
+    if (page > 0) {
+      ItemStack prev = new ItemStack(Material.ARROW);
+      ItemMeta prevMeta = prev.getItemMeta();
+      prevMeta.displayName(Component.text("Previous Page", NamedTextColor.YELLOW));
+      prev.setItemMeta(prevMeta);
+      inv.setItem(46, prev);
+    } else {
+      inv.setItem(46, grayPane);
+    }
+    if (page < totalPages - 1) {
+      ItemStack next = new ItemStack(Material.ARROW);
+      ItemMeta nextMeta = next.getItemMeta();
+      nextMeta.displayName(Component.text("Next Page", NamedTextColor.YELLOW));
+      next.setItemMeta(nextMeta);
+      inv.setItem(52, next);
+    } else {
+      inv.setItem(52, grayPane);
+    }
+
+    // Start a repeating task to update the skull lores live
+    new BukkitRunnable() {
+      @Override
+      public void run() {
+        Component currentTitle = admin.getOpenInventory().title();
+        String expectedTitle =
+            "Admin: Player Status (Page " + (currentPage + 1) + "/" + Math.max(1, totalPages) + ")";
+        if (!currentTitle.toString().contains(expectedTitle)) {
+          cancel();
+          return;
+        }
+        Inventory openInv = admin.getOpenInventory().getTopInventory();
+        int[] itemsPlacedArrUpdate = {0};
+        for (int y = 1; y <= 4; y++) {
+          for (int x = 1; x <= 7; x++) {
+            if ((x + y) % 2 == 0 && startIndex + itemsPlacedArrUpdate[0] < endIndex) {
+              int slot = y * 9 + x;
+              Player target = onlinePlayers.get(startIndex + itemsPlacedArrUpdate[0]);
+              ItemStack skull = openInv.getItem(slot);
+              if (skull != null && skull.getType() == Material.PLAYER_HEAD) {
+                ItemMeta meta = skull.getItemMeta();
+                PlaytimeData data = PlaytimeTracker.getData(target.getUniqueId());
+                double secondsLeft = data != null ? data.getAvailableSeconds() : 0;
+                int h = (int) (secondsLeft / 3600);
+                int m = (int) ((secondsLeft % 3600) / 60);
+                int s = (int) (secondsLeft % 60);
+                String timeString = String.format("%02d:%02d:%02d", h, m, s);
+                meta.lore(
+                    List.of(Component.text("Time Left: " + timeString, NamedTextColor.GREEN)));
+                skull.setItemMeta(meta);
+                openInv.setItem(slot, skull);
+              }
+              itemsPlacedArrUpdate[0]++;
+            }
+          }
+        }
+      }
+    }.runTaskTimer(plugin, 20L, 20L);
+
+    admin.openInventory(inv);
+  }
+
+  /**
+   * Opens a 27-slot inventory for the player to manage another player's playtime.
+   *
+   * @param admin The player who is managing the other player's playtime.
+   * @param target The player whose playtime is being managed.
+   * @param plugin The JavaPlugin instance.
+   */
+  public static void openPlayerManageInventory(Player admin, Player target, Plugin plugin) {
+    Inventory inv = Bukkit.createInventory(null, 27, Component.text("Manage: " + target.getName()));
+
+    // Add 5 minutes
+    ItemStack add = new ItemStack(Material.LIME_WOOL);
+    ItemMeta addMeta = add.getItemMeta();
+    addMeta.displayName(Component.text("Add 5 Minutes").color(NamedTextColor.GREEN));
+    add.setItemMeta(addMeta);
+    inv.setItem(12, add);
+
+    // Remove 5 minutes
+    ItemStack remove = new ItemStack(Material.RED_WOOL);
+    ItemMeta removeMeta = remove.getItemMeta();
+    removeMeta.displayName(Component.text("Remove 5 Minutes").color(NamedTextColor.RED));
+    remove.setItemMeta(removeMeta);
+    inv.setItem(10, remove);
+
+    // Give ticket
+    ItemStack ticket = new ItemStack(Material.NAME_TAG);
+    ItemMeta ticketMeta = ticket.getItemMeta();
+    ticketMeta.displayName(Component.text("Give 5-Minute Ticket").color(NamedTextColor.GOLD));
+    ticket.setItemMeta(ticketMeta);
+    inv.setItem(14, ticket);
+
+    // Cash ticket
+    ItemStack cash = new ItemStack(Material.PAPER);
+    ItemMeta cashMeta = cash.getItemMeta();
+    cashMeta.displayName(Component.text("Cash 5-Minute Ticket").color(NamedTextColor.YELLOW));
+    cash.setItemMeta(cashMeta);
+    inv.setItem(16, cash);
+
+    // Live time left display (slot 4)
+    PlaytimeData data = PlaytimeTracker.getData(target.getUniqueId());
+    double secondsLeft = data != null ? data.getAvailableSeconds() : 0;
+    int h = (int) (secondsLeft / 3600);
+    int m = (int) ((secondsLeft % 3600) / 60);
+    int s = (int) (secondsLeft % 60);
+    String timeString = String.format("%02d:%02d:%02d", h, m, s);
+
+    ItemStack timeLeft = new ItemStack(Material.CLOCK);
+    ItemMeta timeMeta = timeLeft.getItemMeta();
+    timeMeta.displayName(Component.text("Time Left").color(NamedTextColor.WHITE));
+    timeMeta.lore(List.of(Component.text("Time Left: " + timeString, NamedTextColor.GREEN)));
+    timeLeft.setItemMeta(timeMeta);
+    inv.setItem(4, timeLeft);
+
+    admin.openInventory(inv);
+
+    // Live update the time left display
+    new BukkitRunnable() {
+      @Override
+      public void run() {
+        if (!(admin
+            .getOpenInventory()
+            .title()
+            .equals(Component.text("Manage: " + target.getName())))) {
+          cancel();
+          return;
+        }
+        PlaytimeData data = PlaytimeTracker.getData(target.getUniqueId());
+        double secondsLeft = data != null ? data.getAvailableSeconds() : 0;
+        int h = (int) (secondsLeft / 3600);
+        int m = (int) ((secondsLeft % 3600) / 60);
+        int s = (int) (secondsLeft % 60);
+        String timeString = String.format("%02d:%02d:%02d", h, m, s);
+
+        ItemStack timeLeft = new ItemStack(Material.CLOCK);
+        ItemMeta timeMeta = timeLeft.getItemMeta();
+        timeMeta.displayName(Component.text("Time Left").color(NamedTextColor.WHITE));
+        timeMeta.lore(List.of(Component.text("Time Left: " + timeString, NamedTextColor.GREEN)));
+        timeLeft.setItemMeta(timeMeta);
+        admin.getOpenInventory().setItem(4, timeLeft);
+      }
+    }.runTaskTimer(plugin, 20L, 20L);
+
+    admin.openInventory(inv);
   }
 
   /**

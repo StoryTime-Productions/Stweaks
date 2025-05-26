@@ -4,7 +4,6 @@ import com.storytimeproductions.stweaks.playtime.PlaytimeTracker;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.bossbar.BossBar.Color;
 import net.kyori.adventure.bossbar.BossBar.Overlay;
@@ -25,7 +24,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class BossBarManager {
   private static JavaPlugin plugin;
   private static final Map<UUID, BossBar> playerBars = new HashMap<>();
-  public static final Map<UUID, Double> playerBaselineSeconds = new ConcurrentHashMap<>();
 
   /**
    * Initializes the BossBarManager and starts periodic updates for all online players.
@@ -55,32 +53,39 @@ public class BossBarManager {
 
     // If the player is in the lobby, show that their timer is paused
     if (!player.getWorld().getName().startsWith("world")) {
+      double totalSecondsLeftRaw = PlaytimeTracker.getData(uuid).getAvailableSeconds();
+      final double totalSecondsLeft = Math.max(totalSecondsLeftRaw, 0);
+
+      int h = (int) (totalSecondsLeft / 3600);
+      int m = (int) ((totalSecondsLeft % 3600) / 60);
+      int s = (int) (totalSecondsLeft % 60);
+      String timeString = String.format("%02d:%02d:%02d", h, m, s);
+
+      String pausedStatus = "Your remaining time: " + timeString + " (PAUSED)";
+
       BossBar bar =
           playerBars.computeIfAbsent(
               uuid,
               id -> {
                 BossBar newBar =
                     BossBar.bossBar(
-                        Component.text("Your timer is paused. :)"),
-                        0.0f,
-                        Color.WHITE,
-                        Overlay.PROGRESS);
+                        Component.text(pausedStatus), 0.0f, Color.WHITE, Overlay.PROGRESS);
                 player.showBossBar(newBar);
                 return newBar;
               });
 
-      bar.name(Component.text("Your timer is paused. :)"));
+      bar.name(Component.text(pausedStatus));
       bar.progress(0.0f);
       bar.color(Color.WHITE);
       return;
     }
 
+    // Always use 3600 as the baseline for the progress bar
+    final double baselineSeconds = 3600.0;
+
     // Get total remaining seconds
     double totalSecondsLeftRaw = PlaytimeTracker.getData(uuid).getAvailableSeconds();
     final double totalSecondsLeft = Math.max(totalSecondsLeftRaw, 0);
-
-    // Get or set baseline for this session
-    double baseline = playerBaselineSeconds.computeIfAbsent(uuid, k -> totalSecondsLeft);
 
     // If player has 0 or less seconds, teleport them to the lobby world using
     if (totalSecondsLeft <= 0 && player.getWorld().getName().startsWith("world")) {
@@ -104,9 +109,14 @@ public class BossBarManager {
       TablistManager.sendPlaytimeWarningTitle(player, (int) minutesLeft);
     }
 
-    // Progress is based on baseline for this session
-    double progress = (double) (baseline - totalSecondsLeft) / Math.max(1, baseline);
-    progress = Math.min(1.0, Math.max(0.0, progress));
+    // Progress logic: Only start decreasing when <= 3600 seconds left
+    double progress;
+    if (totalSecondsLeft > baselineSeconds) {
+      progress = 1.0;
+    } else {
+      progress = totalSecondsLeft / baselineSeconds;
+      progress = Math.max(0.0, Math.min(1.0, progress));
+    }
 
     // AFK check
     boolean isAfk = false;
@@ -141,7 +151,6 @@ public class BossBarManager {
 
     if (finalProgress >= 1.0) {
       bar.color(Color.BLUE);
-      bar.name(Component.text("✅ You've ran out of playtime!"));
     } else if (finalProgress >= 0.5) {
       bar.color(Color.YELLOW);
     } else {

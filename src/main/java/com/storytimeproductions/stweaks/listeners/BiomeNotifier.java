@@ -135,7 +135,10 @@ public class BiomeNotifier implements Listener {
     // If biome is not in the set or expired, show action bar and add/update
     if (!playerRecent.containsKey(biomeKey)) {
       sendBiomeActionBar(player, currentBiome);
-      biomeTrackerManager.markBiomeDiscovered(uuid, biomeKey);
+      boolean isFirstDiscovery = biomeTrackerManager.markBiomeDiscovered(uuid, biomeKey);
+      if (isFirstDiscovery) {
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.7f, 1.0f);
+      }
     }
     // Update or add the biome with new expiration
     playerRecent.put(biomeKey, now);
@@ -183,7 +186,7 @@ public class BiomeNotifier implements Listener {
                     showActionBar(player, state, queued);
                   }
                 },
-                60L)
+                20L * 5)
             .getTaskId(); // 3 seconds display time
   }
 
