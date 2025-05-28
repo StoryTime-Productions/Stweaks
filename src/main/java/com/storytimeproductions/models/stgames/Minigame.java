@@ -1,0 +1,76 @@
+package com.storytimeproductions.models.stgames;
+
+import java.util.List;
+import org.bukkit.entity.Player;
+
+/**
+ * Represents a minigame that can be played within the game environment. Each minigame has its own
+ * lifecycle methods and player management.
+ */
+public interface Minigame {
+  /** Initializes the minigame. */
+  void onInit();
+
+  /** Called after the minigame has been initialized. */
+  void afterInit();
+
+  /** Updates the minigame state. */
+  void update();
+
+  /** Renders the minigame state. */
+  void render();
+
+  /** Cleans up resources when the minigame is destroyed. */
+  void onDestroy();
+
+  /**
+   * Determines if the minigame should quit.
+   *
+   * @return true if the minigame should quit, false otherwise
+   */
+  boolean shouldQuit();
+
+  /**
+   * Determines if the specified player can join the minigame.
+   *
+   * @param player the player to check
+   * @return true if the player can join, false otherwise
+   */
+  boolean canJoin(Player player);
+
+  /**
+   * Adds the specified player to the minigame.
+   *
+   * @param player the player to add
+   */
+  void join(Player player);
+
+  /**
+   * Removes the specified player from the minigame.
+   *
+   * @param player the player to remove
+   */
+  void leave(Player player);
+
+  /**
+   * Checks if the specified player is currently in the minigame.
+   *
+   * @param player the player to check
+   * @return true if the player is in the minigame, false otherwise
+   */
+  boolean isPlayerInGame(Player player);
+
+  /**
+   * Gets the list of players currently in the minigame.
+   *
+   * @return a list of players in the minigame
+   */
+  List<Player> getPlayers();
+
+  /**
+   * Gets the minigame configuration.
+   *
+   * @return the minigame configuration
+   */
+  GameConfig getConfig();
+}

@@ -1,11 +1,15 @@
 package com.storytimeproductions.stweaks.commands;
 
+import com.storytimeproductions.stweaks.listeners.GameManagerListener;
+import java.io.File;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 /**
  * Handles the /casino command, teleporting the player to the "casino" world using Multiverse.
@@ -42,6 +46,30 @@ public class StCasinoCommand implements CommandExecutor {
       sender.sendMessage("This command can only be used by players.");
       return true;
     }
+
+    if (label.equalsIgnoreCase("casino")
+        && args.length == 1
+        && args[0].equalsIgnoreCase("reload")) {
+      Plugin plugin = Bukkit.getPluginManager().getPlugin("stweaks");
+
+      if (!sender.isOp()) {
+        sender.sendMessage("You do not have permission to use this command.");
+        return true;
+      }
+
+      File gamesFile = new File(plugin.getDataFolder(), "games.yml");
+      if (!gamesFile.exists()) {
+        sender.sendMessage("games.yml not found!");
+        return true;
+      }
+
+      FileConfiguration gamesConfig = YamlConfiguration.loadConfiguration(gamesFile);
+      GameManagerListener.loadGamesFromConfig(gamesConfig);
+
+      sender.sendMessage("Casino games configuration reloaded from games.yml.");
+      return true;
+    }
+
     // Teleport the player to the casino world using Multiverse
     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mv tp " + player.getName() + " casino");
 
