@@ -31,14 +31,6 @@ public interface Minigame {
   boolean shouldQuit();
 
   /**
-   * Determines if the specified player can join the minigame.
-   *
-   * @param player the player to check
-   * @return true if the player can join, false otherwise
-   */
-  boolean canJoin(Player player);
-
-  /**
    * Adds the specified player to the minigame.
    *
    * @param player the player to add
@@ -51,14 +43,6 @@ public interface Minigame {
    * @param player the player to remove
    */
   void leave(Player player);
-
-  /**
-   * Checks if the specified player is currently in the minigame.
-   *
-   * @param player the player to check
-   * @return true if the player is in the minigame, false otherwise
-   */
-  boolean isPlayerInGame(Player player);
 
   /**
    * Gets the list of players currently in the minigame.

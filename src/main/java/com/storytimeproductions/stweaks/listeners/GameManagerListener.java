@@ -202,20 +202,12 @@ public class GameManagerListener implements Listener {
         continue;
       }
 
-      Bukkit.getLogger()
-          .info(
-              "[STweaks] Join block for game '"
-                  + minigame.getConfig().getGameId()
-                  + "' right-clicked at "
-                  + joinLoc);
-
       tryJoinGame(minigame, player, joinLoc);
-      event.setCancelled(true); // Prevent default block interaction
+      event.setCancelled(true);
       break;
     }
   }
 
-  // Extracted join logic for reuse
   private void tryJoinGame(Minigame minigame, Player player, Location joinLoc) {
     String gameId = minigame.getConfig().getGameId();
     if (gameActive.getOrDefault(gameId, false)) {
@@ -227,20 +219,22 @@ public class GameManagerListener implements Listener {
     Set<UUID> players = joinedPlayers.get(gameId);
     if (players.size() >= minigame.getConfig().getPlayerLimit()) {
       setJoinIndicator(joinLoc, false);
-      player.sendMessage(NamedTextColor.RED + minigame.getConfig().getJoinFailMessage());
+      player.sendMessage(
+          Component.text(minigame.getConfig().getJoinFailMessage(), NamedTextColor.RED));
       return;
     }
 
     if (!hasTicket(player)) {
-      player.sendMessage(NamedTextColor.RED + "You need a Time Ticket to join!");
+      player.sendMessage(Component.text("You need a Time Ticket to join!", NamedTextColor.RED));
       return;
     }
 
     consumeTicket(player);
     players.add(player.getUniqueId());
     player.displayName(Component.text(player.getName(), NamedTextColor.GREEN));
-    player.teleport(minigame.getConfig().getGameArea());
-    player.sendMessage(NamedTextColor.GREEN + minigame.getConfig().getJoinSuccessMessage());
+    player.teleport(minigame.getConfig().getGameArea().clone().add(0, 1, 0));
+    player.sendMessage(
+        Component.text(minigame.getConfig().getJoinSuccessMessage(), NamedTextColor.GREEN));
 
     setJoinIndicator(joinLoc, true);
 

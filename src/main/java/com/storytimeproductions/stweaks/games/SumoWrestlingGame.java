@@ -43,17 +43,6 @@ public class SumoWrestlingGame implements Minigame {
   public void onDestroy() {}
 
   /**
-   * Determines if the specified player can join the game.
-   *
-   * @param player the player to check
-   * @return true if the player can join, false otherwise
-   */
-  @Override
-  public boolean canJoin(Player player) {
-    return true;
-  }
-
-  /**
    * Adds the specified player to the game.
    *
    * @param player the player to add
@@ -68,17 +57,6 @@ public class SumoWrestlingGame implements Minigame {
    */
   @Override
   public void leave(Player player) {}
-
-  /**
-   * Checks if the specified player is currently in the game.
-   *
-   * @param player the player to check
-   * @return true if the player is in the game, false otherwise
-   */
-  @Override
-  public boolean isPlayerInGame(Player player) {
-    return false;
-  }
 
   /**
    * Gets the list of players currently in the game.
