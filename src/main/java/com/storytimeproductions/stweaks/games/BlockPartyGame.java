@@ -300,9 +300,9 @@ public class BlockPartyGame implements Minigame {
 
   private void checkPlayers() {
     Location exit = config.getExitArea();
+    int platformY = config.getGameArea().getBlockY();
     for (Player player : new ArrayList<>(players)) {
-      Block feet = player.getLocation().subtract(0, 1, 0).getBlock();
-      if (feet.getType() != currentTargetColor) {
+      if (player.getLocation().getBlockY() < platformY) {
         player.teleport(exit);
         player.sendMessage(Component.text("You lost!", NamedTextColor.RED));
         player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 0.8f);
