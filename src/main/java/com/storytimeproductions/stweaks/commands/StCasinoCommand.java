@@ -80,17 +80,20 @@ public class StCasinoCommand implements CommandExecutor {
     }
 
     if (label.equalsIgnoreCase("casino") && args.length == 1 && args[0].equalsIgnoreCase("leave")) {
-      // Find the game the player is in and teleport to its exit area
       for (Minigame minigame : GameManagerListener.activeGames.values()) {
         if (minigame.getPlayers().contains(player)) {
-          Location exit = minigame.getConfig().getExitArea();
-          if (exit != null) {
-            player.teleport(exit);
-            minigame.leave(player);
-            refundTicket(player, minigame.getConfig().getTicketCost());
-            player.sendMessage("You have left the game.");
+          if (minigame.getPlayers().size() == 1) {
+            Location exit = minigame.getConfig().getExitArea();
+            if (exit != null) {
+              player.teleport(exit);
+              minigame.leave(player);
+              refundTicket(player, minigame.getConfig().getTicketCost());
+              player.sendMessage("You have left the game.");
+            } else {
+              player.sendMessage("No exit area set for this game.");
+            }
           } else {
-            player.sendMessage("No exit area set for this game.");
+            player.sendMessage("You can only leave if you are the only player waiting.");
           }
           return true;
         }

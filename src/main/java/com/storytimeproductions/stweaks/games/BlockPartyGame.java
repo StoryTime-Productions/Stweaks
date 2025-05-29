@@ -62,6 +62,19 @@ public class BlockPartyGame implements Minigame {
   /** Initializes the BlockParty game. */
   @Override
   public void onInit() {
+    initialPlayerCount = players.size();
+    roundActive = false;
+    inGracePeriod = false;
+    inPostRemovalDelay = false;
+    roundNumber = 1;
+    graceSeconds = 6;
+    graceSecondsCurrent = graceSeconds;
+    postRemovalDelaySeconds = 3;
+    postRemovalDelayCurrent = 0;
+    winner = null;
+    platformBlocks.clear();
+    originalPlatformBlocks.clear();
+
     Location area = config.getGameArea();
     if (area == null) {
       return;
@@ -447,7 +460,6 @@ public class BlockPartyGame implements Minigame {
   @Override
   public void join(Player player) {
     players.add(player);
-    initialPlayerCount = Math.max(initialPlayerCount, players.size());
   }
 
   /**
@@ -464,7 +476,6 @@ public class BlockPartyGame implements Minigame {
   @Override
   public void onDestroy() {
     regenerateFloor();
-    initialPlayerCount = 0;
 
     if (winner != null) {
       ItemStack tickets = new ItemStack(Material.NAME_TAG, initialPlayerCount);
@@ -487,7 +498,6 @@ public class BlockPartyGame implements Minigame {
       }
       winner = null;
     }
-
     players.clear();
   }
 

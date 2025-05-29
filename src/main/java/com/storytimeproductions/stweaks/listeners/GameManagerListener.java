@@ -16,6 +16,7 @@ import com.storytimeproductions.stweaks.games.SpeedCraftingGame;
 import com.storytimeproductions.stweaks.games.SpleefGame;
 import com.storytimeproductions.stweaks.games.SumoWrestlingGame;
 import com.storytimeproductions.stweaks.games.TicTacToeGame;
+import java.io.File;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,6 +37,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -50,15 +52,6 @@ import org.bukkit.scheduler.BukkitRunnable;
  * configuration, player joining, and game state.
  */
 public class GameManagerListener implements Listener {
-  /**
-   * Constructor to initialize the GameManagerListener.
-   *
-   * @param plugin the JavaPlugin instance to use for scheduling tasks
-   */
-  public GameManagerListener(JavaPlugin plugin) {
-    GameManagerListener.plugin = plugin;
-  }
-
   public static final Map<String, Minigame> activeGames = new HashMap<>();
 
   private static final Map<String, BukkitRunnable> joinTimers = new ConcurrentHashMap<>();
@@ -84,6 +77,22 @@ public class GameManagerListener implements Listener {
     gameFactories.put("speedcrafting", SpeedCraftingGame::new);
     gameFactories.put("kothtag", KothTagGame::new);
     gameFactories.put("minesweeper", MinesweeperGame::new);
+  }
+
+  /**
+   * Constructor to initialize the GameManagerListener.
+   *
+   * @param plugin the JavaPlugin instance to use for scheduling tasks
+   */
+  public GameManagerListener(JavaPlugin plugin) {
+    GameManagerListener.plugin = plugin;
+
+    File gamesFile = new File(plugin.getDataFolder(), "games.yml");
+
+    if (gamesFile.exists()) {
+      FileConfiguration gamesConfig = YamlConfiguration.loadConfiguration(gamesFile);
+      loadGamesFromConfig(gamesConfig);
+    }
   }
 
   /**
