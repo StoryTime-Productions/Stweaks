@@ -59,7 +59,7 @@ public class GameManagerListener implements Listener {
     GameManagerListener.plugin = plugin;
   }
 
-  private static final Map<String, Minigame> activeGames = new HashMap<>();
+  public static final Map<String, Minigame> activeGames = new HashMap<>();
 
   private static final Map<String, BukkitRunnable> joinTimers = new ConcurrentHashMap<>();
   private static final Map<String, Set<UUID>> joinedPlayers = new ConcurrentHashMap<>();
@@ -224,19 +224,26 @@ public class GameManagerListener implements Listener {
       return;
     }
 
-    if (!hasTicket(player)) {
+    if (!hasTicket(player, minigame.getConfig().getTicketCost())) {
       player.sendMessage(Component.text("You need a Time Ticket to join!", NamedTextColor.RED));
       return;
     }
 
-    consumeTicket(player);
+    consumeTicket(player, minigame.getConfig().getTicketCost());
     players.add(player.getUniqueId());
+    minigame.join(player);
     player.displayName(Component.text(player.getName(), NamedTextColor.GREEN));
     player.teleport(minigame.getConfig().getGameArea().clone().add(0, 1, 0));
     player.sendMessage(
         Component.text(minigame.getConfig().getJoinSuccessMessage(), NamedTextColor.GREEN));
-
+    player.sendMessage(
+        Component.text(
+            "Type /casino leave to leave the game before it begins.", NamedTextColor.YELLOW));
     setJoinIndicator(joinLoc, true);
+
+    if (players.size() < 2) {
+      return;
+    }
 
     if (joinTimers.containsKey(gameId)) {
       joinTimers.get(gameId).cancel();
@@ -250,13 +257,13 @@ public class GameManagerListener implements Listener {
             if (players.size() >= minigame.getConfig().getPlayerLimit()) {
               setJoinIndicator(joinLoc, false);
               this.cancel();
-              startGame(minigame, players);
+              startGame(minigame);
               return;
             }
             if (seconds <= 0) {
               this.cancel();
               setJoinIndicator(joinLoc, false);
-              startGame(minigame, players);
+              startGame(minigame);
               return;
             }
             for (UUID uuid : players) {
@@ -301,40 +308,47 @@ public class GameManagerListener implements Listener {
     above.setType(canJoin ? Material.LIME_CONCRETE : Material.RED_CONCRETE);
   }
 
-  private boolean hasTicket(Player player) {
+  private boolean hasTicket(Player player, int amount) {
+    int found = 0;
+    NamespacedKey timeTicketKey = new NamespacedKey("storytime", "time_ticket");
     for (ItemStack item : player.getInventory().getContents()) {
       if (item != null && item.hasItemMeta() && item.getItemMeta().hasItemModel()) {
-        NamespacedKey timeTicketKey = new NamespacedKey("storytime", "time_ticket");
         if (timeTicketKey.equals(item.getItemMeta().getItemModel())) {
-          return true;
+          found += item.getAmount();
+          if (found >= amount) {
+            return true;
+          }
         }
       }
     }
     return false;
   }
 
-  private void consumeTicket(Player player) {
+  private void consumeTicket(Player player, int amount) {
+    int toRemove = amount;
+    NamespacedKey timeTicketKey = new NamespacedKey("storytime", "time_ticket");
     for (ItemStack item : player.getInventory().getContents()) {
       if (item != null && item.hasItemMeta() && item.getItemMeta().hasItemModel()) {
-        NamespacedKey timeTicketKey = new NamespacedKey("storytime", "time_ticket");
         if (timeTicketKey.equals(item.getItemMeta().getItemModel())) {
-          item.setAmount(item.getAmount() - 1);
-          break;
+          int stackAmount = item.getAmount();
+          if (stackAmount > toRemove) {
+            item.setAmount(stackAmount - toRemove);
+            return;
+          } else {
+            item.setAmount(0);
+            toRemove -= stackAmount;
+            if (toRemove <= 0) {
+              return;
+            }
+          }
         }
       }
     }
   }
 
-  private void startGame(Minigame minigame, Set<UUID> players) {
+  private void startGame(Minigame minigame) {
     String gameId = minigame.getConfig().getGameId();
     gameActive.put(gameId, true);
-
-    for (UUID uuid : players) {
-      Player player = Bukkit.getPlayer(uuid);
-      if (player != null) {
-        minigame.join(player);
-      }
-    }
 
     // Call game lifecycle methods
     minigame.onInit();

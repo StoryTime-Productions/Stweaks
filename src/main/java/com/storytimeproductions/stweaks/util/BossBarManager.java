@@ -89,7 +89,7 @@ public class BossBarManager {
 
     // If player has 0 or less seconds, teleport them to the lobby world using
     if (totalSecondsLeft <= 0 && player.getWorld().getName().startsWith("world")) {
-      Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mv tp " + player.getName() + " lobby");
+      Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lobby");
       player.sendMessage(
           Component.text("Your daily hour is up! Come back tomorrow.")
               .color(NamedTextColor.RED)

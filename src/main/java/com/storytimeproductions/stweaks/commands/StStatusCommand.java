@@ -16,8 +16,10 @@ import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
@@ -200,8 +202,8 @@ public class StStatusCommand implements CommandExecutor {
           ItemMeta meta = ticket.getItemMeta();
           meta.displayName(Component.text("5-minute ticket").color(NamedTextColor.GOLD));
           meta.setItemModel(new NamespacedKey("storytime", "time_ticket"));
-          meta.addEnchant(org.bukkit.enchantments.Enchantment.LUCK_OF_THE_SEA, 1, true);
-          meta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_ENCHANTS);
+          meta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, true);
+          meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
           ticket.setItemMeta(meta);
           target.getInventory().addItem(ticket);
           target.sendMessage("You received a 5-minute ticket!");
@@ -679,7 +681,7 @@ public class StStatusCommand implements CommandExecutor {
             .decoration(TextDecoration.ITALIC, false)
             .color(NamedTextColor.WHITE));
     List<String> dailyLoreRaw = new ArrayList<>();
-    dailyLoreRaw.add("Every day at 1 AM, playtime is reset back to an hour.");
+    dailyLoreRaw.add("Every day at 4 AM, playtime is reset back to an hour.");
     dailyLoreRaw.add(" ");
     dailyLoreRaw.add("You can use tickets to fill your playtime bar back up!");
     List<Component> dailyLore = new ArrayList<>();

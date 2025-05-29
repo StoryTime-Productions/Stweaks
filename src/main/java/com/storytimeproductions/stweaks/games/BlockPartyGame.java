@@ -6,7 +6,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -18,7 +17,9 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -107,7 +108,7 @@ public class BlockPartyGame implements Minigame {
             int bx = x + dx;
             int bz = z + dz;
             Block block = world.getBlockAt(bx, y, bz);
-            if (block.getType() != Material.AIR) { // Only save non-air blocks
+            if (block.getType() != Material.AIR && block.getType() != Material.BARRIER) {
               Location loc = block.getLocation().clone();
               if (!originalPlatformBlocks.contains(loc)) {
                 originalPlatformBlocks.add(loc);
@@ -189,6 +190,10 @@ public class BlockPartyGame implements Minigame {
 
   // Add this method to regenerate the floor with random colors
   private void regenerateFloor() {
+    if (originalPlatformBlocks.isEmpty()) {
+      return;
+    }
+
     Material[] colors = {
       Material.WHITE_CONCRETE,
       Material.ORANGE_CONCRETE,
@@ -210,31 +215,47 @@ public class BlockPartyGame implements Minigame {
     Random rand = new Random();
     platformBlocks.clear();
 
-    // We'll use a set to avoid duplicate locations
-    Set<Location> filled = new java.util.HashSet<>();
+    // 1. Pick a random location to be the target block
+    int targetIndex = rand.nextInt(originalPlatformBlocks.size());
+    Location targetLoc = originalPlatformBlocks.get(targetIndex);
 
-    for (Location baseLoc : originalPlatformBlocks) {
-      if (filled.contains(baseLoc)) {
-        continue;
-      }
+    // 2. Pick a random color for the target
+    Material targetColor = colors[rand.nextInt(colors.length)];
 
-      // Randomly pick grid size between 1 and 4
-      int gridSize = rand.nextInt(4) + 1;
-      Material color = colors[rand.nextInt(colors.length)];
+    // 3. Assign colors to all blocks, ensuring only one block has the target color
+    // and no two adjacent blocks have the same color
+    for (Location loc : originalPlatformBlocks) {
+      Block block = loc.getWorld().getBlockAt(loc);
+      Material color;
+      if (loc.equals(targetLoc)) {
+        color = targetColor;
+      } else {
+        // Pick a color that is not the target color and not the same as any adjacent
+        // block
+        List<Material> possibleColors = new ArrayList<>(List.of(colors));
+        possibleColors.remove(targetColor);
 
-      // Fill the grid, but only if the block is in originalPlatformBlocks
-      for (int dx = 0; dx < gridSize; dx++) {
-        for (int dz = 0; dz < gridSize; dz++) {
-          Location loc = baseLoc.clone().add(dx, 0, dz);
-          if (originalPlatformBlocks.contains(loc) && !filled.contains(loc)) {
-            Block block = loc.getWorld().getBlockAt(loc);
-            block.setType(color);
-            platformBlocks.add(loc.clone());
-            filled.add(loc);
+        // Check adjacent blocks (N, S, E, W)
+        for (int[] offset : new int[][] {{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {
+          Location adj = loc.clone().add(offset[0], 0, offset[1]);
+          if (platformBlocks.contains(adj)) {
+            Block adjBlock = adj.getWorld().getBlockAt(adj);
+            possibleColors.remove(adjBlock.getType());
           }
         }
+        // Fallback in case all colors are removed (shouldn't happen with 15+ colors)
+        if (possibleColors.isEmpty()) {
+          possibleColors.addAll(List.of(colors));
+          possibleColors.remove(targetColor);
+        }
+        color = possibleColors.get(rand.nextInt(possibleColors.size()));
       }
+      block.setType(color);
+      platformBlocks.add(loc.clone());
     }
+
+    // Set the current target color and location for this round
+    currentTargetColor = targetColor;
   }
 
   // In your startNextRound() or update() method, decrease graceTicks every 3
@@ -443,15 +464,16 @@ public class BlockPartyGame implements Minigame {
   @Override
   public void onDestroy() {
     regenerateFloor();
+    initialPlayerCount = 0;
 
     if (winner != null) {
-
-      // Give winner time tickets equal to initial player count
-      ItemStack tickets = new ItemStack(Material.PAPER, initialPlayerCount);
+      ItemStack tickets = new ItemStack(Material.NAME_TAG, initialPlayerCount);
       tickets.getItemMeta().displayName(Component.text("Time Ticket").color(NamedTextColor.GOLD));
       ItemMeta meta = tickets.getItemMeta();
       meta.setItemModel(new NamespacedKey("storytime", "time_ticket"));
       meta.displayName(Component.text("5-minute ticket").color(NamedTextColor.GOLD));
+      meta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, true);
+      meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
       tickets.setItemMeta(meta);
       winner.getInventory().addItem(tickets);
       winner.sendMessage(
