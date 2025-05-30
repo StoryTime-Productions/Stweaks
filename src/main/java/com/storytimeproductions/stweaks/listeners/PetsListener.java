@@ -125,19 +125,19 @@ public class PetsListener implements Listener {
                             + "!"));
               }
             }
-          }
 
-          // Ensure hunger is defined before using it
-          Map<String, Integer> hungerMap = petHunger.get(uuid);
-          int hunger = 0;
-          if (hungerMap != null && petId != null) {
-            hunger = hungerMap.getOrDefault(petId, 0);
+            // Ensure hunger is defined before using it
+            Map<String, Integer> hungerMap = petHunger.get(uuid);
+            int hunger = 0;
+            if (hungerMap != null && petId != null) {
+              hunger = hungerMap.getOrDefault(petId, 0);
+            }
+            String hungerState = getHungerState(hunger);
+            updatePetLore(offhand, hungerState);
           }
-          String hungerState = getHungerState(hunger);
-          updatePetLore(offhand, hungerState);
         }
       }
-    }.runTaskTimer(plugin, 40L, 200L); // Check every 10 seconds (200 ticks)
+    }.runTaskTimer(plugin, 40L, 200L);
   }
 
   private String getHungerState(int hunger) {
