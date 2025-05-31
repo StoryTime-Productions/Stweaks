@@ -97,9 +97,8 @@ public class KothTagGame implements Minigame {
       score.setScore(0);
       p.setScoreboard(scoreboard);
       if (p.equals(currentIt)) {
-        p.sendMessage(Component.text("You are IT! Tag someone else!", NamedTextColor.GOLD));
-        giveItItems(p); // Give bow and arrow to the first IT
-        // Start repeating arrow task for first IT
+        p.sendMessage(Component.text("You are IT! Run!", NamedTextColor.GOLD));
+        giveItItems(p);
         if (itArrowTask != null) {
           itArrowTask.cancel();
         }
