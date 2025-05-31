@@ -135,7 +135,8 @@ public class KothTagGame implements Minigame {
         itArrowTask.runTaskTimer(
             Bukkit.getPluginManager().getPlugin("stweaks"), 60L, 60L); // every 3 seconds
       } else {
-        p.sendMessage(Component.text(currentIt.getName() + " is IT! Run!", NamedTextColor.YELLOW));
+        p.sendMessage(
+            Component.text(currentIt.getName() + " is IT! Get them!", NamedTextColor.YELLOW));
       }
     }
     roundActive = true;
