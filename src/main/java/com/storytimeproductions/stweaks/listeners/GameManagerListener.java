@@ -20,6 +20,7 @@ import java.io.File;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -42,6 +43,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -275,21 +277,24 @@ public class GameManagerListener implements Listener {
               startGame(minigame);
               return;
             }
-            for (UUID uuid : players) {
-              Player p = Bukkit.getPlayer(uuid);
-              if (p != null) {
-                p.showTitle(
-                    Title.title(
-                        Component.text("Game starting in " + seconds, NamedTextColor.YELLOW),
-                        Component.empty(),
-                        Times.times(
-                            java.time.Duration.ZERO, Duration.ofSeconds(1), Duration.ZERO)));
-                if (seconds <= 3) {
-                  p.playSound(p.getLocation(), org.bukkit.Sound.BLOCK_NOTE_BLOCK_HAT, 1.0f, 2.0f);
+            if (players.size() > 1 && players.size() <= minigame.getConfig().getPlayerLimit()) {
+              setJoinIndicator(joinLoc, true);
+              for (UUID uuid : players) {
+                Player p = Bukkit.getPlayer(uuid);
+                if (p != null) {
+                  p.showTitle(
+                      Title.title(
+                          Component.text("Game starting in " + seconds, NamedTextColor.YELLOW),
+                          Component.empty(),
+                          Times.times(
+                              java.time.Duration.ZERO, Duration.ofSeconds(1), Duration.ZERO)));
+                  if (seconds <= 3) {
+                    p.playSound(p.getLocation(), org.bukkit.Sound.BLOCK_NOTE_BLOCK_HAT, 1.0f, 2.0f);
+                  }
                 }
               }
+              seconds--;
             }
-            seconds--;
           }
         };
     joinTimers.put(gameId, timer);
@@ -386,5 +391,27 @@ public class GameManagerListener implements Listener {
 
   private boolean minigameShouldQuit(Minigame minigame) {
     return minigame.shouldQuit();
+  }
+
+  /**
+   * Handles player tagging in KothTagGame when one player damages another.
+   *
+   * @param event the EntityDamageByEntityEvent triggered when a player damages another player
+   */
+  @EventHandler
+  public void onPlayerTag(EntityDamageByEntityEvent event) {
+    if (!(event.getDamager() instanceof Player) || !(event.getEntity() instanceof Player)) {
+      return;
+    }
+    Player tagger = (Player) event.getDamager();
+    Player target = (Player) event.getEntity();
+    for (Minigame minigame : activeGames.values()) {
+      if (minigame instanceof KothTagGame) {
+        List<Player> tagPlayers = minigame.getPlayers();
+        if (tagPlayers.contains(tagger) && tagPlayers.contains(target)) {
+          ((KothTagGame) minigame).tag(tagger, target);
+        }
+      }
+    }
   }
 }

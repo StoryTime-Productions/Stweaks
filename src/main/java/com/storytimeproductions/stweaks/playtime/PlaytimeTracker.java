@@ -57,7 +57,7 @@ public class PlaytimeTracker {
           }
 
           // If we have crossed from before 3 AM to 4 AM or later
-          if (lastHourChecked < 3 && currentHour >= 4) {
+          if (lastHourChecked < 3 && currentHour >= 3) {
             if (data.getAvailableSeconds() <= 3600) {
               data.setAvailableSeconds(3600);
             }
