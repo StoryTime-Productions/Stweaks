@@ -106,6 +106,15 @@ public class PlayerActivityListener implements Listener {
     UUID uuid = event.getPlayer().getUniqueId();
     lastMovement.remove(uuid);
     BossBarManager.removeBossBar(event.getPlayer());
+    if (!event.getPlayer().getWorld().getName().startsWith("world")) {
+      event
+          .getPlayer()
+          .getActivePotionEffects()
+          .forEach(
+              effect -> {
+                event.getPlayer().removePotionEffect(effect.getType());
+              });
+    }
   }
 
   /**

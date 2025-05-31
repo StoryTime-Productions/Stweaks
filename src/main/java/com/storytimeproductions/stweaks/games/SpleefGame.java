@@ -83,9 +83,6 @@ public class SpleefGame implements Minigame {
       winner = players.get(0);
       winner.sendMessage(Component.text("You win!", NamedTextColor.GOLD));
       winner.getInventory().remove(Material.DIAMOND_SHOVEL);
-      if (config.getExitArea() != null) {
-        winner.teleport(config.getExitArea());
-      }
       if (initialPlayerCount > 0) {
         ItemStack tickets = new ItemStack(Material.NAME_TAG, initialPlayerCount);
         tickets.getItemMeta().displayName(Component.text("Time Ticket").color(NamedTextColor.GOLD));
@@ -136,6 +133,7 @@ public class SpleefGame implements Minigame {
   public void join(Player player) {
     if (!players.contains(player)) {
       players.add(player);
+      player.teleport(getConfig().getGameArea().clone().add(0, 1, 0));
     }
   }
 

@@ -459,7 +459,10 @@ public class BlockPartyGame implements Minigame {
    */
   @Override
   public void join(Player player) {
-    players.add(player);
+    if (!players.contains(player)) {
+      players.add(player);
+      player.teleport(getConfig().getGameArea().clone().add(0, 1, 0));
+    }
   }
 
   /**
@@ -491,11 +494,6 @@ public class BlockPartyGame implements Minigame {
           Component.text(
               "You win! +" + initialPlayerCount + " Time Tickets!", NamedTextColor.GOLD));
       winner.playSound(winner.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.2f);
-
-      Location exit = config.getExitArea();
-      if (exit != null) {
-        winner.teleport(exit);
-      }
       winner = null;
     }
     players.clear();

@@ -20,7 +20,6 @@ import java.io.File;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -244,7 +243,6 @@ public class GameManagerListener implements Listener {
     players.add(player.getUniqueId());
     minigame.join(player);
     player.displayName(Component.text(player.getName(), NamedTextColor.GREEN));
-    player.teleport(minigame.getConfig().getGameArea().clone().add(0, 1, 0));
     player.sendMessage(
         Component.text(minigame.getConfig().getJoinSuccessMessage(), NamedTextColor.GREEN));
     player.sendMessage(
@@ -377,9 +375,15 @@ public class GameManagerListener implements Listener {
             if (minigameShouldQuit(minigame)) {
               this.cancel();
               minigame.onDestroy();
-              joinedPlayers.get(gameId).clear();
               gameActive.put(gameId, false);
               setJoinIndicator(minigame.getConfig().getJoinBlock(), true);
+              for (UUID uuid : joinedPlayers.get(gameId)) {
+                Player p = Bukkit.getPlayer(uuid);
+                if (p != null) {
+                  p.teleport(minigame.getConfig().getExitArea());
+                }
+              }
+              joinedPlayers.get(gameId).clear();
               return;
             }
             minigame.update();
@@ -406,10 +410,14 @@ public class GameManagerListener implements Listener {
     Player tagger = (Player) event.getDamager();
     Player target = (Player) event.getEntity();
     for (Minigame minigame : activeGames.values()) {
-      if (minigame instanceof KothTagGame) {
-        List<Player> tagPlayers = minigame.getPlayers();
-        if (tagPlayers.contains(tagger) && tagPlayers.contains(target)) {
-          ((KothTagGame) minigame).tag(tagger, target);
+      if (minigame instanceof KothTagGame koth) {
+        if (koth.getPlayers().contains(tagger) && koth.getPlayers().contains(target)) {
+          // Prevent damage if IT is invulnerable
+          if (target.equals(koth.getCurrentIt()) && koth.isItInvulnerable(target)) {
+            event.setCancelled(true);
+            return;
+          }
+          koth.tag(tagger, target);
         }
       }
     }

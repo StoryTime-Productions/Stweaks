@@ -29,6 +29,7 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 /**
  * Represents a King of the Hill Tag game where players compete to control a designated area.
@@ -38,15 +39,17 @@ public class KothTagGame implements Minigame {
   private final GameConfig config;
   private static List<Player> players = new ArrayList<>();
   private final Map<UUID, Integer> holdTimes = new HashMap<>();
+  private final Map<UUID, Long> itInvulnerableUntil = new HashMap<>();
   private Player currentIt = null;
   private int secondsLeft = 60;
   private boolean roundActive = false;
-  private Player winner = null;
 
   private Scoreboard scoreboard;
   private Objective objective;
+  private Team taggedTeam;
 
   private BukkitRunnable itArrowTask = null;
+  private BukkitRunnable itSoundTask = null;
 
   /**
    * Constructs a new King of the Hill Tag game with the specified configuration.
@@ -65,7 +68,6 @@ public class KothTagGame implements Minigame {
     currentIt = null;
     secondsLeft = 60;
     roundActive = false;
-    winner = null;
     Bukkit.getLogger().info("[KothTag] Game initialized.");
   }
 
@@ -88,6 +90,14 @@ public class KothTagGame implements Minigame {
             "koth_time", Criteria.DUMMY, Component.text("Tag Score", NamedTextColor.YELLOW));
     objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
+    // Setup team for glowing/tagged
+    taggedTeam = scoreboard.getTeam("taggedTeam");
+    if (taggedTeam == null) {
+      taggedTeam = scoreboard.registerNewTeam("taggedTeam");
+      taggedTeam.prefix(Component.text(""));
+      taggedTeam.suffix(Component.text(""));
+    }
+
     // Pick a random player to be "it"
     currentIt = players.get(new Random().nextInt(players.size()));
     Bukkit.getLogger().info("[KothTag] " + currentIt.getName() + " is initially IT.");
@@ -96,9 +106,21 @@ public class KothTagGame implements Minigame {
       Score score = objective.getScore(p.getName());
       score.setScore(0);
       p.setScoreboard(scoreboard);
+
+      // Clear both objectives first
+      Objective taggedBelowNameObj = scoreboard.getObjective("tagged_belowname");
+      Objective notItBelowNameObj = scoreboard.getObjective("notit_belowname");
+      if (taggedBelowNameObj != null) {
+        taggedBelowNameObj.getScore(p.getName()).setScore(0);
+      }
+      if (notItBelowNameObj != null) {
+        notItBelowNameObj.getScore(p.getName()).setScore(0);
+      }
+
       if (p.equals(currentIt)) {
         p.sendMessage(Component.text("You are IT! Run!", NamedTextColor.GOLD));
         giveItItems(p);
+        taggedTeam.addEntry(p.getName());
         if (itArrowTask != null) {
           itArrowTask.cancel();
         }
@@ -194,7 +216,6 @@ public class KothTagGame implements Minigame {
                   "Game over! " + winners.get(0).getName() + " wins!", NamedTextColor.YELLOW));
         }
       }
-      winner = winners.isEmpty() ? null : winners.get(0);
       // Dispose scoreboard for all players
       for (Player p : players) {
         p.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
@@ -214,6 +235,9 @@ public class KothTagGame implements Minigame {
       currentIt.sendActionBar(Component.text("You are IT! Hold on!", NamedTextColor.RED));
     }
     secondsLeft--;
+    // Clean up expired invulnerability
+    long now = System.currentTimeMillis();
+    itInvulnerableUntil.entrySet().removeIf(e -> now > e.getValue());
   }
 
   /** Renders the game state. */
@@ -237,12 +261,17 @@ public class KothTagGame implements Minigame {
     for (Player p : players) {
       p.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
     }
+    if (scoreboard != null) {
+      if (taggedTeam != null) {
+        taggedTeam.unregister();
+      }
+    }
     scoreboard = null;
     objective = null;
+    taggedTeam = null;
     players.clear();
     holdTimes.clear();
     currentIt = null;
-    winner = null;
     roundActive = false;
     Bukkit.getLogger().info("[KothTag] Cleanup complete.");
   }
@@ -256,6 +285,7 @@ public class KothTagGame implements Minigame {
   public void join(Player player) {
     if (!players.contains(player)) {
       players.add(player);
+      player.teleport(getConfig().getGameArea().clone().add(0, 1, 0));
     }
   }
 
@@ -268,8 +298,8 @@ public class KothTagGame implements Minigame {
   public void leave(Player player) {
     players.remove(player);
     holdTimes.remove(player.getUniqueId());
+    itInvulnerableUntil.remove(player.getUniqueId());
     if (currentIt != null && currentIt.equals(player) && !players.isEmpty()) {
-      // Pick a new "it" if the current one leaves
       currentIt = players.get(new Random().nextInt(players.size()));
     }
   }
@@ -333,6 +363,14 @@ public class KothTagGame implements Minigame {
     if (currentIt == null || !players.contains(tagger) || !players.contains(target)) {
       return;
     }
+
+    if (currentIt != null && itInvulnerableUntil.containsKey(currentIt.getUniqueId())) {
+      long until = itInvulnerableUntil.get(currentIt.getUniqueId());
+      if (System.currentTimeMillis() < until) {
+        return;
+      }
+    }
+
     if (tagger.equals(currentIt)) {
       // IT cannot tag anyone
       return;
@@ -349,6 +387,9 @@ public class KothTagGame implements Minigame {
 
     // Set new IT to the tagger
     currentIt = tagger;
+
+    long now = System.currentTimeMillis();
+    itInvulnerableUntil.put(currentIt.getUniqueId(), now + 2000);
 
     // Give IT items to new IT
     giveItItems(currentIt);
@@ -420,6 +461,52 @@ public class KothTagGame implements Minigame {
     arrowMeta.displayName(Component.text("Slowness Arrow", NamedTextColor.AQUA));
     arrow.setItemMeta(arrowMeta);
     player.getInventory().addItem(arrow);
+
+    player.addPotionEffect(
+        new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 0, false, false));
+    player.addPotionEffect(
+        new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1, false, false));
+
+    if (taggedTeam != null) {
+      taggedTeam.addEntry(player.getName());
+    }
+
+    // Start ringing sound task for the tagged player
+    if (itSoundTask != null) {
+      itSoundTask.cancel();
+    }
+    itSoundTask =
+        new BukkitRunnable() {
+          @Override
+          public void run() {
+            if (player.equals(currentIt) && player.isOnline()) {
+              player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 0.7f, 2.0f);
+            } else {
+              this.cancel();
+            }
+          }
+        };
+    itSoundTask.runTaskTimer(Bukkit.getPluginManager().getPlugin("stweaks"), 0L, 10L);
+  }
+
+  /**
+   * Gets the current "it" player in the game.
+   *
+   * @return the player who is currently "it"
+   */
+  public Player getCurrentIt() {
+    return currentIt;
+  }
+
+  /**
+   * Checks if a player is currently invulnerable.
+   *
+   * @param player the player to check
+   * @return true if the player is invulnerable, false otherwise
+   */
+  public boolean isItInvulnerable(Player player) {
+    Long until = itInvulnerableUntil.get(player.getUniqueId());
+    return until != null && System.currentTimeMillis() < until;
   }
 
   // Utility to remove bow and slowness arrows
@@ -427,5 +514,15 @@ public class KothTagGame implements Minigame {
     Bukkit.getLogger().info("[KothTag] Removing IT items from " + player.getName());
     player.getInventory().remove(Material.BOW);
     player.getInventory().remove(Material.TIPPED_ARROW);
+    player.removePotionEffect(PotionEffectType.GLOWING);
+    player.removePotionEffect(PotionEffectType.SPEED);
+
+    if (taggedTeam != null) {
+      taggedTeam.removeEntry(player.getName());
+    }
+    if (itSoundTask != null) {
+      itSoundTask.cancel();
+      itSoundTask = null;
+    }
   }
 }
