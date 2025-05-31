@@ -11,6 +11,7 @@ import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
@@ -147,7 +148,28 @@ public class KothTagGame implements Minigame {
     if (!roundActive) {
       return;
     }
-    if (secondsLeft <= 0) {
+
+    Location startArea = config.getGameArea();
+    int minY = startArea.getBlockY();
+    List<Player> toRemove = new ArrayList<>();
+    for (Player p : new ArrayList<>(players)) {
+      if (p == null
+          || !p.isOnline()
+          || !p.getWorld().equals(startArea.getWorld())
+          || p.getLocation().getY() < minY) {
+        Bukkit.getLogger()
+            .info(
+                "[KothTag] Removing player "
+                    + (p != null ? p.getName() : "null")
+                    + " (left world or fell below Y-level)");
+        toRemove.add(p);
+      }
+    }
+    for (Player p : toRemove) {
+      leave(p);
+    }
+
+    if (players.size() <= 1 || secondsLeft <= 0) {
       roundActive = false;
       // Find the player(s) with the highest hold time
       int max = holdTimes.values().stream().max(Integer::compareTo).orElse(0);
