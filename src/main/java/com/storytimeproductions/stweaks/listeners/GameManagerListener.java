@@ -185,6 +185,27 @@ public class GameManagerListener implements Listener {
   }
 
   /**
+   * Handles player interactions with BattleshipGame blocks.
+   *
+   * @param event the PlayerInteractEvent triggered in the world
+   */
+  @EventHandler
+  public void onPlayerInteractBattleship(PlayerInteractEvent event) {
+    Player player = event.getPlayer();
+
+    // Only run if the player is in a BattleshipGame and in its players list
+    for (Minigame minigame : activeGames.values()) {
+      if (minigame instanceof BattleshipGame battleship) {
+        // Use the players field of the BattleshipGame instance
+        if (battleship.getPlayers().contains(player)) {
+          battleship.onPlayerInteract(event); // Delegate to BattleshipGame logic
+          break;
+        }
+      }
+    }
+  }
+
+  /**
    * Handles player right-click events to allow players to join games by interacting with join
    * blocks.
    *
