@@ -7,10 +7,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.function.BiFunction;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
@@ -35,7 +34,6 @@ public class BattleshipGame implements Minigame, Listener {
   private final Map<Player, Integer> terracottaPlaced = new HashMap<>();
   private final Map<Player, Boolean> boardReady = new HashMap<>();
   private final Map<Player, List<List<Location>>> playerShipsCoords = new HashMap<>();
-  private final Map<Player, Set<Location>> playerHits = new HashMap<>();
   private final Map<Player, List<List<int[]>>> playerShipsCoordsRelative = new HashMap<>();
   private final Material shipBlock = Material.GREEN_GLAZED_TERRACOTTA;
   private final Material boardBlock = Material.LAPIS_BLOCK;
@@ -43,13 +41,16 @@ public class BattleshipGame implements Minigame, Listener {
   private final Material hitBlock = Material.RED_SANDSTONE_WALL;
   private BukkitTask startTimerTask = null;
   private boolean gameInProgress = false;
-  private int currentPlayerIndex = 0; // 0 or 1
+  private int currentPlayerIndex = 0;
 
   // Add this field to your class to store the public board center
   private Location publicBoardCenter;
 
   // Add this field to your class:
   private String boardDirection;
+
+  // Track the number of hits for each player
+  private final Map<Player, Integer> playerHitCount = new HashMap<>();
 
   /**
    * Constructs a new Battleship game with the specified configuration.
@@ -66,12 +67,68 @@ public class BattleshipGame implements Minigame, Listener {
     terracottaPlaced.clear();
     boardReady.clear();
     playerShipsCoords.clear();
-    playerHits.clear();
     gameInProgress = false;
     currentPlayerIndex = 0;
+    playerHitCount.clear(); // Initialize hit count
     if (startTimerTask != null) {
       startTimerTask.cancel();
       startTimerTask = null;
+    }
+  }
+
+  private void clearAllWalls() {
+    // Clear walls from both personal boards
+    for (Player p : players) {
+      Location boardCenter = getPlayerBoardCenter(p);
+      int centerX = boardCenter.getBlockX();
+      int centerZ = boardCenter.getBlockZ();
+      int y = boardCenter.getBlockY() + 1; // walls are one above the board
+      for (int dx = -3; dx <= 3; dx++) {
+        for (int dz = -3; dz <= 3; dz++) {
+          Block b = boardCenter.getWorld().getBlockAt(centerX + dx, y, centerZ + dz);
+          if (b.getType() == hitBlock || b.getType() == missBlock) {
+            b.setType(Material.AIR);
+          }
+        }
+      }
+    }
+
+    // Clear walls from both sides of the public board
+    int pubX = publicBoardCenter.getBlockX();
+    int pubY = publicBoardCenter.getBlockY();
+    int pubZ = publicBoardCenter.getBlockZ();
+    if (boardDirection.equals("north") || boardDirection.equals("south")) {
+      // X is width, Y is height, Z is fixed
+      for (int dx = -3; dx <= 3; dx++) {
+        for (int dy = -3; dy <= 3; dy++) {
+          // South side (lower Z)
+          Block b1 = publicBoardCenter.getWorld().getBlockAt(pubX + dx, pubY + dy, pubZ - 1);
+          if (b1.getType() == hitBlock || b1.getType() == missBlock) {
+            b1.setType(Material.AIR);
+          }
+          // North side (higher Z)
+          Block b2 = publicBoardCenter.getWorld().getBlockAt(pubX + dx, pubY + dy, pubZ + 1);
+          if (b2.getType() == hitBlock || b2.getType() == missBlock) {
+            b2.setType(Material.AIR);
+          }
+        }
+      }
+    } else {
+      // Z is width, Y is height, X is fixed
+      for (int dz = -3; dz <= 3; dz++) {
+        for (int dy = -3; dy <= 3; dy++) {
+          // West side (lower X)
+          Block b1 = publicBoardCenter.getWorld().getBlockAt(pubX - 1, pubY + dy, pubZ + dz);
+          if (b1.getType() == hitBlock || b1.getType() == missBlock) {
+            b1.setType(Material.AIR);
+          }
+          // East side (higher X)
+          Block b2 = publicBoardCenter.getWorld().getBlockAt(pubX + 1, pubY + dy, pubZ + dz);
+          if (b2.getType() == hitBlock || b2.getType() == missBlock) {
+            b2.setType(Material.AIR);
+          }
+        }
+      }
     }
   }
 
@@ -112,6 +169,7 @@ public class BattleshipGame implements Minigame, Listener {
               "Required ships: 5, 4, 3, 2, 2 blocks (no touching, only straight lines).",
               NamedTextColor.YELLOW));
     }
+    clearAllWalls();
   }
 
   /** Updates the game state. */
@@ -129,6 +187,7 @@ public class BattleshipGame implements Minigame, Listener {
       startTimerTask.cancel();
       startTimerTask = null;
     }
+    clearAllWalls();
   }
 
   /** Allows a player to join the game. */
@@ -139,6 +198,7 @@ public class BattleshipGame implements Minigame, Listener {
     }
     if (!players.contains(player)) {
       players.add(player);
+      terracottaPlaced.put(player, 0);
       String key = (players.size() == 1) ? "player1-join-area" : "player2-join-area";
       String[] parts = config.getGameProperties().get(key).split(",");
       Location joinLoc =
@@ -160,7 +220,7 @@ public class BattleshipGame implements Minigame, Listener {
     terracottaPlaced.remove(player);
     boardReady.remove(player);
     playerShipsCoords.remove(player);
-    playerHits.remove(player);
+    playerHitCount.remove(player); // Remove player from hit count map
     player.sendMessage("You have left the game.");
   }
 
@@ -207,6 +267,7 @@ public class BattleshipGame implements Minigame, Listener {
     if (event.getHand() != EquipmentSlot.HAND) {
       return;
     }
+
     if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
       return;
     }
@@ -245,11 +306,8 @@ public class BattleshipGame implements Minigame, Listener {
         String error = validateBoard(player, boardCenter);
         if (error == null) {
           boardReady.put(player, true);
-          // Store both Location and relative int[] versions if needed
-          playerShipsCoords.put(player, extractShipsFromBoard(boardCenter)); // for display
-          playerShipsCoordsRelative.put(
-              player, extractShipsFromBoardRelative(boardCenter)); // for hit checking
-          playerHits.putIfAbsent(player, new HashSet<>());
+          playerShipsCoords.put(player, extractShipsFromBoard(boardCenter));
+          playerShipsCoordsRelative.put(player, extractShipsFromBoardRelative(boardCenter));
           player.sendMessage("Your board is ready!");
           player.showTitle(
               Title.title(
@@ -286,16 +344,28 @@ public class BattleshipGame implements Minigame, Listener {
         Bukkit.getLogger()
             .info(
                 "[Battleship] Relative public board coordinates: (" + rel[0] + "," + rel[1] + ")");
+
+        if (players.indexOf(player) == 1) {
+          if (boardDirection.equals("north") || boardDirection.equals("south")) {
+            rel[1] = 6 - rel[1];
+            rel[0] = 6 - rel[0];
+          }
+        } else {
+          // Player 1's coordinates are already in the correct orientation
+          if (boardDirection.equals("north") || boardDirection.equals("south")) {
+            int temp = rel[0];
+            rel[0] = rel[1];
+            rel[1] = temp;
+          }
+        }
+
         Player opponent = players.get(1 - currentPlayerIndex);
         boolean hit = false;
-        int hitShipIndex = -1;
         for (int i = 0; i < playerShipsCoordsRelative.get(opponent).size(); i++) {
           List<int[]> ship = playerShipsCoordsRelative.get(opponent).get(i);
           for (int[] coord : ship) {
             if (coord[0] == rel[0] && coord[1] == rel[1]) {
               hit = true;
-              hitShipIndex = i;
-              playerHits.get(opponent).add(clicked.getLocation());
               Bukkit.getLogger()
                   .info(
                       "[Battleship] "
@@ -356,16 +426,6 @@ public class BattleshipGame implements Minigame, Listener {
         int mappedX = rel[0];
         int mappedZ = rel[1];
 
-        // Mirror for player 2 (the shooter), not based on world coordinates
-        if (players.indexOf(player) == 1) {
-          mappedX = 6 - mappedX;
-          mappedZ = 6 - mappedZ;
-        }
-
-        // Clamp to 0-6 just in case
-        mappedX = Math.max(0, Math.min(6, mappedX));
-        mappedZ = Math.max(0, Math.min(6, mappedZ));
-
         Location opponentBoardCenter = getPlayerBoardCenter(opponent);
         int oppX;
         int oppZ;
@@ -381,29 +441,20 @@ public class BattleshipGame implements Minigame, Listener {
         Block oppBlock = opponentBoardCenter.getWorld().getBlockAt(oppX, oppY, oppZ);
         oppBlock.setType(hit ? hitBlock : missBlock);
 
-        String shipStatus = hit ? getShipStatus(opponent, hitShipIndex) : "";
         if (hit) {
-          Bukkit.getLogger().info("[Battleship] Ship status after hit: " + shipStatus);
+          // Increment hit count for the current player
+          playerHitCount.put(player, playerHitCount.getOrDefault(player, 0) + 1);
+
           player.showTitle(
               Title.title(
                   Component.text("Hit!", NamedTextColor.RED),
                   Component.text(""),
                   Title.Times.times(
                       Duration.ofMillis(500), Duration.ofMillis(2000), Duration.ofMillis(1000))));
-          if (isShipSunk(opponent, hitShipIndex)) {
-            Bukkit.getLogger()
-                .info(
-                    "[Battleship] Ship of size "
-                        + playerShipsCoords.get(opponent).get(hitShipIndex).size()
-                        + " sunk!");
-            broadcastToPlayers(
-                "Ship of size "
-                    + playerShipsCoords.get(opponent).get(hitShipIndex).size()
-                    + " sunk!");
-          }
-          if (isAllShipsSunk(opponent)) {
-            Bukkit.getLogger()
-                .info("[Battleship] " + player.getName() + " wins! All opponent ships sunk.");
+
+          // Check for win (16 hits)
+          if (playerHitCount.get(player) >= 16) {
+            Bukkit.getLogger().info("[Battleship] " + player.getName() + " wins! 16 hits reached.");
             broadcastToPlayers(player.getName() + " wins!");
             rewardWinner(player);
             quitGame();
@@ -559,33 +610,64 @@ public class BattleshipGame implements Minigame, Listener {
     boolean[][] visited = new boolean[size][size];
     List<List<Location>> ships = new ArrayList<>();
 
-    for (int x = 0; x < size; x++) {
-      for (int z = 0; z < size; z++) {
-        if (board[x][z] == 1 && !visited[x][z]) {
+    int playerIdx = players.indexOf(getPlayerByBoardCenter(boardCenter));
+    String dir = boardDirection;
+
+    // Helper to map logical (row,col) to world (x,z) for each player/direction
+    BiFunction<Integer, Integer, int[]> logicalToWorld =
+        (row, col) -> {
+          int wx = centerX;
+          int wz = centerZ;
+          if (dir.equals("north")) {
+            // Player 1: top=north, Player 2: top=south (mirror Z)
+            if (playerIdx == 0) {
+              wx += col - 3;
+              wz += row - 3;
+            } else {
+              wx += 6 - col - 3;
+              wz += 6 - row - 3;
+            }
+          } else if (dir.equals("east")) {
+            // Player 1: top=east (mirror X), Player 2: top=west
+            if (playerIdx == 0) {
+              wx += 6 - row - 3;
+              wz += col - 3;
+            } else {
+              wx += row - 3;
+              wz += 6 - col - 3;
+            }
+          }
+          return new int[] {wx, wz};
+        };
+
+    for (int row = 0; row < size; row++) {
+      for (int col = 0; col < size; col++) {
+        if (board[row][col] == 1 && !visited[row][col]) {
           List<Location> ship = new ArrayList<>();
           int lenH = 1;
-          int zz = z + 1;
-          while (zz < size && board[x][zz] == 1 && !visited[x][zz]) {
+          int cc = col + 1;
+          while (cc < size && board[row][cc] == 1 && !visited[row][cc]) {
             lenH++;
-            zz++;
+            cc++;
           }
           int lenV = 1;
-          int xx = x + 1;
-          while (xx < size && board[xx][z] == 1 && !visited[xx][z]) {
+          int rr = row + 1;
+          while (rr < size && board[rr][col] == 1 && !visited[rr][col]) {
             lenV++;
-            xx++;
+            rr++;
           }
           boolean isHorizontal = lenH > 1;
           int len = isHorizontal ? lenH : lenV;
           for (int k = 0; k < len; k++) {
-            int cx = isHorizontal ? x : x + k;
-            int cz = isHorizontal ? z + k : z;
-            visited[cx][cz] = true;
-            ship.add(new Location(boardCenter.getWorld(), centerX + cx - 3, y, centerZ + cz - 3));
+            int r = isHorizontal ? row : row + k;
+            int c = isHorizontal ? col + k : col;
+            visited[r][c] = true;
+            int[] wxz = logicalToWorld.apply(r, c);
+            ship.add(new Location(boardCenter.getWorld(), wxz[0], y, wxz[1]));
           }
           ships.add(ship);
           if (isHorizontal) {
-            z += len - 1;
+            col += len - 1;
           }
         }
       }
@@ -593,8 +675,20 @@ public class BattleshipGame implements Minigame, Listener {
     return ships;
   }
 
-  // When extracting ships from a player's board, store them as relative (0-6,
-  // 0-6) coordinates
+  // Helper to get the player by their board center
+  private Player getPlayerByBoardCenter(Location boardCenter) {
+    for (Player p : players) {
+      Location c = getPlayerBoardCenter(p);
+      if (c.getWorld().equals(boardCenter.getWorld())
+          && c.getBlockX() == boardCenter.getBlockX()
+          && c.getBlockY() == boardCenter.getBlockY()
+          && c.getBlockZ() == boardCenter.getBlockZ()) {
+        return p;
+      }
+    }
+    return null;
+  }
+
   private List<List<int[]>> extractShipsFromBoardRelative(Location boardCenter) {
     int size = 7;
     int[][] board = new int[size][size];
@@ -612,33 +706,50 @@ public class BattleshipGame implements Minigame, Listener {
     boolean[][] visited = new boolean[size][size];
     List<List<int[]>> ships = new ArrayList<>();
 
-    for (int x = 0; x < size; x++) {
-      for (int z = 0; z < size; z++) {
-        if (board[x][z] == 1 && !visited[x][z]) {
+    int playerIdx = players.indexOf(getPlayerByBoardCenter(boardCenter));
+    String dir = boardDirection;
+
+    // Helper to map logical (row,col) to stored (relative) coordinates for each
+    // player/direction
+    BiFunction<Integer, Integer, int[]> logicalToRelative =
+        (row, col) -> {
+          int relRow = row;
+          int relCol = col;
+          if ((dir.equals("north") || dir.equals("south")) && playerIdx == 1) {
+            // Mirror Z axis for player 2 if board is north/south
+            relRow = size - 1 - row;
+          }
+          // For east/west, you can add similar logic if you want to mirror X for player 2
+          return new int[] {relRow, relCol};
+        };
+
+    for (int row = 0; row < size; row++) {
+      for (int col = 0; col < size; col++) {
+        if (board[row][col] == 1 && !visited[row][col]) {
           List<int[]> ship = new ArrayList<>();
           int lenH = 1;
-          int zz = z + 1;
-          while (zz < size && board[x][zz] == 1 && !visited[x][zz]) {
+          int cc = col + 1;
+          while (cc < size && board[row][cc] == 1 && !visited[row][cc]) {
             lenH++;
-            zz++;
+            cc++;
           }
           int lenV = 1;
-          int xx = x + 1;
-          while (xx < size && board[xx][z] == 1 && !visited[xx][z]) {
+          int rr = row + 1;
+          while (rr < size && board[rr][col] == 1 && !visited[rr][col]) {
             lenV++;
-            xx++;
+            rr++;
           }
           boolean isHorizontal = lenH > 1;
           int len = isHorizontal ? lenH : lenV;
           for (int k = 0; k < len; k++) {
-            int cx = isHorizontal ? x : x + k;
-            int cz = isHorizontal ? z + k : z;
-            visited[cx][cz] = true;
-            ship.add(new int[] {cx, cz});
+            int r = isHorizontal ? row : row + k;
+            int c = isHorizontal ? col + k : col;
+            visited[r][c] = true;
+            ship.add(logicalToRelative.apply(r, c));
           }
           ships.add(ship);
           if (isHorizontal) {
-            z += len - 1;
+            col += len - 1;
           }
         }
       }
@@ -775,51 +886,6 @@ public class BattleshipGame implements Minigame, Listener {
 
     Bukkit.getLogger().info("[Battleship] isOnPublicBoard result: " + result);
     return result;
-  }
-
-  private boolean isShipSunk(Player player, int shipIndex) {
-    List<Location> ship = playerShipsCoords.get(player).get(shipIndex);
-    Set<Location> hits = playerHits.get(player);
-    for (Location loc : ship) {
-      if (!hits.contains(loc)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  private boolean isAllShipsSunk(Player player) {
-    List<List<Location>> ships = playerShipsCoords.get(player);
-    Set<Location> hits = playerHits.get(player);
-    for (List<Location> ship : ships) {
-      for (Location loc : ship) {
-        if (!hits.contains(loc)) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  private String getShipStatus(Player player, int hitShipIndex) {
-    List<List<Location>> ships = playerShipsCoords.get(player);
-    Set<Location> hits = playerHits.get(player);
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < ships.size(); i++) {
-      List<Location> ship = ships.get(i);
-      boolean sunk = true;
-      for (Location loc : ship) {
-        if (!hits.contains(loc)) {
-          sunk = false;
-          break;
-        }
-      }
-      sb.append("Ship size ").append(ship.size()).append(": ").append(sunk ? "SUNK" : "AFLOAT");
-      if (i != ships.size() - 1) {
-        sb.append(", ");
-      }
-    }
-    return sb.toString();
   }
 
   private void rewardWinner(Player winner) {
