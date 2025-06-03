@@ -52,6 +52,9 @@ public class BattleshipGame implements Minigame, Listener {
   // Track the number of hits for each player
   private final Map<Player, Integer> playerHitCount = new HashMap<>();
 
+  // Track if a winner has been determined
+  private boolean winnerDetermined = false;
+
   /**
    * Constructs a new Battleship game with the specified configuration.
    *
@@ -150,6 +153,8 @@ public class BattleshipGame implements Minigame, Listener {
   public void afterInit() {
     setupPublicBoardCenter();
     for (Player p : players) {
+      Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "fly " + p.getName());
+
       Location boardCenter = getPlayerBoardCenter(p);
       int centerX = boardCenter.getBlockX();
       int centerZ = boardCenter.getBlockZ();
@@ -183,11 +188,26 @@ public class BattleshipGame implements Minigame, Listener {
   /** Called when the game is destroyed or stopped. */
   @Override
   public void onDestroy() {
+    // Cancel any running timer tasks
     if (startTimerTask != null) {
       startTimerTask.cancel();
       startTimerTask = null;
     }
+    // Clear all wall blocks from boards
     clearAllWalls();
+
+    // Clear all game state and references
+    players.clear();
+    terracottaPlaced.clear();
+    boardReady.clear();
+    playerShipsCoords.clear();
+    playerShipsCoordsRelative.clear();
+    playerHitCount.clear();
+    winnerDetermined = false;
+    gameInProgress = false;
+    currentPlayerIndex = 0;
+    publicBoardCenter = null;
+    boardDirection = null;
   }
 
   /** Allows a player to join the game. */
@@ -239,7 +259,7 @@ public class BattleshipGame implements Minigame, Listener {
   /** Determines if the game should quit. */
   @Override
   public boolean shouldQuit() {
-    return false;
+    return winnerDetermined;
   }
 
   private Location getPlayerBoardCenter(Player player) {
@@ -296,6 +316,7 @@ public class BattleshipGame implements Minigame, Listener {
         player.sendMessage("You have already placed all your ships.");
         return;
       }
+
       clicked.setType(shipBlock);
       hand.setAmount(hand.getAmount() - 1);
       terracottaPlaced.put(player, terracottaPlaced.get(player) + 1);
@@ -333,17 +354,14 @@ public class BattleshipGame implements Minigame, Listener {
 
     // --- Game phase: Diorite wall placement ---
     if (gameInProgress && player.equals(players.get(currentPlayerIndex))) {
+      if (!player.equals(players.get(currentPlayerIndex))) {
+        player.sendMessage(Component.text("It's not your turn!", NamedTextColor.RED));
+        event.setCancelled(true);
+        return;
+      }
+
       if (hand.getType() == missBlock && isOnPublicBoard(clicked.getLocation())) {
-        Bukkit.getLogger()
-            .info(
-                "[Battleship] "
-                    + player.getName()
-                    + " is attempting to place a wall at "
-                    + clicked.getLocation());
         int[] rel = getRelativePublicBoardCoords(clicked.getLocation());
-        Bukkit.getLogger()
-            .info(
-                "[Battleship] Relative public board coordinates: (" + rel[0] + "," + rel[1] + ")");
 
         if (players.indexOf(player) == 1) {
           if (boardDirection.equals("north") || boardDirection.equals("south")) {
@@ -353,9 +371,7 @@ public class BattleshipGame implements Minigame, Listener {
         } else {
           // Player 1's coordinates are already in the correct orientation
           if (boardDirection.equals("north") || boardDirection.equals("south")) {
-            int temp = rel[0];
-            rel[0] = rel[1];
-            rel[1] = temp;
+            rel[0] = 6 - rel[0];
           }
         }
 
@@ -366,15 +382,6 @@ public class BattleshipGame implements Minigame, Listener {
           for (int[] coord : ship) {
             if (coord[0] == rel[0] && coord[1] == rel[1]) {
               hit = true;
-              Bukkit.getLogger()
-                  .info(
-                      "[Battleship] "
-                          + player.getName()
-                          + " HIT a ship at ("
-                          + rel[0]
-                          + ","
-                          + rel[1]
-                          + ") on opponent's board.");
               break;
             }
           }
@@ -415,16 +422,37 @@ public class BattleshipGame implements Minigame, Listener {
           }
         }
 
+        // After placing the wall (hit or miss) on the public board and opponent's
+        // board:
         Block wallBlock =
             wallLoc
                 .getWorld()
                 .getBlockAt(wallLoc.getBlockX(), wallLoc.getBlockY(), wallLoc.getBlockZ());
         wallBlock.setType(hit ? hitBlock : missBlock);
 
+        // Remove one diorite wall from the player's inventory after placing
+        ItemStack handItem = player.getInventory().getItemInMainHand();
+        if (handItem.getType() == missBlock) {
+          handItem.setAmount(handItem.getAmount() - 1);
+        } else {
+          // Fallback: remove one from inventory if not in main hand
+          player.getInventory().removeItem(new ItemStack(missBlock, 1));
+        }
+
         // Place a wall (hit or miss) on the opponent's personal board, one level above
         // their board
         int mappedX = rel[0];
         int mappedZ = rel[1];
+
+        if (boardDirection.equals("north") || boardDirection.equals("south")) {
+          if (players.indexOf(player) == 0) { // Player 1
+            mappedX = 6 - mappedX;
+          }
+        } else {
+          if (players.indexOf(player) == 0) { // Player 1
+            mappedZ = 6 - mappedZ;
+          }
+        }
 
         Location opponentBoardCenter = getPlayerBoardCenter(opponent);
         int oppX;
@@ -454,22 +482,13 @@ public class BattleshipGame implements Minigame, Listener {
 
           // Check for win (16 hits)
           if (playerHitCount.get(player) >= 16) {
-            Bukkit.getLogger().info("[Battleship] " + player.getName() + " wins! 16 hits reached.");
             broadcastToPlayers(player.getName() + " wins!");
             rewardWinner(player);
+            winnerDetermined = true; // <-- Set winner flag
             quitGame();
             return;
           }
         } else {
-          Bukkit.getLogger()
-              .info(
-                  "[Battleship] "
-                      + player.getName()
-                      + " MISSED at ("
-                      + rel[0]
-                      + ","
-                      + rel[1]
-                      + ")");
           player.showTitle(
               Title.title(
                   Component.text("Miss!", NamedTextColor.GRAY),
@@ -479,8 +498,6 @@ public class BattleshipGame implements Minigame, Listener {
         }
         // Next turn
         currentPlayerIndex = 1 - currentPlayerIndex;
-        Bukkit.getLogger()
-            .info("[Battleship] Next turn: " + players.get(currentPlayerIndex).getName());
         promptPlayerForMove(players.get(currentPlayerIndex));
       }
     }
@@ -795,6 +812,9 @@ public class BattleshipGame implements Minigame, Listener {
   }
 
   private void promptPlayerForMove(Player player) {
+    // Give the player a diorite wall for their move
+    player.getInventory().addItem(new ItemStack(missBlock, 1));
+
     player.sendActionBar(
         Component.text(
             "It's your turn! Place a diorite wall on your side of the public board.",
@@ -840,14 +860,6 @@ public class BattleshipGame implements Minigame, Listener {
       // Z is width (0-6), Y is height (0-6)
       result = new int[] {relZ + 3, relY + 3};
     }
-    Bukkit.getLogger()
-        .info(
-            "[Battleship] getRelativePublicBoardCoords for "
-                + loc
-                + " | boardDirection="
-                + boardDirection
-                + " | result="
-                + Arrays.toString(result));
     return result;
   }
 
@@ -858,20 +870,6 @@ public class BattleshipGame implements Minigame, Listener {
     int relY = loc.getBlockY() - publicBoardCenter.getBlockY();
     int relZ = loc.getBlockZ() - publicBoardCenter.getBlockZ();
     boolean result;
-
-    // Log input
-    Bukkit.getLogger()
-        .info(
-            "[Battleship] Checking isOnPublicBoard for location: "
-                + loc
-                + " | relX="
-                + relX
-                + ", relY="
-                + relY
-                + ", relZ="
-                + relZ
-                + " | boardDirection="
-                + boardDirection);
 
     // For a vertical board perpendicular to direction:
     // - For north/south: board is X (width) by Y (height), Z is fixed
@@ -884,7 +882,6 @@ public class BattleshipGame implements Minigame, Listener {
       result = relZ >= -3 && relZ <= 3 && relY >= -3 && relY <= 3 && relX == 0;
     }
 
-    Bukkit.getLogger().info("[Battleship] isOnPublicBoard result: " + result);
     return result;
   }
 
@@ -895,5 +892,8 @@ public class BattleshipGame implements Minigame, Listener {
   private void quitGame() {
     gameInProgress = false;
     broadcastToPlayers("Game over!");
+    for (Player p : players) {
+      Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "fly " + p.getName());
+    }
   }
 }
