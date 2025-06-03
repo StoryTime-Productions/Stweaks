@@ -16,14 +16,18 @@ import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -886,6 +890,14 @@ public class BattleshipGame implements Minigame, Listener {
   }
 
   private void rewardWinner(Player winner) {
+    ItemStack tickets = new ItemStack(org.bukkit.Material.NAME_TAG, config.getPlayerLimit());
+    ItemMeta meta = tickets.getItemMeta();
+    meta.setItemModel(new NamespacedKey("storytime", "time_ticket"));
+    meta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, true);
+    meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+    meta.displayName(Component.text("5-minute ticket").color(NamedTextColor.GOLD));
+    tickets.setItemMeta(meta);
+    winner.getInventory().addItem(tickets);
     winner.sendMessage(Component.text("Congratulations! You win!", NamedTextColor.GOLD));
   }
 
