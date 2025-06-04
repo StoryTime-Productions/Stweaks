@@ -19,6 +19,9 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Directional;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -41,8 +44,8 @@ public class BattleshipGame implements Minigame, Listener {
   private final Map<Player, List<List<int[]>>> playerShipsCoordsRelative = new HashMap<>();
   private final Material shipBlock = Material.GREEN_GLAZED_TERRACOTTA;
   private final Material boardBlock = Material.LAPIS_BLOCK;
-  private final Material missBlock = Material.DIORITE_WALL;
-  private final Material hitBlock = Material.RED_SANDSTONE_WALL;
+  private final Material missBlock = Material.END_ROD;
+  private final Material hitBlock = Material.REDSTONE_TORCH;
   private BukkitTask startTimerTask = null;
   private boolean gameInProgress = false;
   private int currentPlayerIndex = 0;
@@ -105,7 +108,6 @@ public class BattleshipGame implements Minigame, Listener {
     int pubY = publicBoardCenter.getBlockY();
     int pubZ = publicBoardCenter.getBlockZ();
     if (boardDirection.equals("north") || boardDirection.equals("south")) {
-      // X is width, Y is height, Z is fixed
       for (int dx = -3; dx <= 3; dx++) {
         for (int dy = -3; dy <= 3; dy++) {
           // South side (lower Z)
@@ -121,7 +123,6 @@ public class BattleshipGame implements Minigame, Listener {
         }
       }
     } else {
-      // Z is width, Y is height, X is fixed
       for (int dz = -3; dz <= 3; dz++) {
         for (int dy = -3; dy <= 3; dy++) {
           // West side (lower X)
@@ -133,6 +134,43 @@ public class BattleshipGame implements Minigame, Listener {
           Block b2 = publicBoardCenter.getWorld().getBlockAt(pubX + 1, pubY + dy, pubZ + dz);
           if (b2.getType() == hitBlock || b2.getType() == missBlock) {
             b2.setType(Material.AIR);
+          }
+        }
+      }
+    }
+
+    // Clear the face of the public board (where torches/end rods may be attached)
+    if (boardDirection.equals("north") || boardDirection.equals("south")) {
+      for (int dx = -3; dx <= 3; dx++) {
+        for (int dy = -3; dy <= 3; dy++) {
+          Block faceBlock = publicBoardCenter.getWorld().getBlockAt(pubX + dx, pubY + dy, pubZ);
+          if (faceBlock.getType() == hitBlock || faceBlock.getType() == missBlock) {
+            faceBlock.setType(Material.AIR);
+          }
+          for (BlockFace face :
+              new BlockFace[] {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST}) {
+            Block attached = faceBlock.getRelative(face);
+            if (attached.getType() == Material.REDSTONE_WALL_TORCH
+                || attached.getType() == Material.END_ROD) {
+              attached.setType(Material.AIR);
+            }
+          }
+        }
+      }
+    } else {
+      for (int dz = -3; dz <= 3; dz++) {
+        for (int dy = -3; dy <= 3; dy++) {
+          Block faceBlock = publicBoardCenter.getWorld().getBlockAt(pubX, pubY + dy, pubZ + dz);
+          if (faceBlock.getType() == hitBlock || faceBlock.getType() == missBlock) {
+            faceBlock.setType(Material.AIR);
+          }
+          for (BlockFace face :
+              new BlockFace[] {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST}) {
+            Block attached = faceBlock.getRelative(face);
+            if (attached.getType() == Material.REDSTONE_WALL_TORCH
+                || attached.getType() == Material.END_ROD) {
+              attached.setType(Material.AIR);
+            }
           }
         }
       }
@@ -157,7 +195,7 @@ public class BattleshipGame implements Minigame, Listener {
   public void afterInit() {
     setupPublicBoardCenter();
     for (Player p : players) {
-      Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "fly " + p.getName());
+      Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "fly " + p.getName() + " enable");
 
       Location boardCenter = getPlayerBoardCenter(p);
       int centerX = boardCenter.getBlockX();
@@ -183,7 +221,9 @@ public class BattleshipGame implements Minigame, Listener {
 
   /** Updates the game state. */
   @Override
-  public void update() {}
+  public void update() {
+    checkPlayerDistances();
+  }
 
   /** Renders the game state. */
   @Override
@@ -305,6 +345,11 @@ public class BattleshipGame implements Minigame, Listener {
 
     // Remove ship block
     if (clicked.getType() == shipBlock) {
+      if (gameInProgress) {
+        event.setCancelled(true);
+        return;
+      }
+
       clicked.setType(boardBlock);
       player.getInventory().addItem(new ItemStack(shipBlock, 1));
       terracottaPlaced.put(player, terracottaPlaced.get(player) - 1);
@@ -434,6 +479,48 @@ public class BattleshipGame implements Minigame, Listener {
                 .getBlockAt(wallLoc.getBlockX(), wallLoc.getBlockY(), wallLoc.getBlockZ());
         wallBlock.setType(hit ? hitBlock : missBlock);
 
+        // Set orientation for torch or end rod
+        if (hit) {
+          // Torch: must be attached to the side of the public board block
+          BlockData torchData = Bukkit.createBlockData(Material.REDSTONE_WALL_TORCH);
+          if (torchData instanceof Directional) {
+            Directional directional = (Directional) torchData;
+            if (boardDirection.equals("north")) {
+              directional.setFacing(
+                  players.indexOf(player) == 1 ? BlockFace.SOUTH : BlockFace.NORTH);
+            } else if (boardDirection.equals("south")) {
+              directional.setFacing(
+                  players.indexOf(player) == 1 ? BlockFace.NORTH : BlockFace.SOUTH);
+            } else if (boardDirection.equals("east")) {
+              directional.setFacing(players.indexOf(player) == 1 ? BlockFace.WEST : BlockFace.EAST);
+            } else if (boardDirection.equals("west")) {
+              directional.setFacing(players.indexOf(player) == 1 ? BlockFace.EAST : BlockFace.WEST);
+            }
+            wallBlock.setBlockData(directional, false);
+          } else {
+            wallBlock.setBlockData(torchData, false);
+          }
+        } else {
+          // End rod: must be pointing away from the public board block
+          BlockData rodData = Bukkit.createBlockData(Material.END_ROD);
+          if (rodData instanceof Directional) {
+            Directional directional = (Directional) rodData;
+            if (boardDirection.equals("north")) {
+              directional.setFacing(
+                  players.indexOf(player) == 1 ? BlockFace.SOUTH : BlockFace.NORTH);
+            } else if (boardDirection.equals("south")) {
+              directional.setFacing(
+                  players.indexOf(player) == 1 ? BlockFace.NORTH : BlockFace.SOUTH);
+            } else if (boardDirection.equals("east")) {
+              directional.setFacing(players.indexOf(player) == 1 ? BlockFace.WEST : BlockFace.EAST);
+            } else if (boardDirection.equals("west")) {
+              directional.setFacing(players.indexOf(player) == 1 ? BlockFace.EAST : BlockFace.WEST);
+            }
+            wallBlock.setBlockData(directional, false);
+          } else {
+            wallBlock.setBlockData(rodData, false);
+          }
+        }
         // Remove one diorite wall from the player's inventory after placing
         ItemStack handItem = player.getInventory().getItemInMainHand();
         if (handItem.getType() == missBlock) {
@@ -484,6 +571,8 @@ public class BattleshipGame implements Minigame, Listener {
                   Title.Times.times(
                       Duration.ofMillis(500), Duration.ofMillis(2000), Duration.ofMillis(1000))));
 
+          player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 1.5f);
+
           // Check for win (16 hits)
           if (playerHitCount.get(player) >= 16) {
             broadcastToPlayers(player.getName() + " wins!");
@@ -499,6 +588,8 @@ public class BattleshipGame implements Minigame, Listener {
                   Component.text("", NamedTextColor.GRAY),
                   Title.Times.times(
                       Duration.ofMillis(500), Duration.ofMillis(2000), Duration.ofMillis(1000))));
+
+          player.playSound(player.getLocation(), Sound.ENTITY_FISHING_BOBBER_SPLASH, 1.0f, 1.2f);
         }
         // Next turn
         currentPlayerIndex = 1 - currentPlayerIndex;
@@ -821,8 +912,7 @@ public class BattleshipGame implements Minigame, Listener {
 
     player.sendActionBar(
         Component.text(
-            "It's your turn! Place a diorite wall on your side of the public board.",
-            NamedTextColor.AQUA));
+            "It's your turn! Send a missle to your opponent! (You can fly.)", NamedTextColor.AQUA));
     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.2f);
 
     new BukkitRunnable() {
@@ -831,7 +921,7 @@ public class BattleshipGame implements Minigame, Listener {
         if (gameInProgress && players.get(currentPlayerIndex).equals(player)) {
           player.sendActionBar(
               Component.text(
-                  "It's your turn! Place a diorite wall on your side of the public board.",
+                  "It's your turn! Send a missle to your opponent! (You can fly.)",
                   NamedTextColor.AQUA));
           player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.2f);
         } else {
@@ -889,8 +979,32 @@ public class BattleshipGame implements Minigame, Listener {
     return result;
   }
 
+  // Call this periodically (e.g., in update() or via a repeating task )
+  private void checkPlayerDistances() {
+    double maxDistance = 15.0; // blocks, adjust as needed
+    List<Player> toRemove = new ArrayList<>();
+    for (Player p : players) {
+      Location boardCenter = getPlayerBoardCenter(p);
+      if (!p.getWorld().equals(boardCenter.getWorld())
+          || p.getLocation().distance(boardCenter) > maxDistance) {
+        p.sendMessage(
+            Component.text(
+                "You moved too far from your board. You have left the game.", NamedTextColor.RED));
+        toRemove.add(p);
+      }
+    }
+    if (!toRemove.isEmpty()) {
+      for (Player p : toRemove) {
+        leave(p);
+      }
+      broadcastToPlayers("A player left or moved too far. The game has ended.");
+      winnerDetermined = true;
+      quitGame();
+    }
+  }
+
   private void rewardWinner(Player winner) {
-    ItemStack tickets = new ItemStack(org.bukkit.Material.NAME_TAG, config.getPlayerLimit());
+    ItemStack tickets = new ItemStack(org.bukkit.Material.NAME_TAG, players.size());
     ItemMeta meta = tickets.getItemMeta();
     meta.setItemModel(new NamespacedKey("storytime", "time_ticket"));
     meta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, true);
@@ -905,7 +1019,7 @@ public class BattleshipGame implements Minigame, Listener {
     gameInProgress = false;
     broadcastToPlayers("Game over!");
     for (Player p : players) {
-      Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "fly " + p.getName());
+      Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "fly " + p.getName() + " disable");
     }
   }
 }
