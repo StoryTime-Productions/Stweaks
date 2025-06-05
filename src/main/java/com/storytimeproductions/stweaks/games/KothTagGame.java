@@ -63,24 +63,20 @@ public class KothTagGame implements Minigame {
   /** Initializes the Battleship game. */
   @Override
   public void onInit() {
-    Bukkit.getLogger().info("[KothTag] Initializing game...");
     holdTimes.clear();
     currentIt = null;
     secondsLeft = 60;
     roundActive = false;
-    Bukkit.getLogger().info("[KothTag] Game initialized.");
   }
 
   /** Called after the game has been initialized. */
   @Override
   public void afterInit() {
-    Bukkit.getLogger().info("[KothTag] afterInit: Players: " + players.size());
     if (players.size() < 2) {
       for (Player p : players) {
         p.sendMessage(Component.text("Need at least 2 players for KOTH Tag!", NamedTextColor.RED));
       }
       roundActive = false;
-      Bukkit.getLogger().info("[KothTag] Not enough players to start.");
       return;
     }
     // Setup scoreboard
@@ -100,7 +96,6 @@ public class KothTagGame implements Minigame {
 
     // Pick a random player to be "it"
     currentIt = players.get(new Random().nextInt(players.size()));
-    Bukkit.getLogger().info("[KothTag] " + currentIt.getName() + " is initially IT.");
     for (Player p : players) {
       holdTimes.put(p.getUniqueId(), 0);
       Score score = objective.getScore(p.getName());
@@ -148,8 +143,6 @@ public class KothTagGame implements Minigame {
                   arrowMeta.displayName(Component.text("Slowness Arrow", NamedTextColor.AQUA));
                   arrow.setItemMeta(arrowMeta);
                   currentIt.getInventory().addItem(arrow);
-                  Bukkit.getLogger()
-                      .info("[KothTag] Gave slowness arrow to " + currentIt.getName());
                 }
               }
             };
@@ -161,7 +154,6 @@ public class KothTagGame implements Minigame {
       }
     }
     roundActive = true;
-    Bukkit.getLogger().info("[KothTag] Game started.");
   }
 
   /** Updates the game state. */
@@ -179,11 +171,6 @@ public class KothTagGame implements Minigame {
           || !p.isOnline()
           || !p.getWorld().equals(startArea.getWorld())
           || p.getLocation().getY() < minY) {
-        Bukkit.getLogger()
-            .info(
-                "[KothTag] Removing player "
-                    + (p != null ? p.getName() : "null")
-                    + " (left world or fell below Y-level)");
         toRemove.add(p);
       }
     }
@@ -201,9 +188,6 @@ public class KothTagGame implements Minigame {
           winners.add(p);
         }
       }
-      Bukkit.getLogger()
-          .info(
-              "[KothTag] Game ended. Winner(s): " + winners.stream().map(Player::getName).toList());
       for (Player p : players) {
         if (winners.contains(p)) {
           givePrize(p, players.size());
@@ -249,7 +233,6 @@ public class KothTagGame implements Minigame {
   /** Cleans up resources when the game is destroyed. */
   @Override
   public void onDestroy() {
-    Bukkit.getLogger().info("[KothTag] Destroying game and cleaning up.");
     if (itArrowTask != null) {
       itArrowTask.cancel();
       itArrowTask = null;
@@ -273,7 +256,6 @@ public class KothTagGame implements Minigame {
     holdTimes.clear();
     currentIt = null;
     roundActive = false;
-    Bukkit.getLogger().info("[KothTag] Cleanup complete.");
   }
 
   /**
@@ -380,8 +362,6 @@ public class KothTagGame implements Minigame {
       return;
     }
 
-    Bukkit.getLogger().info("[KothTag] " + tagger.getName() + " stole IT from " + target.getName());
-
     // Remove IT items from previous IT
     removeItItems(currentIt);
 
@@ -421,7 +401,6 @@ public class KothTagGame implements Minigame {
               arrowMeta.displayName(Component.text("Slowness Arrow", NamedTextColor.AQUA));
               arrow.setItemMeta(arrowMeta);
               currentIt.getInventory().addItem(arrow);
-              Bukkit.getLogger().info("[KothTag] Gave slowness arrow to " + currentIt.getName());
             }
           }
         };
@@ -442,7 +421,6 @@ public class KothTagGame implements Minigame {
 
   // Utility to give infinity bow and a single slowness arrow
   private void giveItItems(Player player) {
-    Bukkit.getLogger().info("[KothTag] Giving IT items to " + player.getName());
     // Give infinity bow
     ItemStack bow = new ItemStack(Material.BOW, 1);
     ItemMeta bowMeta = bow.getItemMeta();
@@ -511,7 +489,6 @@ public class KothTagGame implements Minigame {
 
   // Utility to remove bow and slowness arrows
   private void removeItItems(Player player) {
-    Bukkit.getLogger().info("[KothTag] Removing IT items from " + player.getName());
     player.getInventory().remove(Material.BOW);
     player.getInventory().remove(Material.TIPPED_ARROW);
     player.removePotionEffect(PotionEffectType.GLOWING);
@@ -525,4 +502,7 @@ public class KothTagGame implements Minigame {
       itSoundTask = null;
     }
   }
+
+  @Override
+  public void removeItems(Player player) {}
 }

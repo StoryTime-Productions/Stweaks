@@ -1,8 +1,5 @@
 package com.storytimeproductions.stweaks.commands;
 
-import com.storytimeproductions.models.stgames.Minigame;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -51,15 +48,6 @@ public class StLobbyCommand implements CommandExecutor {
     }
 
     Player player = (Player) sender;
-
-    for (Minigame minigame :
-        com.storytimeproductions.stweaks.listeners.GameManagerListener.activeGames.values()) {
-      if (minigame.getPlayers().contains(player)) {
-        player.sendMessage(
-            Component.text("You cannot use /lobby while in a game.", NamedTextColor.RED));
-        return true;
-      }
-    }
 
     String worldName = config.getString("lobby.world", "lobby");
     double x = config.getDouble("lobby.x", -117);

@@ -212,4 +212,7 @@ public class SpleefGame implements Minigame {
     shovel.setItemMeta(meta);
     player.getInventory().addItem(shovel);
   }
+
+  @Override
+  public void removeItems(Player player) {}
 }

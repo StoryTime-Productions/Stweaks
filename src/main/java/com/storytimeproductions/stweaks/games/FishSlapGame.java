@@ -7,18 +7,18 @@ import java.util.List;
 import org.bukkit.entity.Player;
 
 /**
- * Represents a Memory Pairs game where players match pairs of cards. Implements the Minigame
+ * Represents a Fish Slap game where players can slap each other with fish. Implements the Minigame
  * interface for game lifecycle management.
  */
-public class MemoryPairsGame implements Minigame {
+public class FishSlapGame implements Minigame {
   private final GameConfig config;
 
   /**
-   * Constructs a new Memory Pairs game with the specified configuration.
+   * Constructs a new Fish Slap game with the specified configuration.
    *
    * @param config the game configuration
    */
-  public MemoryPairsGame(GameConfig config) {
+  public FishSlapGame(GameConfig config) {
     this.config = config;
   }
 

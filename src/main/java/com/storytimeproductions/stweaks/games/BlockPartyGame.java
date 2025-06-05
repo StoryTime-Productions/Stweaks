@@ -507,4 +507,7 @@ public class BlockPartyGame implements Minigame {
       }
     }
   }
+
+  @Override
+  public void removeItems(Player player) {}
 }

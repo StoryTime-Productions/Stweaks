@@ -5,6 +5,7 @@ import com.storytimeproductions.models.stgames.Minigame;
 import com.storytimeproductions.stweaks.games.BattleshipGame;
 import com.storytimeproductions.stweaks.games.BlockBreakGame;
 import com.storytimeproductions.stweaks.games.BlockPartyGame;
+import com.storytimeproductions.stweaks.games.ColorSplatGame;
 import com.storytimeproductions.stweaks.games.ConnectFourGame;
 import com.storytimeproductions.stweaks.games.GuessWhoGame;
 import com.storytimeproductions.stweaks.games.KothTagGame;
@@ -44,6 +45,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -78,6 +81,7 @@ public class GameManagerListener implements Listener {
     gameFactories.put("speedcrafting", SpeedCraftingGame::new);
     gameFactories.put("kothtag", KothTagGame::new);
     gameFactories.put("minesweeper", MinesweeperGame::new);
+    gameFactories.put("color_splat", ColorSplatGame::new);
   }
 
   /**
@@ -379,6 +383,40 @@ public class GameManagerListener implements Listener {
     }
   }
 
+  /**
+   * Handles player quitting the game. Removes items and leaves all active games.
+   *
+   * @param event the PlayerQuitEvent triggered when a player quits
+   */
+  @EventHandler
+  public void onPlayerQuit(PlayerQuitEvent event) {
+    Player player = event.getPlayer();
+    for (Minigame minigame : activeGames.values()) {
+      minigame.removeItems(player);
+
+      if (minigame.getPlayers().contains(player)) {
+        minigame.leave(player);
+      }
+    }
+  }
+
+  /**
+   * Handles player movement events to allow games to respond to player actions.
+   *
+   * @param event the PlayerMoveEvent triggered when a player moves
+   */
+  @EventHandler
+  public void onPlayerMove(PlayerMoveEvent event) {
+    Player player = event.getPlayer();
+    for (Minigame minigame : activeGames.values()) {
+      if (minigame.getPlayers().contains(player)) {
+        if (minigame instanceof ColorSplatGame colorSplat) {
+          colorSplat.onPlayerMove(event);
+        }
+      }
+    }
+  }
+
   private void startGame(Minigame minigame) {
     String gameId = minigame.getConfig().getGameId();
     gameActive.put(gameId, true);
@@ -402,6 +440,9 @@ public class GameManagerListener implements Listener {
                 Player p = Bukkit.getPlayer(uuid);
                 if (p != null) {
                   p.teleport(minigame.getConfig().getExitArea());
+                  if (minigame.getPlayers().contains(p)) {
+                    minigame.leave(p);
+                  }
                 }
               }
               joinedPlayers.get(gameId).clear();

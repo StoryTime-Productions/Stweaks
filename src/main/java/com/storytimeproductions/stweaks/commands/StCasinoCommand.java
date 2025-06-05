@@ -56,14 +56,6 @@ public class StCasinoCommand implements CommandExecutor {
       return true;
     }
 
-    for (Minigame minigame : GameManagerListener.activeGames.values()) {
-      if (minigame.getPlayers().contains(player)) {
-        player.sendMessage(
-            Component.text("You cannot use /casino while in a game.", NamedTextColor.RED));
-        return true;
-      }
-    }
-
     if (label.equalsIgnoreCase("casino")
         && args.length == 1
         && args[0].equalsIgnoreCase("reload")) {

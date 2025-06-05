@@ -87,7 +87,10 @@ public class BattleshipGame implements Minigame, Listener {
   }
 
   private void clearAllWalls() {
-    // Clear walls from both personal boards
+    if (publicBoardCenter == null || boardDirection == null) {
+      return;
+    }
+
     for (Player p : players) {
       Location boardCenter = getPlayerBoardCenter(p);
       int centerX = boardCenter.getBlockX();
@@ -361,6 +364,16 @@ public class BattleshipGame implements Minigame, Listener {
 
     // Place ship block
     if (hand.getType() == shipBlock && clicked.getType() == boardBlock) {
+
+      Location playerBoardCenter = getPlayerBoardCenter(player);
+      int relX = clicked.getX() - playerBoardCenter.getBlockX();
+      int relY = clicked.getY() - playerBoardCenter.getBlockY();
+      int relZ = clicked.getZ() - playerBoardCenter.getBlockZ();
+      if (!(relX >= -3 && relX <= 3 && relZ >= -3 && relZ <= 3 && relY == 0)) {
+        event.setCancelled(true);
+        return;
+      }
+
       if (terracottaPlaced.get(player) >= 16) {
         player.sendMessage("You have already placed all your ships.");
         return;
@@ -874,6 +887,9 @@ public class BattleshipGame implements Minigame, Listener {
     if (players.size() < 2) {
       return;
     }
+    if (startTimerTask != null) {
+      return;
+    }
     if (Boolean.TRUE.equals(boardReady.get(players.get(0)))
         && Boolean.TRUE.equals(boardReady.get(players.get(1)))) {
       if (startTimerTask == null) {
@@ -981,12 +997,13 @@ public class BattleshipGame implements Minigame, Listener {
 
   // Call this periodically (e.g., in update() or via a repeating task )
   private void checkPlayerDistances() {
-    double maxDistance = 15.0; // blocks, adjust as needed
+    double maxDistance = 15.0;
     List<Player> toRemove = new ArrayList<>();
     for (Player p : players) {
       Location boardCenter = getPlayerBoardCenter(p);
       if (!p.getWorld().equals(boardCenter.getWorld())
-          || p.getLocation().distance(boardCenter) > maxDistance) {
+          || p.getLocation().distance(boardCenter) > maxDistance
+          || !p.isOnline()) {
         p.sendMessage(
             Component.text(
                 "You moved too far from your board. You have left the game.", NamedTextColor.RED));
@@ -1022,4 +1039,7 @@ public class BattleshipGame implements Minigame, Listener {
       Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "fly " + p.getName() + " disable");
     }
   }
+
+  @Override
+  public void removeItems(Player player) {}
 }

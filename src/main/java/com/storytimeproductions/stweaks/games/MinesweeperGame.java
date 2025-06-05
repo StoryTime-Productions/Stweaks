@@ -87,4 +87,7 @@ public class MinesweeperGame implements Minigame {
   public boolean shouldQuit() {
     return false;
   }
+
+  @Override
+  public void removeItems(Player player) {}
 }

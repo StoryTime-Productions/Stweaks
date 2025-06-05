@@ -57,4 +57,11 @@ public interface Minigame {
    * @return the minigame configuration
    */
   GameConfig getConfig();
+
+  /**
+   * Removes all game-related items from the player's inventory.
+   *
+   * @param player the player whose items will be removed
+   */
+  void removeItems(Player player);
 }
