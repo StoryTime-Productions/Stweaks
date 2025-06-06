@@ -7,6 +7,7 @@ import com.storytimeproductions.stweaks.games.BlockBreakGame;
 import com.storytimeproductions.stweaks.games.BlockPartyGame;
 import com.storytimeproductions.stweaks.games.ColorSplatGame;
 import com.storytimeproductions.stweaks.games.ConnectFourGame;
+import com.storytimeproductions.stweaks.games.FishSlapGame;
 import com.storytimeproductions.stweaks.games.GuessWhoGame;
 import com.storytimeproductions.stweaks.games.KothTagGame;
 import com.storytimeproductions.stweaks.games.MemoryPairsGame;
@@ -15,7 +16,6 @@ import com.storytimeproductions.stweaks.games.RockPaperScissorsGame;
 import com.storytimeproductions.stweaks.games.RouletteGame;
 import com.storytimeproductions.stweaks.games.SpeedCraftingGame;
 import com.storytimeproductions.stweaks.games.SpleefGame;
-import com.storytimeproductions.stweaks.games.SumoWrestlingGame;
 import com.storytimeproductions.stweaks.games.TicTacToeGame;
 import java.io.File;
 import java.time.Duration;
@@ -69,7 +69,6 @@ public class GameManagerListener implements Listener {
   static {
     gameFactories.put("roulette", RouletteGame::new);
     gameFactories.put("rock_paper_scissors", RockPaperScissorsGame::new);
-    gameFactories.put("sumo_wrestling", SumoWrestlingGame::new);
     gameFactories.put("guess_who", GuessWhoGame::new);
     gameFactories.put("battleship", BattleshipGame::new);
     gameFactories.put("spleef", SpleefGame::new);
@@ -82,6 +81,7 @@ public class GameManagerListener implements Listener {
     gameFactories.put("kothtag", KothTagGame::new);
     gameFactories.put("minesweeper", MinesweeperGame::new);
     gameFactories.put("color_splat", ColorSplatGame::new);
+    gameFactories.put("fish_slap", FishSlapGame::new);
   }
 
   /**
@@ -204,6 +204,29 @@ public class GameManagerListener implements Listener {
         if (battleship.getPlayers().contains(player)) {
           battleship.onPlayerInteract(event); // Delegate to BattleshipGame logic
           break;
+        }
+      }
+    }
+  }
+
+  /**
+   * Handles player damage events to allow games to respond to player interactions.
+   *
+   * @param event the EntityDamageByEntityEvent triggered when a player damages another entity
+   */
+  @EventHandler
+  public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+    if (!(event.getDamager() instanceof Player) || !(event.getEntity() instanceof Player)) {
+      return;
+    }
+    Player damager = (Player) event.getDamager();
+    Player target = (Player) event.getEntity();
+
+    for (Minigame minigame : activeGames.values()) {
+      if (minigame.getPlayers().contains(damager) && minigame.getPlayers().contains(target)) {
+        if (minigame instanceof FishSlapGame fishSlap) {
+          fishSlap.onEntityDamageByEntity(event);
+          return;
         }
       }
     }
