@@ -246,7 +246,7 @@ public class GameManagerListener implements Listener {
   private void tryJoinGame(Minigame minigame, Player player, Location joinLoc) {
     String gameId = minigame.getConfig().getGameId();
     if (gameActive.getOrDefault(gameId, false)) {
-      player.sendMessage(NamedTextColor.RED + "Game is already running!");
+      player.sendMessage(Component.text("Game is already running!", NamedTextColor.RED));
       return;
     }
 

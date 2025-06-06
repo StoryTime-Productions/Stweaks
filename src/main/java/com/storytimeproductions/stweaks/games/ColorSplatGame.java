@@ -186,31 +186,15 @@ public class ColorSplatGame implements Minigame, Listener {
     // Only trigger when the player lands (Y velocity negative, on ground, and moved
     // to a new block)
     if (from.getBlockY() >= to.getBlockY() && isOnGround) {
-      // Require a minimum downward velocity (e.g., -0.6 or lower)
-      if (player.getVelocity().getY() > -0.06) {
-        Bukkit.getLogger()
-            .info(
-                "[ColorSplat] "
-                    + player.getName()
-                    + " landed but did not fall fast enough (velocity: "
-                    + player.getVelocity().getY()
-                    + ").");
+      if (player.getVelocity().getY() > -0.6) {
         return;
       }
 
       Block landed = toBlock;
       if (landed.getType() == Material.WATER && poolBlocks.contains(landed.getLocation())) {
-        Bukkit.getLogger()
-            .info(
-                "[ColorSplat] "
-                    + player.getName()
-                    + " landed in the pool at "
-                    + landed.getLocation());
         // Replace water with player's color
         Material color = playerColors.get(player);
         landed.setType(color);
-        Bukkit.getLogger()
-            .info("[ColorSplat] Block at " + landed.getLocation() + " set to " + color);
 
         // Color adjacent blocks if they are not already the player's color
         for (BlockFace face :
@@ -220,14 +204,11 @@ public class ColorSplatGame implements Minigame, Listener {
               && adj.getType() != color
               && adj.getType() != Material.WATER) {
             adj.setType(color);
-            Bukkit.getLogger()
-                .info("[ColorSplat] Adjacent block at " + adj.getLocation() + " set to " + color);
           }
         }
 
         // Check if pool is finished
         if (isPoolFull()) {
-          Bukkit.getLogger().info("[ColorSplat] Pool is full. Ending game and awarding winner.");
           endGameAndAwardWinner();
         }
       }
