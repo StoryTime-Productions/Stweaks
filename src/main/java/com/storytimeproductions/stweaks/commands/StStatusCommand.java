@@ -322,8 +322,10 @@ public class StStatusCommand implements CommandExecutor {
       return true;
     }
 
+    // /ststatus [admin]
     if (sender instanceof Player player) {
-      if (player.isOp()) {
+      boolean isAdmin = args.length > 0 && args[0].equalsIgnoreCase("admin");
+      if (isAdmin && player.isOp()) {
         openAdminStatusInventory(player, 0);
         return true;
       } else {

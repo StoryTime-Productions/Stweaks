@@ -7,18 +7,18 @@ import java.util.List;
 import org.bukkit.entity.Player;
 
 /**
- * Represents a Speed Crafting game where players can quickly craft items within a time limit.
- * Implements the Minigame interface for game lifecycle management.
+ * Represents a Tic Tac Toe game where players can place Xs and Os on a grid. Implements the
+ * Minigame interface for game lifecycle management.
  */
-public class SpeedCraftingGame implements Minigame {
+public class StoryBlitz implements Minigame {
   private final GameConfig config;
 
   /**
-   * Constructs a new Speed Crafting game with the specified configuration.
+   * Constructs a new StoryBlitz game with the specified configuration.
    *
    * @param config the game configuration
    */
-  public SpeedCraftingGame(GameConfig config) {
+  public StoryBlitz(GameConfig config) {
     this.config = config;
   }
 

@@ -186,7 +186,7 @@ public class ColorSplatGame implements Minigame, Listener {
     // Only trigger when the player lands (Y velocity negative, on ground, and moved
     // to a new block)
     if (from.getBlockY() >= to.getBlockY() && isOnGround) {
-      if (player.getVelocity().getY() > -0.6) {
+      if (player.getVelocity().getY() > -0.5) {
         return;
       }
 
