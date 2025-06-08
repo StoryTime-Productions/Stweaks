@@ -92,8 +92,6 @@ public class StCasinoCommand implements CommandExecutor {
             } else {
               player.sendMessage("No exit area set for this game.");
             }
-          } else {
-            player.sendMessage("You can only leave if you are the only player waiting.");
           }
           return true;
         }

@@ -10,13 +10,15 @@ import org.bukkit.entity.Player;
  */
 public class BreakBlockChallenge implements StoryBlitzChallenge {
 
+  private final String description;
+
   /**
    * Constructs a new BreakBlockChallenge with the specified description.
    *
    * @param description The description of the challenge (shown to players).
    */
   public BreakBlockChallenge(String description) {
-    description = description;
+    this.description = description;
   }
 
   /**
@@ -37,7 +39,7 @@ public class BreakBlockChallenge implements StoryBlitzChallenge {
    */
   @Override
   public String getDescription() {
-    throw new UnsupportedOperationException("Unimplemented method 'getDescription'");
+    return description;
   }
 
   /**

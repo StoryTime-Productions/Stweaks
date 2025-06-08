@@ -335,6 +335,12 @@ public class BattleshipGame implements Minigame, Listener {
       return;
     }
 
+    // Prevent editing if board is ready
+    if (Boolean.TRUE.equals(boardReady.get(player))) {
+      event.setCancelled(true);
+      return;
+    }
+
     if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
       return;
     }

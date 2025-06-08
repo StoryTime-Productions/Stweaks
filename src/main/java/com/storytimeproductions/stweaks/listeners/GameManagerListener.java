@@ -200,7 +200,13 @@ public class GameManagerListener implements Listener {
       if (minigame instanceof BattleshipGame battleship) {
         // Use the players field of the BattleshipGame instance
         if (battleship.getPlayers().contains(player)) {
-          battleship.onPlayerInteract(event); // Delegate to BattleshipGame logic
+          battleship.onPlayerInteract(event);
+          break;
+        }
+      }
+      if (minigame instanceof RouletteGame roulette) {
+        if (roulette.getPlayers().contains(player)) {
+          roulette.handleTableInteract(event);
           break;
         }
       }
@@ -258,7 +264,9 @@ public class GameManagerListener implements Listener {
         continue;
       }
 
-      tryJoinGame(minigame, player, joinLoc);
+      if (!minigame.getPlayers().contains(player)) {
+        tryJoinGame(minigame, player, joinLoc);
+      }
       event.setCancelled(true);
       break;
     }
