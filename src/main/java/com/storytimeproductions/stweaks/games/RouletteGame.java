@@ -110,8 +110,6 @@ public class RouletteGame implements Minigame {
       tablePlayerSlots.put(i, new HashMap<>());
       tableLockedPlayers.put(i, new HashSet<>());
     }
-
-    initializeSlotHologramLines();
   }
 
   @Override
@@ -123,6 +121,7 @@ public class RouletteGame implements Minigame {
       cancelTableCountdown(i);
       cancelSpinTask(i);
     }
+    initializeSlotHologramLines();
   }
 
   private void cancelSpinTask(int table) {
@@ -188,8 +187,6 @@ public class RouletteGame implements Minigame {
   public void join(Player player) {
     if (!players.contains(player)) {
       players.add(player);
-      Bukkit.getLogger()
-          .info("[RouletteGame][DEBUG] Player " + player.getName() + " joined the game.");
       Location spawnLocation = config.getGameArea();
       if (spawnLocation != null) {
         player.teleport(spawnLocation);
@@ -203,10 +200,17 @@ public class RouletteGame implements Minigame {
         Bukkit.getLogger()
             .warning("[RouletteGame][DEBUG] No spawn location set in game properties.");
       }
-      ensureSlotHologramLinesCapacity();
+      for (int i = 1; i <= maxTables; i++) {
+        ensureSlotHologramLinesCapacity(i);
+      }
     }
   }
 
+  /**
+   * Removes the specified player from the game and updates holograms.
+   *
+   * @param player the player to remove
+   */
   @Override
   public void leave(Player player) {
     players.remove(player);
@@ -214,6 +218,21 @@ public class RouletteGame implements Minigame {
     lockedPlayers.remove(player);
     for (int i = 1; i <= maxTables; i++) {
       tablePlayers.get(i).remove(player);
+    }
+
+    // Move all slot holograms down by 1 when a player leaves
+    int playerCount = players.size();
+    if (playerCount >= 2) {
+      for (int table = 1; table <= maxTables; table++) {
+        for (int slot = 1; slot <= maxSlots; slot++) {
+          String color = (slot % 2 == 1) ? "R" : "B";
+          String slotHolo = table + "-" + color + "-" + slot;
+          // Only move down for each player above the second
+          for (int i = 3; i <= playerCount + 1; i++) {
+            logAndDispatchDhCommand("dh move " + slotHolo + " ~ -1 ~");
+          }
+        }
+      }
     }
   }
 
@@ -238,19 +257,15 @@ public class RouletteGame implements Minigame {
   /** Handles player interaction with a table block. Only main hand interactions are allowed. */
   public void handleTableInteract(PlayerInteractEvent event) {
     if (event.getHand() == null || event.getHand().name().equals("OFF_HAND")) {
-      Bukkit.getLogger().info("[RouletteGame][DEBUG] Ignored offhand interaction.");
       return;
     }
     Player player = event.getPlayer();
     Block clicked = event.getClickedBlock();
     if (clicked == null) {
-      Bukkit.getLogger().info("[RouletteGame][DEBUG] No block clicked by " + player.getName());
       return;
     }
 
     if (leaveBlock != null && clicked.getLocation().equals(leaveBlock.getLocation())) {
-      Bukkit.getLogger()
-          .info("[RouletteGame][DEBUG] " + player.getName() + " right-clicked leave block.");
       player.performCommand("casino leave");
       event.setCancelled(true);
       return;
@@ -258,18 +273,12 @@ public class RouletteGame implements Minigame {
 
     int table = getTableFromBlock(clicked);
     if (table == -1) {
-      Bukkit.getLogger()
-          .info("[RouletteGame][DEBUG] Block clicked by " + player.getName() + " is not a table.");
       return;
     }
 
     if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-      Bukkit.getLogger()
-          .info("[RouletteGame][DEBUG] " + player.getName() + " left-clicked table " + table);
       handleLeftClickTable(player, table);
     } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-      Bukkit.getLogger()
-          .info("[RouletteGame][DEBUG] " + player.getName() + " right-clicked table " + table);
       handleRightClickTable(player, table);
     }
   }
@@ -328,19 +337,13 @@ public class RouletteGame implements Minigame {
 
     // If player is locked, do nothing
     if (locked.contains(player)) {
-      Bukkit.getLogger()
-          .info(
-              "[RouletteGame][DEBUG] "
-                  + player.getName()
-                  + " tried to change slot but is locked at table "
-                  + table);
       player.sendMessage(
           Component.text(
               "You are already locked in and cannot change your slot.", NamedTextColor.RED));
       return;
     }
 
-    ensureSlotHologramLinesCapacity();
+    ensureSlotHologramLinesCapacity(table);
 
     // First time joining: assign to slot 1
     if (!tableSet.contains(player)) {
@@ -351,13 +354,6 @@ public class RouletteGame implements Minigame {
       }
       tableSet.add(player);
       playerSlots.put(player, 1);
-      Bukkit.getLogger()
-          .info(
-              "[RouletteGame][DEBUG] "
-                  + player.getName()
-                  + " joined table "
-                  + table
-                  + " on slot 1");
       updateSlotHologram(table, 1, player, "&e" + player.getName()); // yellow = not ready
       playerBets.put(player, new BetInfo(table, "R", 1));
 
@@ -390,16 +386,6 @@ public class RouletteGame implements Minigame {
     // Already joined, increment slot (wrap around after 8)
     int currentSlot = playerSlots.get(player);
     int nextSlot = (currentSlot % maxSlots) + 1;
-    Bukkit.getLogger()
-        .info(
-            "[RouletteGame][DEBUG] "
-                + player.getName()
-                + " moving from slot "
-                + currentSlot
-                + " to slot "
-                + nextSlot
-                + " on table "
-                + table);
 
     // Remove name from previous slot
     updateSlotHologram(table, currentSlot, player, "-");
@@ -454,12 +440,6 @@ public class RouletteGame implements Minigame {
 
     // Interrupt countdown if running
     if (tableCountdownTasks.containsKey(table)) {
-      Bukkit.getLogger()
-          .info(
-              "[RouletteGame][DEBUG] Countdown interrupted for table "
-                  + table
-                  + " by "
-                  + player.getName());
       cancelTableCountdown(table);
 
       // Set the countdown hologram to "Waiting..."
@@ -468,24 +448,22 @@ public class RouletteGame implements Minigame {
     }
   }
 
-  private void ensureSlotHologramLinesCapacity() {
+  private void ensureSlotHologramLinesCapacity(int table) {
     int neededLines = players.size() + 1;
-    for (int table = 1; table <= maxTables; table++) {
-      for (int slot = 1; slot <= maxSlots; slot++) {
-        String color = (slot % 2 == 1) ? "R" : "B";
-        String slotHolo = table + "-" + color + "-" + slot;
-        List<String> orig = hologramOriginalLines.get(slotHolo);
-        List<String> curr = hologramCurrentLines.get(slotHolo);
-        if (orig != null && orig.size() < neededLines) {
-          // Add missing lines as "-"
-          while (orig.size() < neededLines) {
-            orig.add("-");
-          }
+    for (int slot = 1; slot <= maxSlots; slot++) {
+      String color = (slot % 2 == 1) ? "R" : "B";
+      String slotHolo = table + "-" + color + "-" + slot;
+      List<String> orig = hologramOriginalLines.get(slotHolo);
+      List<String> curr = hologramCurrentLines.get(slotHolo);
+      if (orig != null && orig.size() < neededLines) {
+        while (orig.size() < neededLines) {
+          orig.add("-");
+          logAndDispatchDhCommand("dh l add " + slotHolo + " 1 &7-");
         }
-        if (curr != null && curr.size() < neededLines) {
-          while (curr.size() < neededLines) {
-            curr.add("-");
-          }
+      }
+      if (curr != null && curr.size() < neededLines) {
+        while (curr.size() < neededLines) {
+          curr.add("-");
         }
       }
     }
@@ -604,15 +582,7 @@ public class RouletteGame implements Minigame {
                 new Runnable() {
                   @Override
                   public void run() {
-                    Bukkit.getLogger()
-                        .info(
-                            "[RouletteGame][SPIN] Spin task running for table "
-                                + table
-                                + ", spinIndex="
-                                + spinIndex[0]);
                     if (spinIndex[0] >= delays.length) {
-                      Bukkit.getLogger()
-                          .info("[RouletteGame][SPIN] Spin finished for table " + table);
 
                       // Determine the final slot and color
                       int finalSlot = lastSlot[0];
@@ -622,9 +592,6 @@ public class RouletteGame implements Minigame {
                       // Highlight the winning slot for 3 seconds
                       List<String> orig = hologramOriginalLines.get(finalSlotHolo);
                       if (orig != null) {
-                        Bukkit.getLogger()
-                            .info(
-                                "[RouletteGame][SPIN] Highlighting winning slot " + finalSlotHolo);
                         for (int i = 1; i <= orig.size(); i++) {
                           logAndDispatchDhCommand(
                               "dh l set " + finalSlotHolo + " 1 " + i + " &a" + orig.get(i - 1));
@@ -662,10 +629,6 @@ public class RouletteGame implements Minigame {
                                   String sh = table + "-" + color + "-" + slot;
                                   List<String> origLines = hologramOriginalLines.get(sh);
                                   if (origLines != null) {
-                                    Bukkit.getLogger()
-                                        .info(
-                                            "[RouletteGame][SPIN] Restoring all lines for slot "
-                                                + sh);
                                     for (int i = 1; i <= origLines.size(); i++) {
                                       logAndDispatchDhCommand(
                                           "dh l set "
@@ -694,13 +657,6 @@ public class RouletteGame implements Minigame {
                                 }
                                 int reward = losers.size() + 1;
                                 for (Player winner : winners) {
-                                  Bukkit.getLogger()
-                                      .info(
-                                          "[RouletteGame][SPIN] Rewarding winner "
-                                              + winner.getName()
-                                              + " with "
-                                              + reward
-                                              + " tickets.");
                                   winner.sendMessage(
                                       Component.text(
                                           "You won! You receive " + reward + " tickets!",
@@ -708,19 +664,10 @@ public class RouletteGame implements Minigame {
                                   rewardWinner(winner, reward);
                                 }
                                 for (Player loser : losers) {
-                                  Bukkit.getLogger()
-                                      .info(
-                                          "[RouletteGame][SPIN] Notifying loser "
-                                              + loser.getName());
                                   loser.sendMessage(
                                       Component.text(
                                           "You did not win this round.", NamedTextColor.RED));
                                 }
-
-                                Bukkit.getLogger()
-                                    .info(
-                                        "[RouletteGame][SPIN] Cancelling spin task for table "
-                                            + table);
                                 Integer spinTaskId = tableSpinTasks.remove(table);
 
                                 String holoName = "roulette-table-" + table + "-countdown";
@@ -763,8 +710,6 @@ public class RouletteGame implements Minigame {
                       String slotHolo = table + "-" + color + "-" + lastSlot[0];
                       List<String> orig = hologramOriginalLines.get(slotHolo);
                       if (orig != null) {
-                        Bukkit.getLogger()
-                            .info("[RouletteGame][SPIN] Turning off previous slot " + slotHolo);
                         for (int i = 1; i <= orig.size(); i++) {
                           logAndDispatchDhCommand("dh l set " + slotHolo + " 1 " + i + " &7-");
                         }
@@ -778,8 +723,6 @@ public class RouletteGame implements Minigame {
                     String slotHolo = table + "-" + color + "-" + currentSlot;
                     List<String> orig = hologramOriginalLines.get(slotHolo);
                     if (orig != null) {
-                      Bukkit.getLogger()
-                          .info("[RouletteGame][SPIN] Turning on current slot " + slotHolo);
                       for (int i = 1; i <= orig.size(); i++) {
                         logAndDispatchDhCommand(
                             "dh l set " + slotHolo + " 1 " + i + " " + orig.get(i - 1));
@@ -789,8 +732,6 @@ public class RouletteGame implements Minigame {
                     Set<Player> tableSet = tablePlayers.get(table);
                     if (tableSet != null) {
                       for (Player p : tableSet) {
-                        Bukkit.getLogger()
-                            .info("[RouletteGame][SPIN] Playing ding sound for " + p.getName());
                         p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1.0f, 2.0f);
                       }
                     }
@@ -834,7 +775,6 @@ public class RouletteGame implements Minigame {
   // Add this method to initialize the original lines for all slot holograms at
   // game start or round start
   private void initializeSlotHologramLines() {
-    Bukkit.getLogger().info("[RouletteGame][DEBUG] Initializing slot hologram lines...");
     int playerCount = players.size();
 
     for (int table = 1; table <= maxTables; table++) {
@@ -855,13 +795,6 @@ public class RouletteGame implements Minigame {
         }
         hologramOriginalLines.put(slotHolo, new ArrayList<>(lines));
         hologramCurrentLines.put(slotHolo, new ArrayList<>(lines));
-        Bukkit.getLogger()
-            .info(
-                "[RouletteGame][DEBUG] Initialized hologram lines for: "
-                    + slotHolo
-                    + " (lines: "
-                    + lines.size()
-                    + ")");
         clearSlotHologramPlayers(table, slot);
 
         if (playerCount >= 3) {
@@ -871,7 +804,6 @@ public class RouletteGame implements Minigame {
         }
       }
     }
-    Bukkit.getLogger().info("[RouletteGame][DEBUG] Finished initializing all slot hologram lines.");
   }
 
   private void clearSlotHologramPlayers(int table, int slot) {
@@ -951,7 +883,6 @@ public class RouletteGame implements Minigame {
 
   // Utility method for logging and dispatching DecentHolograms commands
   private void logAndDispatchDhCommand(String command) {
-    Bukkit.getLogger().info("[RouletteGame][DH] Running command: " + command);
     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
   }
 }
