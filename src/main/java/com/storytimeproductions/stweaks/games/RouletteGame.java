@@ -130,10 +130,6 @@ public class RouletteGame implements Minigame {
       cancelTableCountdown(i);
     }
     initializeSlotHologramLines();
-    for (Player player : players) {
-      player.sendMessage(
-          Component.text("A new round of Roulette has started!", NamedTextColor.GOLD));
-    }
   }
 
   @Override
