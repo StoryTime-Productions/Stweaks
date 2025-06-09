@@ -274,6 +274,42 @@ public class GameManagerListener implements Listener {
 
   private void tryJoinGame(Minigame minigame, Player player, Location joinLoc) {
     String gameId = minigame.getConfig().getGameId();
+
+    // Allow joining at any time if the game is roulette
+    if (minigame instanceof RouletteGame) {
+      joinedPlayers.putIfAbsent(gameId, new HashSet<>());
+      Set<UUID> players = joinedPlayers.get(gameId);
+
+      if (players.size() >= minigame.getConfig().getPlayerLimit()) {
+        setJoinIndicator(joinLoc, false);
+        player.sendMessage(
+            Component.text(minigame.getConfig().getJoinFailMessage(), NamedTextColor.RED));
+        return;
+      }
+
+      if (!hasTicket(player, minigame.getConfig().getTicketCost())) {
+        player.sendMessage(Component.text("You need a Time Ticket to join!", NamedTextColor.RED));
+        return;
+      }
+
+      consumeTicket(player, minigame.getConfig().getTicketCost());
+      players.add(player.getUniqueId());
+      minigame.join(player);
+      player.displayName(Component.text(player.getName(), NamedTextColor.GREEN));
+      player.sendMessage(
+          Component.text(minigame.getConfig().getJoinSuccessMessage(), NamedTextColor.GREEN));
+      player.sendMessage(
+          Component.text(
+              "Type /casino leave to leave the game before it begins.", NamedTextColor.YELLOW));
+      setJoinIndicator(joinLoc, true);
+      if (gameActive.getOrDefault(gameId, false)) {
+        return;
+      }
+      startGame(minigame);
+      return;
+    }
+
+    // Default logic for other games
     if (gameActive.getOrDefault(gameId, false)) {
       player.sendMessage(Component.text("Game is already running!", NamedTextColor.RED));
       return;

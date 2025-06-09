@@ -124,6 +124,10 @@ public class StCasinoCommand implements CommandExecutor {
   }
 
   private void refundTicket(Player player, int amount) {
+    if (amount <= 0) {
+      return;
+    }
+
     ItemStack tickets = new ItemStack(org.bukkit.Material.NAME_TAG, amount);
     ItemMeta meta = tickets.getItemMeta();
     meta.setItemModel(new NamespacedKey("storytime", "time_ticket"));
