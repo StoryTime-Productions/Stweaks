@@ -83,7 +83,7 @@ dependencies {
     testImplementation 'io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.12.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.12.1'
-    implementation 'org.xerial:sqlite-jdbc:3.42.0.0'
+    implementation 'org.xerial:sqlite-jdbc:3.50.1.0'
     compileOnly 'net.skinsrestorer:skinsrestorer-api:15.6.2'
     compileOnly 'com.comphenix.protocol:ProtocolLib:5.1.0'
 }
