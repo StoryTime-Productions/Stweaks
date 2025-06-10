@@ -5,6 +5,7 @@ import com.storytimeproductions.models.stgames.Minigame;
 import com.storytimeproductions.stweaks.games.BattleshipGame;
 import com.storytimeproductions.stweaks.games.BlockBreakGame;
 import com.storytimeproductions.stweaks.games.BlockPartyGame;
+import com.storytimeproductions.stweaks.games.BombermanGame;
 import com.storytimeproductions.stweaks.games.ColorSplatGame;
 import com.storytimeproductions.stweaks.games.ConnectFourGame;
 import com.storytimeproductions.stweaks.games.FishSlapGame;
@@ -80,6 +81,7 @@ public class GameManagerListener implements Listener {
     gameFactories.put("minesweeper", MinesweeperGame::new);
     gameFactories.put("color_splat", ColorSplatGame::new);
     gameFactories.put("fish_slap", FishSlapGame::new);
+    gameFactories.put("bomberman", BombermanGame::new);
   }
 
   /**
@@ -207,6 +209,12 @@ public class GameManagerListener implements Listener {
       if (minigame instanceof RouletteGame roulette) {
         if (roulette.getPlayers().contains(player)) {
           roulette.handleTableInteract(event);
+          break;
+        }
+      }
+      if (minigame instanceof BombermanGame bomberman) {
+        if (bomberman.getPlayers().contains(player)) {
+          bomberman.onPlayerInteract(event);
           break;
         }
       }
@@ -545,6 +553,23 @@ public class GameManagerListener implements Listener {
             return;
           }
           koth.tag(tagger, target);
+        }
+      }
+    }
+  }
+
+  /**
+   * Handles player death events to allow games to respond to player deaths.
+   *
+   * @param event the PlayerDeathEvent triggered when a player dies
+   */
+  @EventHandler
+  public void onPlayerDeath(org.bukkit.event.entity.PlayerDeathEvent event) {
+    Player player = event.getEntity();
+    for (Minigame minigame : activeGames.values()) {
+      if (minigame.getPlayers().contains(player)) {
+        if (minigame instanceof BombermanGame bomberman) {
+          bomberman.onPlayerDeath(event);
         }
       }
     }

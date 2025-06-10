@@ -229,7 +229,7 @@ public class RouletteGame implements Minigame {
           String slotHolo = table + "-" + color + "-" + slot;
           // Only move down for each player above the second
           for (int i = 3; i <= playerCount + 1; i++) {
-            logAndDispatchDhCommand("dh move " + slotHolo + " ~ -1 ~");
+            logAndDispatchDhCommand("dh move " + slotHolo + " ~ ~-1 ~");
           }
         }
       }
@@ -799,7 +799,7 @@ public class RouletteGame implements Minigame {
 
         if (playerCount >= 3) {
           for (int i = 3; i <= playerCount; i++) {
-            logAndDispatchDhCommand("dh move " + slotHolo + " ~ 1 ~");
+            logAndDispatchDhCommand("dh move " + slotHolo + " ~ ~1 ~");
           }
         }
       }

@@ -263,6 +263,11 @@ public class PlayerActivityListener implements Listener {
    * @param secondsLeft The number of seconds left to display.
    */
   public static void updateBelowName(Player player, double secondsLeft) {
+    if (GameManagerListener.activeGames.values().stream()
+        .anyMatch(minigame -> minigame.getPlayers().contains(player))) {
+      return;
+    }
+
     Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
 
     Objective objective = scoreboard.getObjective("timeleft");

@@ -320,6 +320,22 @@ public class BattleshipGame implements Minigame, Listener {
   }
 
   // --- Board Placement and Validation ---
+  private boolean isOnPersonalBoard(Block block, Player player) {
+    if (block == null) {
+      return false;
+    }
+    Location boardCenter = getPlayerBoardCenter(player);
+    int centerX = boardCenter.getBlockX();
+    int centerZ = boardCenter.getBlockZ();
+    int y = boardCenter.getBlockY();
+    int x = block.getX();
+    int z = block.getZ();
+    int by = block.getY();
+    // 7x7 board at y-level
+    return (by == y)
+        && (x >= centerX - 3 && x <= centerX + 3)
+        && (z >= centerZ - 3 && z <= centerZ + 3);
+  }
 
   /**
    * Handles player interactions to place or remove ship blocks on the board.
@@ -335,8 +351,8 @@ public class BattleshipGame implements Minigame, Listener {
       return;
     }
 
-    // Prevent editing if board is ready
-    if (Boolean.TRUE.equals(boardReady.get(player))) {
+    // Only block ship placement/removal if board is ready and game not started
+    if (gameInProgress && isOnPersonalBoard(event.getClickedBlock(), player)) {
       event.setCancelled(true);
       return;
     }
@@ -1040,7 +1056,6 @@ public class BattleshipGame implements Minigame, Listener {
 
   private void quitGame() {
     gameInProgress = false;
-    broadcastToPlayers("Game over!");
     for (Player p : players) {
       Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "fly " + p.getName() + " disable");
     }

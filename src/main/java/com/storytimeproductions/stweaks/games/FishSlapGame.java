@@ -34,7 +34,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class FishSlapGame implements Minigame, Listener {
   private final GameConfig config;
   private final List<Player> players = new ArrayList<>();
-  private final Map<Player, Integer> consecutiveWins = new HashMap<>();
+  private final Map<Player, Integer> totalWins = new HashMap<>();
   private final Set<Player> outPlayers = new HashSet<>();
   private boolean roundInProgress = false;
   private Player lastWinner = null;
@@ -68,7 +68,7 @@ public class FishSlapGame implements Minigame, Listener {
   public void afterInit() {
     for (Player p : players) {
       giveFish(p);
-      consecutiveWins.put(p, 0);
+      totalWins.put(p, 0);
     }
     startRound();
   }
@@ -117,7 +117,7 @@ public class FishSlapGame implements Minigame, Listener {
       p.getInventory().remove(Material.COD);
     }
     players.clear();
-    consecutiveWins.clear();
+    totalWins.clear();
     outPlayers.clear();
     lastWinner = null;
   }
@@ -131,7 +131,7 @@ public class FishSlapGame implements Minigame, Listener {
   public void join(Player player) {
     if (!players.contains(player)) {
       players.add(player);
-      consecutiveWins.put(player, 0);
+      totalWins.put(player, 0);
       giveFish(player);
       player.teleport(config.getGameArea());
     }
@@ -145,7 +145,7 @@ public class FishSlapGame implements Minigame, Listener {
   @Override
   public void leave(Player player) {
     players.remove(player);
-    consecutiveWins.remove(player);
+    totalWins.remove(player);
     outPlayers.remove(player);
     player.getInventory().remove(Material.COD);
   }
@@ -177,8 +177,8 @@ public class FishSlapGame implements Minigame, Listener {
    */
   @Override
   public boolean shouldQuit() {
-    // The game should quit if any player has 3 or more consecutive wins
-    for (int wins : consecutiveWins.values()) {
+    // The game should quit if any player has 3 or more total wins
+    for (int wins : totalWins.values()) {
       if (wins >= 3) {
         return true;
       }
@@ -275,17 +275,12 @@ public class FishSlapGame implements Minigame, Listener {
 
   private void endRound(Player winner) {
     roundInProgress = false;
-    for (Player p : players) {
-      if (p.equals(winner)) {
-        consecutiveWins.put(p, consecutiveWins.getOrDefault(p, 0) + 1);
-      } else {
-        consecutiveWins.put(p, 0);
-      }
-    }
+    totalWins.put(winner, totalWins.getOrDefault(winner, 0) + 1);
+
     for (Player p : players) {
       showActionBar(p);
     }
-    if (consecutiveWins.get(winner) >= 3) {
+    if (totalWins.get(winner) >= 3) {
       for (Player p : players) {
         p.showTitle(
             Title.title(
@@ -326,7 +321,7 @@ public class FishSlapGame implements Minigame, Listener {
 
   // CHECKSTYLE:OFF: AvoidEscapedUnicodeCharacters
   private void showActionBar(Player player) {
-    int wins = consecutiveWins.getOrDefault(player, 0);
+    int wins = totalWins.getOrDefault(player, 0);
     Component bar = Component.empty();
     for (int i = 0; i < 3; i++) {
       if (i < wins) {
