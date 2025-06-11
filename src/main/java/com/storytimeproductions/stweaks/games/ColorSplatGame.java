@@ -36,7 +36,12 @@ public class ColorSplatGame implements Minigame, Listener {
   private final Map<Player, Material> playerColors = new HashMap<>();
   private final Set<Location> poolBlocks = new HashSet<>();
   private boolean gameInProgress = false;
-  private Location poolOrigin; // bottom northwest corner of pool
+  private Location poolOrigin;
+  private Location ladderLoc;
+  private final Map<Player, Boolean> heightRequirement = new HashMap<>();
+  private final Map<Player, Integer> lastYlevel = new HashMap<>();
+  private final Map<Player, Boolean> wasOnGround = new HashMap<>();
+  private final Map<Player, Boolean> hasJumped = new HashMap<>();
 
   /**
    * Constructs a new Color Splat game with the specified configuration.
@@ -58,6 +63,14 @@ public class ColorSplatGame implements Minigame, Listener {
             Double.parseDouble(parts[1]),
             Double.parseDouble(parts[2]),
             Double.parseDouble(parts[3]));
+
+    String[] ladderParts = config.getGameProperties().get("ladderLocation").split(",");
+    ladderLoc =
+        new Location(
+            Bukkit.getWorld(ladderParts[0]),
+            Double.parseDouble(ladderParts[1]),
+            Double.parseDouble(ladderParts[2]),
+            Double.parseDouble(ladderParts[3]));
   }
 
   /** Called after the game has been initialized. */
@@ -68,6 +81,8 @@ public class ColorSplatGame implements Minigame, Listener {
     };
     for (int i = 0; i < players.size(); i++) {
       playerColors.put(players.get(i), colors[i % colors.length]);
+      heightRequirement.put(players.get(i), false);
+      wasOnGround.put(players.get(i), true);
     }
     // Fill pool with water and record locations
     poolBlocks.clear();
@@ -80,6 +95,32 @@ public class ColorSplatGame implements Minigame, Listener {
       }
     }
     gameInProgress = true;
+
+    // Track Y-level and on-ground status every tick (1/20s)
+    Bukkit.getScheduler()
+        .runTaskTimer(
+            Bukkit.getPluginManager().getPlugin("stweaks"),
+            () -> {
+              if (!gameInProgress) {
+                return;
+              }
+              for (Player player : players) {
+                int y = player.getLocation().getBlockY();
+                lastYlevel.put(player, y);
+                boolean onGround =
+                    player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().isSolid();
+                boolean wasGround = wasOnGround.getOrDefault(player, true);
+                int poolY = poolOrigin.getBlockY();
+                // Set heightRequirement true if player jumps from ground and is at least 10
+                // blocks above pool
+                if (!onGround && wasGround && y >= poolY + 10) {
+                  heightRequirement.put(player, true);
+                }
+                wasOnGround.put(player, onGround);
+              }
+            },
+            0L,
+            1L);
   }
 
   /** Updates the game state. */
@@ -178,28 +219,60 @@ public class ColorSplatGame implements Minigame, Listener {
     }
 
     Location to = event.getTo();
-    Location from = event.getFrom();
-    Block toBlock = to.getBlock();
-    Block blockBelow = toBlock.getRelative(BlockFace.DOWN);
-    boolean isOnGround = blockBelow.getType().isSolid();
+    if (to == null) {
+      return;
+    }
 
-    // Only trigger when the player lands (Y velocity negative, on ground, and moved
-    // to a new block)
-    if (from.getBlockY() >= to.getBlockY() && isOnGround) {
-      if (player.getVelocity().getY() > -0.5) {
-        return;
-      }
+    int poolY = poolOrigin.getBlockY();
+    int y = player.getLocation().getBlockY();
 
-      Block landed = toBlock;
-      if (landed.getType() == Material.WATER && poolBlocks.contains(landed.getLocation())) {
-        // Replace water with player's color
+    // Set heightRequirement true if player is at least 10 blocks above pool
+    if (y >= poolY + 10) {
+      heightRequirement.put(player, true);
+      hasJumped.put(player, false); // Reset jump state
+    }
+
+    // Detect spacebar press (jump) while heightRequirement is true and player is
+    // airborne
+    if (heightRequirement.getOrDefault(player, false)
+        && !hasJumped.getOrDefault(player, false)
+        && player.getVelocity().getY() > 0.1) {
+      hasJumped.put(player, true);
+    }
+
+    // Replace all uses of 'toBlock' in the splat logic with 'blockBelow'
+    Block blockBelow = to.clone().add(0, -1, 0).getBlock();
+    Bukkit.getLogger()
+        .info(
+            "Player "
+                + player.getName()
+                + " moved to "
+                + to
+                + ", block below: "
+                + blockBelow.getType());
+    // Instantly teleport the player if the block below is a color block
+    if (playerColors.containsValue(blockBelow.getType())) {
+      heightRequirement.put(player, false);
+      hasJumped.put(player, false);
+      player.teleport(ladderLoc);
+    }
+
+    // Only allow splat if player had heightRequirement, has jumped, and lands in
+    // pool
+    if (heightRequirement.getOrDefault(player, false)
+        && hasJumped.getOrDefault(player, false)
+        && (to.getBlockY() == poolY || to.getBlockY() == poolY + 1)) {
+      Block toBlock = to.getBlock();
+
+      if (toBlock.getType() == Material.WATER && poolBlocks.contains(toBlock.getLocation())) {
+        // Landed in the pool: color it and reset requirement
         Material color = playerColors.get(player);
-        landed.setType(color);
+        toBlock.setType(color);
 
         // Color adjacent blocks if they are not already the player's color
         for (BlockFace face :
             new BlockFace[] {BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST}) {
-          Block adj = landed.getRelative(face);
+          Block adj = toBlock.getRelative(face);
           if (poolBlocks.contains(adj.getLocation())
               && adj.getType() != color
               && adj.getType() != Material.WATER) {
@@ -212,6 +285,20 @@ public class ColorSplatGame implements Minigame, Listener {
           endGameAndAwardWinner();
         }
       }
+
+      // Reset requirements so they must jump out and up again
+      heightRequirement.put(player, false);
+      hasJumped.put(player, false);
+
+      player.teleport(ladderLoc);
+    } else if (hasJumped.getOrDefault(player, false)
+        && (playerColors.containsValue(blockBelow.getType())
+            || blockBelow.getType() == Material.STRIPPED_OAK_LOG)) {
+      // Instantly reset requirements and teleport player if they land on a colored or
+      // pale oak log block
+      heightRequirement.put(player, false);
+      hasJumped.put(player, false);
+      player.teleport(ladderLoc);
     }
   }
 

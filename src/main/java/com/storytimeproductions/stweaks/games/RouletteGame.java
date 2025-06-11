@@ -176,6 +176,15 @@ public class RouletteGame implements Minigame {
       cancelTableCountdown(i);
     }
     initializeSlotHologramLines();
+
+    for (int table = 1; table <= maxTables; table++) {
+      for (int slot = 1; slot <= maxSlots; slot++) {
+        String color = (slot % 2 == 1) ? "R" : "B";
+        String slotHolo = table + "-" + color + "-" + slot;
+        String moveCmd = String.format("dh move %s ~ 75.5 ~", slotHolo);
+        logAndDispatchDhCommand(moveCmd);
+      }
+    }
   }
 
   /**

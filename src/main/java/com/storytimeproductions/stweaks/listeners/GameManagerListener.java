@@ -12,7 +12,7 @@ import com.storytimeproductions.stweaks.games.FishSlapGame;
 import com.storytimeproductions.stweaks.games.GuessWhoGame;
 import com.storytimeproductions.stweaks.games.KothTagGame;
 import com.storytimeproductions.stweaks.games.MemoryPairsGame;
-import com.storytimeproductions.stweaks.games.MinesweeperGame;
+import com.storytimeproductions.stweaks.games.MobHunt;
 import com.storytimeproductions.stweaks.games.RockPaperScissorsGame;
 import com.storytimeproductions.stweaks.games.RouletteGame;
 import com.storytimeproductions.stweaks.games.SpleefGame;
@@ -78,10 +78,10 @@ public class GameManagerListener implements Listener {
     gameFactories.put("connectfour", ConnectFourGame::new);
     gameFactories.put("block_party", BlockPartyGame::new);
     gameFactories.put("kothtag", KothTagGame::new);
-    gameFactories.put("minesweeper", MinesweeperGame::new);
     gameFactories.put("color_splat", ColorSplatGame::new);
     gameFactories.put("fish_slap", FishSlapGame::new);
     gameFactories.put("bomberman", BombermanGame::new);
+    gameFactories.put("mob_hunt", MobHunt::new);
   }
 
   /**
@@ -464,6 +464,9 @@ public class GameManagerListener implements Listener {
   @EventHandler
   public void onPlayerQuit(PlayerQuitEvent event) {
     Player player = event.getPlayer();
+
+    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "undisguiseplayer " + player.getName());
+
     for (Minigame minigame : activeGames.values()) {
       minigame.removeItems(player);
 
@@ -570,6 +573,9 @@ public class GameManagerListener implements Listener {
       if (minigame.getPlayers().contains(player)) {
         if (minigame instanceof BombermanGame bomberman) {
           bomberman.onPlayerDeath(event);
+        }
+        if (minigame instanceof MobHunt mobHunt) {
+          mobHunt.onPlayerDeath(event);
         }
       }
     }
