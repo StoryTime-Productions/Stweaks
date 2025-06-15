@@ -283,9 +283,7 @@ public class PlayerActivityListener implements Listener {
     Score score = objective.getScore(player.getName());
     score.setScore(totalSeconds);
 
-    // Assign the main scoreboard to the player (if not already)
-    if (player.getScoreboard() != scoreboard) {
-      player.setScoreboard(scoreboard);
-    }
+    // Always assign the main scoreboard to the player to ensure it's set
+    player.setScoreboard(scoreboard);
   }
 }

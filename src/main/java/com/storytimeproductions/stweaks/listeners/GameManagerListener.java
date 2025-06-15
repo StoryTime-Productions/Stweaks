@@ -8,8 +8,10 @@ import com.storytimeproductions.stweaks.games.BlockPartyGame;
 import com.storytimeproductions.stweaks.games.BombermanGame;
 import com.storytimeproductions.stweaks.games.ColorSplatGame;
 import com.storytimeproductions.stweaks.games.ConnectFourGame;
+import com.storytimeproductions.stweaks.games.DodgeballGame;
 import com.storytimeproductions.stweaks.games.FishSlapGame;
 import com.storytimeproductions.stweaks.games.GuessWhoGame;
+import com.storytimeproductions.stweaks.games.HungryHungryHooksGame;
 import com.storytimeproductions.stweaks.games.KothTagGame;
 import com.storytimeproductions.stweaks.games.MemoryPairsGame;
 import com.storytimeproductions.stweaks.games.MobHunt;
@@ -39,11 +41,13 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -82,6 +86,8 @@ public class GameManagerListener implements Listener {
     gameFactories.put("fish_slap", FishSlapGame::new);
     gameFactories.put("bomberman", BombermanGame::new);
     gameFactories.put("mob_hunt", MobHunt::new);
+    gameFactories.put("hungry_hungry_hooks", HungryHungryHooksGame::new);
+    gameFactories.put("dodgeball", DodgeballGame::new);
   }
 
   /**
@@ -184,6 +190,22 @@ public class GameManagerListener implements Listener {
         activeGames.put(gameId, minigame);
       } else {
         Bukkit.getLogger().warning("[STweaks] Unknown game id in config: " + gameId);
+      }
+    }
+  }
+
+  /**
+   * Handles firework damage events to prevent players from being damaged by fireworks in the casino
+   * world.
+   *
+   * @param event the EntityDamageByEntityEvent triggered when a firework damages a player
+   */
+  @EventHandler
+  public void onFireworkDamage(EntityDamageByEntityEvent event) {
+    if (event.getDamager() instanceof Firework && event.getEntity() instanceof Player) {
+      Player player = (Player) event.getEntity();
+      if (player.getWorld().getName().equalsIgnoreCase("casino")) {
+        event.setCancelled(true);
       }
     }
   }
@@ -567,7 +589,7 @@ public class GameManagerListener implements Listener {
    * @param event the PlayerDeathEvent triggered when a player dies
    */
   @EventHandler
-  public void onPlayerDeath(org.bukkit.event.entity.PlayerDeathEvent event) {
+  public void onPlayerDeath(PlayerDeathEvent event) {
     Player player = event.getEntity();
     for (Minigame minigame : activeGames.values()) {
       if (minigame.getPlayers().contains(player)) {
@@ -576,6 +598,9 @@ public class GameManagerListener implements Listener {
         }
         if (minigame instanceof MobHunt mobHunt) {
           mobHunt.onPlayerDeath(event);
+        }
+        if (minigame instanceof DodgeballGame dodgeball) {
+          dodgeball.onPlayerDeath(event);
         }
       }
     }

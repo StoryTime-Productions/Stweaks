@@ -197,11 +197,11 @@ public class MobHunt implements Minigame {
     long min = remaining / 60;
     long sec = remaining % 60;
     double progress = Math.max(0, Math.min(1, (double) remaining / total));
-    Component timerText =
-        Component.text(String.format("Time left: %d:%02d", min, sec), NamedTextColor.YELLOW);
 
     if (timerBar == null) {
-      timerBar = Bukkit.createBossBar(timerText.toString(), BarColor.YELLOW, BarStyle.SOLID);
+      timerBar =
+          Bukkit.createBossBar(
+              String.format("Time left: %d:%02d", min, sec), BarColor.YELLOW, BarStyle.SOLID);
     } else {
       timerBar.setTitle(String.format("Time left: %d:%02d", min, sec));
     }
