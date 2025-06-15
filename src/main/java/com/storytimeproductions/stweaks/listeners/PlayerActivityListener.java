@@ -7,6 +7,7 @@ import com.storytimeproductions.stweaks.util.BossBarManager;
 import com.storytimeproductions.stweaks.util.TablistManager;
 import java.util.HashMap;
 import java.util.UUID;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -20,6 +21,11 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Criteria;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
+import org.bukkit.scoreboard.Scoreboard;
 
 /**
  * Listens for player movement and connection events to track activity and manage UI elements.
@@ -47,6 +53,8 @@ public class PlayerActivityListener implements Listener {
         for (Player player : Bukkit.getOnlinePlayers()) {
           TablistManager.updateTablist(player, PlaytimeTracker.getTotalMultiplier());
           UUID uuid = player.getUniqueId();
+          updateBelowName(
+              player, PlaytimeTracker.getData(player.getUniqueId()).getAvailableSeconds());
           long lastActive = lastMovement.getOrDefault(uuid, now);
           boolean afk = (now - lastActive) > AFK_THRESHOLD_MILLIS;
           PlaytimeTracker.setAfk(uuid, afk);
@@ -106,6 +114,15 @@ public class PlayerActivityListener implements Listener {
     UUID uuid = event.getPlayer().getUniqueId();
     lastMovement.remove(uuid);
     BossBarManager.removeBossBar(event.getPlayer());
+    if (!event.getPlayer().getWorld().getName().startsWith("world")) {
+      event
+          .getPlayer()
+          .getActivePotionEffects()
+          .forEach(
+              effect -> {
+                event.getPlayer().removePotionEffect(effect.getType());
+              });
+    }
   }
 
   /**
@@ -195,8 +212,7 @@ public class PlayerActivityListener implements Listener {
       if (pdc.has(
           new org.bukkit.NamespacedKey("stweaks", "add_banked"),
           org.bukkit.persistence.PersistentDataType.STRING)) {
-        var data =
-            com.storytimeproductions.stweaks.playtime.PlaytimeTracker.getData(player.getUniqueId());
+        var data = PlaytimeTracker.getData(player.getUniqueId());
         if (data == null) {
           return;
         }
@@ -238,5 +254,36 @@ public class PlayerActivityListener implements Listener {
         return;
       }
     }
+  }
+
+  /**
+   * Updates the player's scoreboard to show the time left below their name.
+   *
+   * @param player The player whose scoreboard to update.
+   * @param secondsLeft The number of seconds left to display.
+   */
+  public static void updateBelowName(Player player, double secondsLeft) {
+    if (GameManagerListener.activeGames.values().stream()
+        .anyMatch(minigame -> minigame.getPlayers().contains(player))) {
+      return;
+    }
+
+    Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+
+    Objective objective = scoreboard.getObjective("timeleft");
+    if (objective == null) {
+      objective =
+          scoreboard.registerNewObjective("timeleft", Criteria.DUMMY, Component.text("s left"));
+      objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
+    }
+
+    int totalSeconds = (int) secondsLeft;
+
+    // Set the score for this player (do not reset others!)
+    Score score = objective.getScore(player.getName());
+    score.setScore(totalSeconds);
+
+    // Always assign the main scoreboard to the player to ensure it's set
+    player.setScoreboard(scoreboard);
   }
 }
