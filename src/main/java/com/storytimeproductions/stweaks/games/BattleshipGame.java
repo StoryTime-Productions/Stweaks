@@ -1051,7 +1051,6 @@ public class BattleshipGame implements Minigame, Listener {
     meta.displayName(Component.text("5-minute ticket").color(NamedTextColor.GOLD));
     tickets.setItemMeta(meta);
     winner.getInventory().addItem(tickets);
-    winner.sendMessage(Component.text("Congratulations! You win!", NamedTextColor.GOLD));
   }
 
   private void quitGame() {

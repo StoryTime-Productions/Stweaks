@@ -42,7 +42,7 @@ public class DodgeballGame implements Minigame {
   private final List<Location> blueSpawns = new ArrayList<>();
   private final List<Location> rocketSpawners = new ArrayList<>();
   private int rocketTick = 0;
-  private final int rocketInterval = 8;
+  private final int rocketInterval = 5;
   private int nextRocketIn = rocketInterval;
   private boolean gameInProgress = false;
 

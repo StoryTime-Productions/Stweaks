@@ -1,6 +1,5 @@
 package com.storytimeproductions.models.stgames.challenges;
 
-import com.storytimeproductions.models.stgames.StoryBlitzChallenge;
 import java.util.List;
 import org.bukkit.entity.Player;
 
@@ -29,7 +28,7 @@ public class BreakBlockChallenge implements StoryBlitzChallenge {
    */
   @Override
   public boolean isCompleted(Player player) {
-    return false; // Placeholder return value
+    return false;
   }
 
   /**
@@ -43,22 +42,22 @@ public class BreakBlockChallenge implements StoryBlitzChallenge {
   }
 
   /**
-   * Starts the challenge for the given team players.
+   * Starts the challenge for the given players.
    *
-   * @param teamPlayers The players in the team.
+   * @param players The players in the game.
    */
   @Override
-  public void start(List<Player> teamPlayers) {
-    throw new UnsupportedOperationException("Unimplemented method 'start'");
+  public void start(List<Player> players) {
+    // Optional: implement challenge setup logic
   }
 
   /**
    * Cleans up resources when the challenge ends.
    *
-   * @param teamPlayers The players in the team.
+   * @param players The players in the game.
    */
   @Override
-  public void cleanup(List<Player> teamPlayers) {
-    throw new UnsupportedOperationException("Unimplemented method 'cleanup'");
+  public void cleanup(List<Player> players) {
+    // Optional: implement challenge cleanup logic
   }
 }
