@@ -42,7 +42,7 @@ public class DodgeballGame implements Minigame {
   private final List<Location> blueSpawns = new ArrayList<>();
   private final List<Location> rocketSpawners = new ArrayList<>();
   private int rocketTick = 0;
-  private final int rocketInterval = 5;
+  private final int rocketInterval = 8;
   private int nextRocketIn = rocketInterval;
   private boolean gameInProgress = false;
 
@@ -309,7 +309,10 @@ public class DodgeballGame implements Minigame {
     // Remove any item named "Rocket Launcher" or "Rockets"
     for (ItemStack item : player.getInventory().getContents()) {
       if (item != null && item.hasItemMeta()) {
-        if (item.getType() == Material.CARROT_ON_A_STICK || item.getType() == Material.CLOCK) {
+        // log the item name
+        if (item.getType() == Material.CARROT_ON_A_STICK
+            || item.getType() == Material.WARPED_FUNGUS_ON_A_STICK
+            || item.getType() == Material.CLOCK) {
           player.getInventory().remove(item);
         }
       }

@@ -141,22 +141,26 @@ public class MobHunt implements Minigame {
       Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "undisguiseplayer " + p.getName());
       p.removePotionEffect(PotionEffectType.BLINDNESS);
     }
-    // Announce result using kyori adventure and play sounds
+    // Announce result using kyori adventure and play sounds (only to players in the
+    // game)
     if (innocents.isEmpty()) {
-      Bukkit.broadcast(Component.text("The hunters have won!", NamedTextColor.RED));
+      Component msg = Component.text("The hunters have won!", NamedTextColor.RED);
       for (Player p : players) {
+        p.sendMessage(msg);
         p.playSound(p.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f);
       }
       rewardWinners(hunters);
     } else if (hunters.isEmpty()) {
-      Bukkit.broadcast(Component.text("The innocents have won!", NamedTextColor.GREEN));
+      Component msg = Component.text("The innocents have won!", NamedTextColor.GREEN);
       for (Player p : players) {
+        p.sendMessage(msg);
         p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
       }
       rewardWinners(innocents);
     } else {
-      Bukkit.broadcast(Component.text("Time's up! The innocents win!", NamedTextColor.YELLOW));
+      Component msg = Component.text("Time's up! The innocents win!", NamedTextColor.YELLOW);
       for (Player p : players) {
+        p.sendMessage(msg);
         p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
       }
       rewardWinners(innocents);

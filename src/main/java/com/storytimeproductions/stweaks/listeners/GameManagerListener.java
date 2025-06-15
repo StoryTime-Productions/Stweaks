@@ -490,9 +490,8 @@ public class GameManagerListener implements Listener {
     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "undisguiseplayer " + player.getName());
 
     for (Minigame minigame : activeGames.values()) {
-      minigame.removeItems(player);
-
       if (minigame.getPlayers().contains(player)) {
+        minigame.removeItems(player);
         minigame.leave(player);
       }
     }
