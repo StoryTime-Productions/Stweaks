@@ -11,12 +11,12 @@ import org.bukkit.World;
  */
 public class Cuboid {
   public final World world;
-  private final int x1;
-  private final int y1;
-  private final int z1;
-  private final int x2;
-  private final int y2;
-  private final int z2;
+  public final int x1;
+  public final int y1;
+  public final int z1;
+  public final int x2;
+  public final int y2;
+  public final int z2;
 
   /**
    * Constructs a Cuboid with the specified world and corner coordinates.

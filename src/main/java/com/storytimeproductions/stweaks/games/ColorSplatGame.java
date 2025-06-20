@@ -242,14 +242,6 @@ public class ColorSplatGame implements Minigame, Listener {
 
     // Replace all uses of 'toBlock' in the splat logic with 'blockBelow'
     Block blockBelow = to.clone().add(0, -1, 0).getBlock();
-    Bukkit.getLogger()
-        .info(
-            "Player "
-                + player.getName()
-                + " moved to "
-                + to
-                + ", block below: "
-                + blockBelow.getType());
     // Instantly teleport the player if the block below is a color block
     if (playerColors.containsValue(blockBelow.getType())) {
       heightRequirement.put(player, false);

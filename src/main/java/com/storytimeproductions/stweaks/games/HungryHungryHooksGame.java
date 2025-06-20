@@ -392,8 +392,6 @@ public class HungryHungryHooksGame implements Minigame, Listener {
   }
 
   private void endGame(int winningTeam) {
-    Bukkit.getLogger()
-        .info("[HungryHungryHooksGame] Ending game. Winning team: " + teamNames[winningTeam]);
     Component winMsg =
         Component.text(
             "Team " + teamNames[winningTeam] + " wins Hungry Hungry Hooks!",
@@ -401,16 +399,7 @@ public class HungryHungryHooksGame implements Minigame, Listener {
     // Show title and send message to winners
     for (Player p : players) {
       Integer team = teamMap.get(p);
-      Bukkit.getLogger()
-          .info(
-              "[HungryHungryHooksGame] Player: "
-                  + p.getName()
-                  + ", team: "
-                  + team
-                  + ", winningTeam: "
-                  + winningTeam);
       if (team != null && team.equals(winningTeam)) {
-        Bukkit.getLogger().info("[HungryHungryHooksGame] Winner: " + p.getName());
         p.sendMessage(winMsg);
         p.showTitle(
             Title.title(
@@ -434,7 +423,6 @@ public class HungryHungryHooksGame implements Minigame, Listener {
     for (Location spawnLoc : pigSpawnLocations) {
       World world = spawnLoc.getWorld();
       for (Pig pig : world.getEntitiesByClass(Pig.class)) {
-        Bukkit.getLogger().info("[HungryHungryHooksGame] Removing pig at " + pig.getLocation());
         pig.remove();
       }
     }
@@ -443,7 +431,6 @@ public class HungryHungryHooksGame implements Minigame, Listener {
     for (Player p : players) {
       Integer team = teamMap.get(p);
       if (team != null && team.equals(winningTeam)) {
-        Bukkit.getLogger().info("[HungryHungryHooksGame] Launching fireworks for " + p.getName());
         launchFireworks(p, teamColors[winningTeam]);
       }
     }
@@ -451,7 +438,6 @@ public class HungryHungryHooksGame implements Minigame, Listener {
     new BukkitRunnable() {
       @Override
       public void run() {
-        Bukkit.getLogger().info("[HungryHungryHooksGame] Game state set to not in progress.");
         gameInProgress = false;
       }
     }.runTaskLater(Bukkit.getPluginManager().getPlugin("stweaks"), 50L);

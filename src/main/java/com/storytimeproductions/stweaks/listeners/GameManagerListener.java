@@ -11,6 +11,7 @@ import com.storytimeproductions.stweaks.games.ConnectFourGame;
 import com.storytimeproductions.stweaks.games.DodgeballGame;
 import com.storytimeproductions.stweaks.games.FishSlapGame;
 import com.storytimeproductions.stweaks.games.GuessWhoGame;
+import com.storytimeproductions.stweaks.games.GymGame;
 import com.storytimeproductions.stweaks.games.HungryHungryHooksGame;
 import com.storytimeproductions.stweaks.games.KothTagGame;
 import com.storytimeproductions.stweaks.games.MemoryPairsGame;
@@ -18,6 +19,7 @@ import com.storytimeproductions.stweaks.games.MobHunt;
 import com.storytimeproductions.stweaks.games.RockPaperScissorsGame;
 import com.storytimeproductions.stweaks.games.RouletteGame;
 import com.storytimeproductions.stweaks.games.SpleefGame;
+import com.storytimeproductions.stweaks.games.StoryBlitz;
 import com.storytimeproductions.stweaks.games.TicTacToeGame;
 import java.io.File;
 import java.time.Duration;
@@ -88,6 +90,8 @@ public class GameManagerListener implements Listener {
     gameFactories.put("mob_hunt", MobHunt::new);
     gameFactories.put("hungry_hungry_hooks", HungryHungryHooksGame::new);
     gameFactories.put("dodgeball", DodgeballGame::new);
+    gameFactories.put("storyblitz", StoryBlitz::new);
+    gameFactories.put("gym", GymGame::new);
   }
 
   /**
@@ -305,8 +309,8 @@ public class GameManagerListener implements Listener {
   private void tryJoinGame(Minigame minigame, Player player, Location joinLoc) {
     String gameId = minigame.getConfig().getGameId();
 
-    // Allow joining at any time if the game is roulette
-    if (minigame instanceof RouletteGame) {
+    // Allow joining at any time if the game is roulette or the time gym
+    if (minigame instanceof RouletteGame || minigame instanceof GymGame) {
       joinedPlayers.putIfAbsent(gameId, new HashSet<>());
       Set<UUID> players = joinedPlayers.get(gameId);
 
@@ -536,7 +540,9 @@ public class GameManagerListener implements Listener {
               for (UUID uuid : joinedPlayers.get(gameId)) {
                 Player p = Bukkit.getPlayer(uuid);
                 if (p != null) {
-                  p.teleport(minigame.getConfig().getExitArea());
+                  if (!(minigame instanceof RouletteGame) && !(minigame instanceof GymGame)) {
+                    p.teleport(minigame.getConfig().getExitArea());
+                  }
                   if (minigame.getPlayers().contains(p)) {
                     minigame.leave(p);
                   }

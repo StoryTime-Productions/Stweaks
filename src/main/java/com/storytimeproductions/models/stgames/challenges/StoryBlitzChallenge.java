@@ -1,6 +1,7 @@
 package com.storytimeproductions.models.stgames.challenges;
 
 import java.util.List;
+import java.util.Random;
 import org.bukkit.entity.Player;
 
 /**
@@ -39,5 +40,18 @@ public interface StoryBlitzChallenge {
    */
   default void cleanup(List<Player> players) {
     // Optional: implement to clean up challenge state.
+  }
+
+  /**
+   * Returns a description with a chance to include "goob" for fun.
+   *
+   * @param normalDescription The normal description of the challenge.
+   * @return The modified description, possibly including "goob".
+   */
+  default String getDescriptionWithGoob(String normalDescription) {
+    if (new Random().nextInt(100) == 0) {
+      return "goob";
+    }
+    return normalDescription;
   }
 }

@@ -287,8 +287,6 @@ public class BlockPartyGame implements Minigame {
 
     if (presentColors.isEmpty()) {
       roundActive = false;
-      Bukkit.getLogger()
-          .warning("[BlockParty] No concrete colors left on the platform. Ending game.");
       return;
     }
 

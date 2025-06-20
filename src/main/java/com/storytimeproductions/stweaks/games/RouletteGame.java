@@ -205,9 +205,6 @@ public class RouletteGame implements Minigame {
                 Component.text(
                     "Right-click a table wall to pick a slot. Left-click to confirm.",
                     NamedTextColor.YELLOW)));
-      } else {
-        Bukkit.getLogger()
-            .warning("[RouletteGame][DEBUG] No spawn location set in game properties.");
       }
       for (int i = 1; i <= maxTables; i++) {
         ensureSlotHologramLinesCapacity(i);
@@ -559,11 +556,6 @@ public class RouletteGame implements Minigame {
 
   private void spinRouletteForTable(int table) {
     if (tableSpinTasks.containsKey(table)) {
-      Bukkit.getLogger()
-          .warning(
-              "[RouletteGame][DEBUG] Spin already running for table "
-                  + table
-                  + ", not starting another.");
       return;
     }
     int slots = maxSlots;
@@ -820,8 +812,6 @@ public class RouletteGame implements Minigame {
     String slotHolo = table + "-" + color + "-" + slot;
     List<String> orig = hologramOriginalLines.get(slotHolo);
     if (orig == null) {
-      Bukkit.getLogger()
-          .warning("[RouletteGame][DEBUG] Tried to clear non-existent hologram: " + slotHolo);
       return;
     }
 
@@ -849,8 +839,6 @@ public class RouletteGame implements Minigame {
     String slotHolo = table + "-" + color + "-" + slot;
     List<String> orig = hologramOriginalLines.get(slotHolo);
     if (orig == null) {
-      Bukkit.getLogger()
-          .warning("[RouletteGame][DEBUG] Tried to update non-existent hologram: " + slotHolo);
       return;
     }
 
