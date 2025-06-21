@@ -158,7 +158,6 @@ public class QuestsManager {
       int playerAmount = countItems(player, material);
 
       if (playerAmount < requiredAmount) {
-        Bukkit.getLogger().info("Player does NOT have enough of " + material.name());
         return false;
       }
     }
@@ -174,16 +173,13 @@ public class QuestsManager {
    */
   public boolean hasRequiredStats(Player player, Quest quest) {
     if (quest.getStatRequirements() == null) {
-      Bukkit.getLogger().info("No stat requirements for quest: " + quest.getName());
       return true;
     }
 
     for (String req : quest.getStatRequirements()) {
-      Bukkit.getLogger().info("Checking stat requirement: " + req);
 
       String[] parts = req.split(":");
       if (parts.length != 3) {
-        Bukkit.getLogger().warning("Invalid stat requirement format: " + req);
         continue;
       }
 
@@ -193,16 +189,13 @@ public class QuestsManager {
 
       try {
         requiredAmount = Integer.parseInt(parts[2]);
-        Bukkit.getLogger().info("Parsed required amount: " + requiredAmount);
       } catch (NumberFormatException e) {
-        Bukkit.getLogger().warning("Invalid stat quantity in: " + req);
         continue;
       }
 
       Statistic statistic;
       try {
         statistic = Statistic.valueOf(statName.toUpperCase());
-        Bukkit.getLogger().info("Parsed statistic: " + statistic);
       } catch (IllegalArgumentException e) {
         Bukkit.getLogger().warning("Unknown statistic: " + statName);
         continue;
@@ -213,7 +206,6 @@ public class QuestsManager {
       // Handle typed statistics
       if (statistic.getType() == Type.UNTYPED) {
         currentStat = player.getStatistic(statistic);
-        Bukkit.getLogger().info("Current stat value (UNTYPED): " + currentStat);
       } else if (statistic.getType() == Type.BLOCK || statistic.getType() == Type.ITEM) {
         Material material = Material.matchMaterial(key);
         if (material == null) {
@@ -221,50 +213,25 @@ public class QuestsManager {
           continue;
         }
         currentStat = player.getStatistic(statistic, material);
-        Bukkit.getLogger()
-            .info("Current stat value (BLOCK/ITEM): " + currentStat + " for material: " + material);
       } else if (statistic.getType() == Type.ENTITY) {
         EntityType entityType;
         try {
           entityType = EntityType.valueOf(key.toUpperCase().replace("MINECRAFT:", ""));
-          Bukkit.getLogger().info("Parsed entity type: " + entityType);
         } catch (IllegalArgumentException e) {
           Bukkit.getLogger().warning("Invalid entity type for stat " + statistic + ": " + key);
           continue;
         }
         currentStat = player.getStatistic(statistic, entityType);
-        Bukkit.getLogger()
-            .info("Current stat value (ENTITY): " + currentStat + " for entity: " + entityType);
       } else {
         Bukkit.getLogger().warning("Unsupported stat type: " + statistic);
         continue;
       }
 
       if (currentStat < requiredAmount) {
-        Bukkit.getLogger()
-            .info(
-                "Player does NOT meet stat "
-                    + statistic
-                    + " (has "
-                    + currentStat
-                    + ", needs "
-                    + requiredAmount
-                    + ")");
         return false;
-      } else {
-        Bukkit.getLogger()
-            .info(
-                "Player meets stat "
-                    + statistic
-                    + " (has "
-                    + currentStat
-                    + ", needs "
-                    + requiredAmount
-                    + ")");
       }
     }
 
-    Bukkit.getLogger().info("Player meets all stat requirements for quest: " + quest.getName());
     return true;
   }
 
@@ -322,7 +289,6 @@ public class QuestsManager {
                 namespacedKey.substring(0, namespacedKey.indexOf("[")),
                 nbtData,
                 amount);
-        Bukkit.getLogger().info("Executing command: " + giveCommand);
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), giveCommand);
       } else {
         // Create and give the item normally

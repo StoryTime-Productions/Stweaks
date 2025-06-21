@@ -189,8 +189,6 @@ public class PetsManager {
       Pet pet = new Pet(id, subtitle, perk, burps, quotes, foodMat, recipeMatrix);
       allPets.add(pet);
     }
-
-    Bukkit.getLogger().info("Loaded " + allPets.size() + " valid pets.");
   }
 
   private boolean isValidPerk(String perk) {

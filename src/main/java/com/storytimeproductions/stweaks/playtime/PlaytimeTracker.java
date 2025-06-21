@@ -56,8 +56,8 @@ public class PlaytimeTracker {
             continue;
           }
 
-          // If we have crossed from before 1 AM to 1 AM or later
-          if (lastHourChecked < 1 && currentHour >= 1) {
+          // If we have crossed from before 3 AM to 4 AM or later
+          if (lastHourChecked < 3 && currentHour >= 3) {
             if (data.getAvailableSeconds() <= 3600) {
               data.setAvailableSeconds(3600);
             }
@@ -187,18 +187,18 @@ public class PlaytimeTracker {
   public static double getTotalMultiplier() {
     double total = getBaseMultiplier();
     if (isWeekend()) {
-      total += getWeekendMultiplier();
+      total *= getWeekendMultiplier();
     }
     total += computeGlobalSocialMultiplier();
     return Math.floor(total * 100) / 100.0;
   }
 
-  /** Checks if it is currently the weekend (Saturday or Sunday) in Eastern Time. */
+  /** Checks if it is currently the weekend in Eastern Time. */
   public static boolean isWeekend() {
     ZoneId easternZone = ZoneId.of("America/New_York");
     ZonedDateTime nowEastern = ZonedDateTime.now(easternZone);
     int day = nowEastern.getDayOfWeek().getValue();
-    return day == 6 || day == 7; // Saturday or Sunday
+    return day == 5 || day == 6 || day == 7; // Friday or Saturday or Sunday
   }
 
   /**
