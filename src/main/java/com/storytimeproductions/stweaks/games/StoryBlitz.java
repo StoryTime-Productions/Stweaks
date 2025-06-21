@@ -452,15 +452,22 @@ public class StoryBlitz implements Minigame {
     }
     StoryBlitzChallenge next = challengeOrder.get(challengeIndex++);
     currentChallenge = next;
-    currentChallenge.start(players);
+
+    // Only pass players who are still alive to the challenge
+    List<Player> alivePlayers = new ArrayList<>();
+    for (Player p : players) {
+      if (lives.getOrDefault(p, 0) > 0) {
+        alivePlayers.add(p);
+      }
+    }
+    currentChallenge.start(alivePlayers);
+
     cooldownTicks = cooldown;
     challengeTimerTicks = 0;
     challengeTimeoutWarning = false;
-    for (Player p : players) {
-      if (lives.getOrDefault(p, 0) > 0) {
-        p.sendMessage(
-            Component.text("Challenge: " + currentChallenge.getDescription(), NamedTextColor.AQUA));
-      }
+    for (Player p : alivePlayers) {
+      p.sendMessage(
+          Component.text("Challenge: " + currentChallenge.getDescription(), NamedTextColor.AQUA));
     }
   }
 

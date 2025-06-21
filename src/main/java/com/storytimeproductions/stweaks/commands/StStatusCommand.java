@@ -622,7 +622,7 @@ public class StStatusCommand implements CommandExecutor {
     multiplierLoreRaw.add(" ");
 
     double weekendMultiplier = PlaytimeTracker.getWeekendMultiplier();
-    boolean isWeekend = isWeekend();
+    boolean isWeekend = PlaytimeTracker.isWeekend();
     if (isWeekend) {
       multiplierLoreRaw.add("Weekend Multiplier: " + weekendMultiplier + "x (active)");
     } else {
@@ -835,11 +835,6 @@ public class StStatusCommand implements CommandExecutor {
         player.getOpenInventory().setItem(20, timeLeft);
       }
     }.runTaskTimer(plugin, 20L, 20L);
-  }
-
-  private boolean isWeekend() {
-    java.time.DayOfWeek day = java.time.LocalDate.now().getDayOfWeek();
-    return day == java.time.DayOfWeek.SATURDAY || day == java.time.DayOfWeek.SUNDAY;
   }
 
   /** Wraps a string into lines of maxLineLength, not breaking words. */

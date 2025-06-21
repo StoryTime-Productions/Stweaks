@@ -136,7 +136,9 @@ public class StCasinoCommand implements CommandExecutor {
     meta.displayName(Component.text("5-minute ticket").color(NamedTextColor.GOLD));
     tickets.setItemMeta(meta);
     player.getInventory().addItem(tickets);
-    player.sendMessage(
-        Component.text("Your Time Ticket(s) have been refunded.", NamedTextColor.YELLOW));
+    if (amount != 0) {
+      player.sendMessage(
+          Component.text("Your Time Ticket(s) have been refunded.", NamedTextColor.YELLOW));
+    }
   }
 }

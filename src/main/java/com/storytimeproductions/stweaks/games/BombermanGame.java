@@ -271,8 +271,6 @@ public class BombermanGame implements Minigame {
       player.teleport(spawnPoints.get(spawnIdx));
     }
     giveTnt(player);
-    player.sendMessage(
-        Component.text("You have joined Bomberman! Use TNT to play.", NamedTextColor.GREEN));
   }
 
   /**

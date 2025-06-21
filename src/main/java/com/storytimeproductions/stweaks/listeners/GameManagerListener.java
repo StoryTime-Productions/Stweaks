@@ -321,17 +321,39 @@ public class GameManagerListener implements Listener {
         return;
       }
 
-      if (!hasTicket(player, minigame.getConfig().getTicketCost())) {
+      if (minigame.getConfig().getTicketCost() > 0
+          && !hasTicket(player, minigame.getConfig().getTicketCost())) {
         player.sendMessage(Component.text("You need a Time Ticket to join!", NamedTextColor.RED));
         return;
       }
 
-      consumeTicket(player, minigame.getConfig().getTicketCost());
+      if (minigame.getConfig().getTicketCost() > 0) {
+        consumeTicket(player, minigame.getConfig().getTicketCost());
+      }
+
       players.add(player.getUniqueId());
       minigame.join(player);
       player.displayName(Component.text(player.getName(), NamedTextColor.GREEN));
-      player.sendMessage(
-          Component.text(minigame.getConfig().getJoinSuccessMessage(), NamedTextColor.GREEN));
+
+      int currentCount = players.size();
+      int maxCount = minigame.getConfig().getPlayerLimit();
+      String minigameName =
+          minigame.getConfig().getGameId().substring(0, 1).toUpperCase()
+              + minigame.getConfig().getGameId().substring(1);
+      Component joinMsg =
+          Component.text()
+              .append(Component.text(player.getName(), NamedTextColor.GREEN))
+              .append(
+                  Component.text(
+                      " joined " + minigameName + " (" + currentCount + "/" + maxCount + ")",
+                      NamedTextColor.WHITE))
+              .build();
+      for (Player p : Bukkit.getOnlinePlayers()) {
+        if (p.getWorld().getName().equalsIgnoreCase("casino")) {
+          p.sendMessage(joinMsg);
+        }
+      }
+
       player.sendMessage(
           Component.text(
               "Type /casino leave to leave the game before it begins.", NamedTextColor.YELLOW));
@@ -367,8 +389,26 @@ public class GameManagerListener implements Listener {
     players.add(player.getUniqueId());
     minigame.join(player);
     player.displayName(Component.text(player.getName(), NamedTextColor.GREEN));
-    player.sendMessage(
-        Component.text(minigame.getConfig().getJoinSuccessMessage(), NamedTextColor.GREEN));
+
+    int currentCount = players.size();
+    int maxCount = minigame.getConfig().getPlayerLimit();
+    String minigameName =
+        minigame.getConfig().getGameId().substring(0, 1).toUpperCase()
+            + minigame.getConfig().getGameId().substring(1);
+    Component joinMsg =
+        Component.text()
+            .append(Component.text(player.getName(), NamedTextColor.GREEN))
+            .append(
+                Component.text(
+                    " joined " + minigameName + " (" + currentCount + "/" + maxCount + ")",
+                    NamedTextColor.WHITE))
+            .build();
+    for (Player p : Bukkit.getOnlinePlayers()) {
+      if (p.getWorld().getName().equalsIgnoreCase("casino")) {
+        p.sendMessage(joinMsg);
+      }
+    }
+
     player.sendMessage(
         Component.text(
             "Type /casino leave to leave the game before it begins.", NamedTextColor.YELLOW));

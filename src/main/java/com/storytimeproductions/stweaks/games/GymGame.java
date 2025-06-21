@@ -43,7 +43,7 @@ public class GymGame implements Minigame, Listener {
   private final Map<Location, Integer> punchingBagCounts = new HashMap<>();
   private final Map<Location, Integer> treadmillCounts = new HashMap<>();
   private final Map<Location, Integer> trampolineCounts = new HashMap<>();
-  private final int goal = 100;
+  private final int goal = 350;
   private final Map<Location, String> punchingBagHologramNames = new HashMap<>();
   private final Map<Location, String> treadmillHologramNames = new HashMap<>();
   private final Map<Location, String> trampolineHologramNames = new HashMap<>();
@@ -53,6 +53,9 @@ public class GymGame implements Minigame, Listener {
   private final Map<Location, String> squatHologramNames = new HashMap<>();
   private final Map<UUID, Boolean> lastSneakState = new HashMap<>();
   private final List<Cuboid> squatCuboids = new ArrayList<>();
+  private Block leaveBlock;
+  private final Map<Cuboid, Location> punchingBagCuboidToBase = new HashMap<>();
+  private final List<Cuboid> punchingBagCuboids = new ArrayList<>();
 
   /**
    * Constructs a new GymGame with the specified configuration and plugin.
@@ -69,7 +72,7 @@ public class GymGame implements Minigame, Listener {
     // --- Punching Bags ---
     int punchingBagCount =
         Integer.parseInt(config.getGameProperties().get("punchingBagCount").toString());
-    List<Cuboid> punchingBagCuboids = new ArrayList<>();
+    punchingBagCuboids.clear();
     List<String> punchingBagHolograms = new ArrayList<>();
     for (int i = 1; i <= punchingBagCount; i++) {
       String[] regionParts =
@@ -81,7 +84,15 @@ public class GymGame implements Minigame, Listener {
       int x2 = Integer.parseInt(regionParts[4]);
       int y2 = Integer.parseInt(regionParts[5]);
       int z2 = Integer.parseInt(regionParts[6]);
-      punchingBagCuboids.add(new Cuboid(world, x1, y1, z1, x2, y2, z2));
+      Cuboid cuboid = new Cuboid(world, x1, y1, z1, x2, y2, z2);
+      punchingBagCuboids.add(cuboid);
+
+      // Use center of cuboid for tracking/hologram
+      int centerX = (cuboid.x1 + cuboid.x2) / 2;
+      int minY = cuboid.y1;
+      int centerZ = (cuboid.z1 + cuboid.z2) / 2;
+      Location base = new Location(world, centerX, minY, centerZ);
+      punchingBagCuboidToBase.put(cuboid, base);
 
       String holoName = (String) config.getGameProperties().get("punchingBagHologram" + i);
       if (holoName != null) {
@@ -174,15 +185,7 @@ public class GymGame implements Minigame, Listener {
     // --- Place blocks and holograms as before using these lists ---
     for (int i = 0; i < punchingBagCuboids.size(); i++) {
       Cuboid cuboid = punchingBagCuboids.get(i);
-      int centerX = (cuboid.x1 + cuboid.x2) / 2;
-      int minY = cuboid.y1;
-      int centerZ = (cuboid.z1 + cuboid.z2) / 2;
-      World world = cuboid.world;
-      Location base = new Location(world, centerX, minY, centerZ);
-      Block lower = world.getBlockAt(base);
-      Block upper = world.getBlockAt(base.clone().add(0, 1, 0));
-      lower.setType(Material.RED_WOOL);
-      upper.setType(Material.RED_WOOL);
+      Location base = punchingBagCuboidToBase.get(cuboid);
       punchingBagCounts.put(base, goal);
       String holoName =
           punchingBagHolograms.size() > i ? punchingBagHolograms.get(i) : "gym-punchingbag-" + i;
@@ -205,14 +208,6 @@ public class GymGame implements Minigame, Listener {
       treadmillHologramNames.put(back, holoName);
       Bukkit.dispatchCommand(
           Bukkit.getConsoleSender(), "dh l set " + holoName + " 1 1 &eMeters: 0/" + goal);
-
-      back.getBlock().setType(Material.BLACK_CONCRETE);
-
-      int frontX = cuboid.x2;
-      int frontY = cuboid.y1;
-      int frontZ = cuboid.z2;
-      Location front = new Location(world, frontX, frontY, frontZ);
-      front.getBlock().setType(Material.LIGHT_GRAY_CONCRETE);
     }
 
     // --- Trampolines ---
@@ -223,7 +218,6 @@ public class GymGame implements Minigame, Listener {
       int centerZ = (cuboid.z1 + cuboid.z2) / 2;
       World world = cuboid.world;
       Location loc = new Location(world, centerX, minY, centerZ);
-      loc.getBlock().setType(Material.SLIME_BLOCK);
       trampolineCounts.put(loc, goal);
       String holoName =
           trampolineHolograms.size() > i ? trampolineHolograms.get(i) : "gym-trampoline-" + i;
@@ -240,12 +234,26 @@ public class GymGame implements Minigame, Listener {
       int centerZ = (cuboid.z1 + cuboid.z2) / 2;
       World world = cuboid.world;
       Location loc = new Location(world, centerX, minY, centerZ);
-      loc.getBlock().setType(Material.GREEN_WOOL);
       squatCounts.put(loc, goal);
       String holoName = squatHolograms.size() > i ? squatHolograms.get(i) : "gym-squat-" + i;
       squatHologramNames.put(loc, holoName);
       Bukkit.dispatchCommand(
           Bukkit.getConsoleSender(), "dh l set " + holoName + " 1 1 &eSquats left: " + goal);
+    }
+
+    // --- Leave Block ---
+    String leaveLocString = (String) config.getGameProperties().get("leaveBlock");
+    if (leaveLocString != null) {
+      String[] parts = leaveLocString.split(",");
+      if (parts.length == 4) {
+        Location loc =
+            new Location(
+                Bukkit.getWorld(parts[0]),
+                Double.parseDouble(parts[1]),
+                Double.parseDouble(parts[2]),
+                Double.parseDouble(parts[3]));
+        leaveBlock = loc.getBlock();
+      }
     }
 
     Bukkit.getPluginManager().registerEvents(this, plugin);
@@ -260,6 +268,7 @@ public class GymGame implements Minigame, Listener {
   public void join(Player player) {
     if (!players.contains(player)) {
       players.add(player);
+      player.teleport(config.getGameArea());
     }
   }
 
@@ -297,17 +306,7 @@ public class GymGame implements Minigame, Listener {
   @Override
   public void onDestroy() {
     HandlerList.unregisterAll(this);
-    // Remove holograms and reset blocks
-    for (Location loc : punchingBagCounts.keySet()) {
-      loc.getBlock().setType(Material.AIR);
-      loc.clone().add(0, 1, 0).getBlock().setType(Material.AIR);
-    }
-    for (Location loc : treadmillCounts.keySet()) {
-      loc.getBlock().setType(Material.AIR);
-    }
-    for (Location loc : trampolineCounts.keySet()) {
-      loc.getBlock().setType(Material.AIR);
-    }
+    resetAllCounts();
     squatCounts.clear();
     squatHologramNames.clear();
     squatCuboids.clear();
@@ -321,29 +320,45 @@ public class GymGame implements Minigame, Listener {
    */
   @EventHandler
   public void onPlayerInteract(PlayerInteractEvent event) {
+    // Allow leaving the gym by clicking the leave block
+    Block block = event.getClickedBlock();
+    if (block != null
+        && leaveBlock != null
+        && block.getLocation().equals(leaveBlock.getLocation())) {
+      event.getPlayer().performCommand("casino leave");
+      event.setCancelled(true);
+      return;
+    }
+
     if (event.getAction() != Action.LEFT_CLICK_BLOCK) {
       return;
     }
-    Block block = event.getClickedBlock();
-    if (block == null) {
+    Block clickedBlock = event.getClickedBlock();
+    if (clickedBlock == null) {
       return;
     }
-    Location base = block.getLocation();
-    if (punchingBagCounts.containsKey(base)) {
-      int left = punchingBagCounts.get(base) - 1;
-      punchingBagCounts.put(base, left);
-      String holoName = punchingBagHologramNames.get(base);
-      Bukkit.dispatchCommand(
-          Bukkit.getConsoleSender(),
-          "dh l set " + holoName + " 1 1 &ePunches left: " + (left > 0 ? left : 0));
-      if (left <= 0) {
-        Player player = event.getPlayer();
-        giveTimeTicket(player);
+    Location hitLoc = clickedBlock.getLocation();
+
+    // Check if the clicked block is inside any punching bag cuboid
+    for (Cuboid cuboid : punchingBagCuboids) {
+      if (cuboid.contains(hitLoc)) {
+        Location base = punchingBagCuboidToBase.get(cuboid);
+        int left = punchingBagCounts.get(base) - 1;
+        punchingBagCounts.put(base, left);
+        String holoName = punchingBagHologramNames.get(base);
         Bukkit.dispatchCommand(
-            Bukkit.getConsoleSender(), "dh l set " + holoName + " 1 1 &ePunches left: 0");
-        punchingBagCounts.put(base, 0);
+            Bukkit.getConsoleSender(),
+            "dh l set " + holoName + " 1 1 &ePunches left: " + (left > 0 ? left : 0));
+        if (left <= 0) {
+          Player player = event.getPlayer();
+          giveTimeTicket(player);
+          Bukkit.dispatchCommand(
+              Bukkit.getConsoleSender(), "dh l set " + holoName + " 1 1 &ePunches left: " + goal);
+          punchingBagCounts.put(base, goal);
+        }
+        event.setCancelled(true);
+        return;
       }
-      event.setCancelled(true);
     }
   }
 
@@ -398,7 +413,7 @@ public class GymGame implements Minigame, Listener {
             Bukkit.getConsoleSender(),
             "dh l set " + holoName + " 1 1 &eMeters: " + meters + "/" + goal);
         // Teleport player to back block, preserving yaw and pitch
-        Location tp = back.clone().add(0.5, 0, 0.5);
+        Location tp = back.clone().add(0.5, 0.5, 0.5);
         tp.setYaw(to.getYaw());
         tp.setPitch(to.getPitch());
         player.teleport(tp);
@@ -429,9 +444,9 @@ public class GymGame implements Minigame, Listener {
               "dh l set " + holoName + " 1 1 &eJumps left: " + (jumps > 0 ? jumps : 0));
           if (jumps <= 0) {
             giveTimeTicket(player);
-            trampolineCounts.put(tramp, 0);
+            trampolineCounts.put(tramp, goal);
             Bukkit.dispatchCommand(
-                Bukkit.getConsoleSender(), "dh l set " + holoName + " 1 1 &eJumps left: 0");
+                Bukkit.getConsoleSender(), "dh l set " + holoName + " 1 1 &eJumps left: " + goal);
           }
         }
         lastTrampoline.put(player.getUniqueId(), tramp);
@@ -500,6 +515,46 @@ public class GymGame implements Minigame, Listener {
     player.sendMessage(Component.text("You earned a time ticket!").color(NamedTextColor.GOLD));
   }
 
+  /** Resets all gym station counts and holograms back to the goal value. */
+  public void resetAllCounts() {
+    // Reset punching bags
+    for (Map.Entry<Location, Integer> entry : punchingBagCounts.entrySet()) {
+      punchingBagCounts.put(entry.getKey(), goal);
+      String holoName = punchingBagHologramNames.get(entry.getKey());
+      if (holoName != null) {
+        Bukkit.dispatchCommand(
+            Bukkit.getConsoleSender(), "dh l set " + holoName + " 1 1 &ePunches left: " + goal);
+      }
+    }
+    // Reset treadmills
+    for (Map.Entry<Location, Integer> entry : treadmillCounts.entrySet()) {
+      treadmillCounts.put(entry.getKey(), 0);
+      String holoName = treadmillHologramNames.get(entry.getKey());
+      if (holoName != null) {
+        Bukkit.dispatchCommand(
+            Bukkit.getConsoleSender(), "dh l set " + holoName + " 1 1 &eMeters: 0/" + goal);
+      }
+    }
+    // Reset trampolines
+    for (Map.Entry<Location, Integer> entry : trampolineCounts.entrySet()) {
+      trampolineCounts.put(entry.getKey(), goal);
+      String holoName = trampolineHologramNames.get(entry.getKey());
+      if (holoName != null) {
+        Bukkit.dispatchCommand(
+            Bukkit.getConsoleSender(), "dh l set " + holoName + " 1 1 &eJumps left: " + goal);
+      }
+    }
+    // Reset squats
+    for (Map.Entry<Location, Integer> entry : squatCounts.entrySet()) {
+      squatCounts.put(entry.getKey(), goal);
+      String holoName = squatHologramNames.get(entry.getKey());
+      if (holoName != null) {
+        Bukkit.dispatchCommand(
+            Bukkit.getConsoleSender(), "dh l set " + holoName + " 1 1 &eSquats left: " + goal);
+      }
+    }
+  }
+
   /**
    * Called after the game has been initialized. Use this method to perform any post-initialization
    * logic required by the minigame.
@@ -528,7 +583,7 @@ public class GymGame implements Minigame, Listener {
    */
   @Override
   public boolean shouldQuit() {
-    return false;
+    return players.size() == 0;
   }
 
   /**
