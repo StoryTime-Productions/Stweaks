@@ -84,6 +84,10 @@ public class BombermanGame implements Minigame {
       Bukkit.dispatchCommand(
           Bukkit.getConsoleSender(),
           String.format("rg addmember -w \"casino\" bomber %s", player.getName()));
+      // Disguise player and hide their name
+      Bukkit.dispatchCommand(
+          Bukkit.getConsoleSender(),
+          String.format("disguise player %s setNameVisible false", player.getName()));
     }
 
     alivePlayers.clear();
@@ -240,6 +244,9 @@ public class BombermanGame implements Minigame {
       Bukkit.dispatchCommand(
           Bukkit.getConsoleSender(),
           String.format("rg removemember -w \"casino\" bomber %s", player.getName()));
+      // Undisguise player
+      Bukkit.dispatchCommand(
+          Bukkit.getConsoleSender(), String.format("undisguise %s", player.getName()));
     }
     players.clear();
     playerSpawnIndex.clear();

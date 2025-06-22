@@ -7,20 +7,15 @@ import com.storytimeproductions.stweaks.games.BlockBreakGame;
 import com.storytimeproductions.stweaks.games.BlockPartyGame;
 import com.storytimeproductions.stweaks.games.BombermanGame;
 import com.storytimeproductions.stweaks.games.ColorSplatGame;
-import com.storytimeproductions.stweaks.games.ConnectFourGame;
 import com.storytimeproductions.stweaks.games.DodgeballGame;
 import com.storytimeproductions.stweaks.games.FishSlapGame;
-import com.storytimeproductions.stweaks.games.GuessWhoGame;
 import com.storytimeproductions.stweaks.games.GymGame;
 import com.storytimeproductions.stweaks.games.HungryHungryHooksGame;
 import com.storytimeproductions.stweaks.games.KothTagGame;
-import com.storytimeproductions.stweaks.games.MemoryPairsGame;
 import com.storytimeproductions.stweaks.games.MobHunt;
-import com.storytimeproductions.stweaks.games.RockPaperScissorsGame;
 import com.storytimeproductions.stweaks.games.RouletteGame;
 import com.storytimeproductions.stweaks.games.SpleefGame;
 import com.storytimeproductions.stweaks.games.StoryBlitz;
-import com.storytimeproductions.stweaks.games.TicTacToeGame;
 import java.io.File;
 import java.time.Duration;
 import java.util.HashMap;
@@ -74,14 +69,9 @@ public class GameManagerListener implements Listener {
 
   static {
     gameFactories.put("roulette", RouletteGame::new);
-    gameFactories.put("rock_paper_scissors", RockPaperScissorsGame::new);
-    gameFactories.put("guess_who", GuessWhoGame::new);
     gameFactories.put("battleship", BattleshipGame::new);
     gameFactories.put("spleef", SpleefGame::new);
     gameFactories.put("blockbreak", BlockBreakGame::new);
-    gameFactories.put("tictactoe", TicTacToeGame::new);
-    gameFactories.put("memorypairs", MemoryPairsGame::new);
-    gameFactories.put("connectfour", ConnectFourGame::new);
     gameFactories.put("block_party", BlockPartyGame::new);
     gameFactories.put("kothtag", KothTagGame::new);
     gameFactories.put("color_splat", ColorSplatGame::new);
