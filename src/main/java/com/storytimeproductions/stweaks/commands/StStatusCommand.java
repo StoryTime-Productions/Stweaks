@@ -1,5 +1,6 @@
 package com.storytimeproductions.stweaks.commands;
 
+import com.storytimeproductions.stweaks.config.SettingsManager;
 import com.storytimeproductions.stweaks.playtime.PlaytimeData;
 import com.storytimeproductions.stweaks.playtime.PlaytimeTracker;
 import java.util.ArrayList;
@@ -48,6 +49,49 @@ public class StStatusCommand implements CommandExecutor {
 
   @Override
   public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    // /status boost <boostAmount>
+    if (args.length == 2 && args[0].equalsIgnoreCase("boost")) {
+      if (!sender.hasPermission("stweaks.status.boost")) {
+        sender.sendMessage(
+            Component.text("[Stweaks] ", NamedTextColor.YELLOW)
+                .append(
+                    Component.text(
+                        "You don't have permission to boost the multiplier.", NamedTextColor.RED)));
+        return true;
+      }
+      try {
+        double boostAmount = Double.parseDouble(args[1]);
+        double currentBoost = 0.0;
+        if (SettingsManager.getConfig().contains("activeBoost.amount")) {
+          currentBoost = SettingsManager.getConfig().getDouble("activeBoost.amount");
+        }
+        double newBoost = currentBoost + boostAmount;
+
+        // Store new boost in config (do not modify baseMultiplier)
+        SettingsManager.getConfig().set("activeBoost.amount", newBoost);
+        SettingsManager.saveConfig();
+        SettingsManager.reload();
+
+        sender.sendMessage(
+            Component.text("[Stweaks] ", NamedTextColor.YELLOW)
+                .append(
+                    Component.text(
+                        "Boost of "
+                            + boostAmount
+                            + " applied. Total boost is now "
+                            + newBoost
+                            + ". ",
+                        NamedTextColor.YELLOW)));
+      } catch (NumberFormatException e) {
+        sender.sendMessage(
+            Component.text("[Stweaks] ", NamedTextColor.YELLOW)
+                .append(
+                    Component.text(
+                        "Invalid boost amount. Please enter a number.", NamedTextColor.RED)));
+      }
+      return true;
+    }
+
     // /ststatus reset <player>
     if (args.length == 2 && args[0].equalsIgnoreCase("reset")) {
       if (!sender.hasPermission("stweaks.ststatus.reset")) {

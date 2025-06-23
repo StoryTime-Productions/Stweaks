@@ -94,9 +94,18 @@ public class PlaytimeTracker {
     }.runTaskTimer(plugin, 0L, 20L);
   }
 
-  // --- Multiplier Getters using SettingsManager ---
+  /**
+   * Retrieves the base multiplier for playtime.
+   *
+   * @return The base multiplier, which may be boosted by an active boost.
+   */
   public static double getBaseMultiplier() {
-    return SettingsManager.getBaseMultiplier();
+    double base = SettingsManager.getBaseMultiplier();
+    double boost = SettingsManager.getConfig().getDouble("activeBoost.amount", 0.0);
+    if (boost != 0.0) {
+      return base + boost;
+    }
+    return base;
   }
 
   public static double getWeekendMultiplier() {

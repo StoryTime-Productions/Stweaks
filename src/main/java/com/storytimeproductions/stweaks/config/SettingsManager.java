@@ -31,6 +31,7 @@ public class SettingsManager {
   public static void load(JavaPlugin pl) {
     plugin = pl;
     config = plugin.getConfig();
+    config.set("activeBoost.amount", 0.0);
   }
 
   /**
@@ -38,10 +39,8 @@ public class SettingsManager {
    *
    * <p>This method reloads the configuration by getting the config from the provided JavaPlugin
    * instance. This must be called to refresh the configuration values.
-   *
-   * @param plugin The plugin instance from which the configuration is reloaded.
    */
-  public static void reload(JavaPlugin plugin) {
+  public static void reload() {
     plugin.reloadConfig();
     config = plugin.getConfig();
   }
@@ -138,6 +137,20 @@ public class SettingsManager {
       playerSettingsMap.put(playerUuid, settings);
     }
     return playerSettingsMap.get(playerUuid);
+  }
+
+  /**
+   * Retrieves the config.
+   *
+   * @return the config
+   */
+  public static FileConfiguration getConfig() {
+    return config;
+  }
+
+  /** Saves the config. */
+  public static void saveConfig() {
+    plugin.saveConfig();
   }
 
   /** A helper class to store per-player settings. */

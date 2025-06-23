@@ -3,6 +3,7 @@ package com.storytimeproductions.stweaks.listeners;
 import com.storytimeproductions.models.ItemConsumable;
 import com.storytimeproductions.stweaks.consumables.AnvilConsumable;
 import com.storytimeproductions.stweaks.consumables.BackConsumable;
+import com.storytimeproductions.stweaks.consumables.BoostConsumable;
 import com.storytimeproductions.stweaks.consumables.EnderchestConsumable;
 import com.storytimeproductions.stweaks.consumables.EntitySizeConsumable;
 import com.storytimeproductions.stweaks.consumables.NickConsumable;
@@ -44,7 +45,8 @@ public class ItemConsumableListener implements Listener {
           new EnderchestConsumable(),
           new AnvilConsumable(),
           new EntitySizeConsumable(),
-          new PlayerSizeConsumable());
+          new PlayerSizeConsumable(),
+          new BoostConsumable());
 
   // Map to track players waiting for parameters
   private final Map<UUID, PendingCommand> pendingCommands = new HashMap<>();
