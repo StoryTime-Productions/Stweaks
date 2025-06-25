@@ -13,6 +13,7 @@ import com.storytimeproductions.stweaks.games.GymGame;
 import com.storytimeproductions.stweaks.games.HungryHungryHooksGame;
 import com.storytimeproductions.stweaks.games.KothTagGame;
 import com.storytimeproductions.stweaks.games.MobHunt;
+import com.storytimeproductions.stweaks.games.ParkourGame;
 import com.storytimeproductions.stweaks.games.RouletteGame;
 import com.storytimeproductions.stweaks.games.SpleefGame;
 import com.storytimeproductions.stweaks.games.StoryBlitz;
@@ -82,6 +83,7 @@ public class GameManagerListener implements Listener {
     gameFactories.put("dodgeball", DodgeballGame::new);
     gameFactories.put("storyblitz", StoryBlitz::new);
     gameFactories.put("gym", GymGame::new);
+    gameFactories.put("parkour", ParkourGame::new);
   }
 
   /**
@@ -300,7 +302,9 @@ public class GameManagerListener implements Listener {
     String gameId = minigame.getConfig().getGameId();
 
     // Allow joining at any time if the game is roulette or the time gym
-    if (minigame instanceof RouletteGame || minigame instanceof GymGame) {
+    if (minigame instanceof RouletteGame
+        || minigame instanceof GymGame
+        || minigame instanceof ParkourGame) {
       joinedPlayers.putIfAbsent(gameId, new HashSet<>());
       Set<UUID> players = joinedPlayers.get(gameId);
 
@@ -324,30 +328,11 @@ public class GameManagerListener implements Listener {
       players.add(player.getUniqueId());
       minigame.join(player);
       player.displayName(Component.text(player.getName(), NamedTextColor.GREEN));
-
-      int currentCount = players.size();
-      int maxCount = minigame.getConfig().getPlayerLimit();
-      String minigameName =
-          minigame.getConfig().getGameId().substring(0, 1).toUpperCase()
-              + minigame.getConfig().getGameId().substring(1);
-      Component joinMsg =
-          Component.text()
-              .append(Component.text(player.getName(), NamedTextColor.GREEN))
-              .append(
-                  Component.text(
-                      " joined " + minigameName + " (" + currentCount + "/" + maxCount + ")",
-                      NamedTextColor.WHITE))
-              .build();
-      for (Player p : Bukkit.getOnlinePlayers()) {
-        if (p.getWorld().getName().equalsIgnoreCase("casino")) {
-          p.sendMessage(joinMsg);
-        }
-      }
-
       player.sendMessage(
           Component.text(
               "Type /casino leave to leave the game before it begins.", NamedTextColor.YELLOW));
       setJoinIndicator(joinLoc, true);
+
       if (gameActive.getOrDefault(gameId, false)) {
         return;
       }
@@ -570,7 +555,9 @@ public class GameManagerListener implements Listener {
               for (UUID uuid : joinedPlayers.get(gameId)) {
                 Player p = Bukkit.getPlayer(uuid);
                 if (p != null) {
-                  if (!(minigame instanceof RouletteGame) && !(minigame instanceof GymGame)) {
+                  if (!(minigame instanceof RouletteGame)
+                      && !(minigame instanceof GymGame)
+                      && !(minigame instanceof ParkourGame)) {
                     p.teleport(minigame.getConfig().getExitArea());
                   }
                   if (minigame.getPlayers().contains(p)) {

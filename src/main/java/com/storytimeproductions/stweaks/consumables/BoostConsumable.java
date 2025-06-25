@@ -32,7 +32,7 @@ public class BoostConsumable implements ItemConsumable {
 
   @Override
   public String getCommand() {
-    return "status boost 0.01";
+    return "status boost 0.1";
   }
 
   @Override

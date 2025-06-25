@@ -72,16 +72,15 @@ public class StStatusCommand implements CommandExecutor {
         SettingsManager.saveConfig();
         SettingsManager.reload();
 
-        sender.sendMessage(
-            Component.text("[Stweaks] ", NamedTextColor.YELLOW)
-                .append(
-                    Component.text(
-                        "Boost of "
-                            + boostAmount
-                            + " applied. Total boost is now "
-                            + newBoost
-                            + ". ",
-                        NamedTextColor.YELLOW)));
+        // Announce to all players
+        Bukkit.getServer()
+            .sendMessage(
+                Component.text("[Stweaks] ", NamedTextColor.YELLOW)
+                    .append(
+                        Component.text(
+                            (sender instanceof Player p ? p.getName() : sender.getName())
+                                + " has added 0.1 to the timer multiplier! Expires 8 AM EST.",
+                            NamedTextColor.YELLOW)));
       } catch (NumberFormatException e) {
         sender.sendMessage(
             Component.text("[Stweaks] ", NamedTextColor.YELLOW)
