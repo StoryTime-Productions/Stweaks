@@ -1,0 +1,14 @@
+games:
+  block_party:
+    join-block: casino,100,64,100
+    ticket-cost: 1
+    player-limit: 4
+    join-success-message: "You joined the game!"
+    join-fail-message: "Game is full!"
+    win-message: "You win!"
+    lose-message: "You lose!"
+    game-area: casino,200,70,200
+    exit-area: casino,90,64,90
+    gameProperties:
+      someProperty: value
+      anotherProperty: value

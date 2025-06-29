@@ -100,8 +100,6 @@ public class CosmeticsManager {
       Cosmetic cosmetic = new Cosmetic(id, itemModel, name, lore, recipe);
       cosmetics.put(id, cosmetic);
     }
-
-    Bukkit.getLogger().info("Loaded " + cosmetics.size() + " cosmetic(s).");
   }
 
   /**

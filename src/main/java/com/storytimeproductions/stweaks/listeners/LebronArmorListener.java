@@ -239,16 +239,8 @@ public class LebronArmorListener implements Listener {
    * @param skinValue The skin value to restore
    */
   private void restoreOriginalSkin(Player player, String skinValue) {
-    String skinName = "orig_" + player.getUniqueId();
-    skinsRestorer.getSkinStorage().setCustomSkinData(skinName, SkinProperty.of(skinValue, ""));
-    skinsRestorer
-        .getPlayerStorage()
-        .setSkinIdOfPlayer(player.getUniqueId(), SkinIdentifier.ofCustom(skinName));
-    try {
-      skinsRestorer.getSkinApplier(Player.class).applySkin(player);
-    } catch (DataRequestException e) {
-      e.printStackTrace();
-    }
+    String command = "skinsrestorer applySkin " + player.getName();
+    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
   }
 
   /**

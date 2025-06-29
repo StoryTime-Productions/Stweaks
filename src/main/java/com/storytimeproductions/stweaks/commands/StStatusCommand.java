@@ -1,5 +1,6 @@
 package com.storytimeproductions.stweaks.commands;
 
+import com.storytimeproductions.stweaks.config.SettingsManager;
 import com.storytimeproductions.stweaks.playtime.PlaytimeData;
 import com.storytimeproductions.stweaks.playtime.PlaytimeTracker;
 import java.util.ArrayList;
@@ -16,8 +17,10 @@ import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
@@ -46,6 +49,48 @@ public class StStatusCommand implements CommandExecutor {
 
   @Override
   public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    // /status boost <boostAmount>
+    if (args.length == 2 && args[0].equalsIgnoreCase("boost")) {
+      if (!sender.hasPermission("stweaks.status.boost")) {
+        sender.sendMessage(
+            Component.text("[Stweaks] ", NamedTextColor.YELLOW)
+                .append(
+                    Component.text(
+                        "You don't have permission to boost the multiplier.", NamedTextColor.RED)));
+        return true;
+      }
+      try {
+        double boostAmount = Double.parseDouble(args[1]);
+        double currentBoost = 0.0;
+        if (SettingsManager.getConfig().contains("activeBoost.amount")) {
+          currentBoost = SettingsManager.getConfig().getDouble("activeBoost.amount");
+        }
+        double newBoost = currentBoost + boostAmount;
+
+        // Store new boost in config (do not modify baseMultiplier)
+        SettingsManager.getConfig().set("activeBoost.amount", newBoost);
+        SettingsManager.saveConfig();
+        SettingsManager.reload();
+
+        // Announce to all players
+        Bukkit.getServer()
+            .sendMessage(
+                Component.text("[Stweaks] ", NamedTextColor.YELLOW)
+                    .append(
+                        Component.text(
+                            (sender instanceof Player p ? p.getName() : sender.getName())
+                                + " has added 0.1 to the timer multiplier! Expires 8 AM EST.",
+                            NamedTextColor.YELLOW)));
+      } catch (NumberFormatException e) {
+        sender.sendMessage(
+            Component.text("[Stweaks] ", NamedTextColor.YELLOW)
+                .append(
+                    Component.text(
+                        "Invalid boost amount. Please enter a number.", NamedTextColor.RED)));
+      }
+      return true;
+    }
+
     // /ststatus reset <player>
     if (args.length == 2 && args[0].equalsIgnoreCase("reset")) {
       if (!sender.hasPermission("stweaks.ststatus.reset")) {
@@ -200,8 +245,8 @@ public class StStatusCommand implements CommandExecutor {
           ItemMeta meta = ticket.getItemMeta();
           meta.displayName(Component.text("5-minute ticket").color(NamedTextColor.GOLD));
           meta.setItemModel(new NamespacedKey("storytime", "time_ticket"));
-          meta.addEnchant(org.bukkit.enchantments.Enchantment.LUCK_OF_THE_SEA, 1, true);
-          meta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_ENCHANTS);
+          meta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, true);
+          meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
           ticket.setItemMeta(meta);
           target.getInventory().addItem(ticket);
           target.sendMessage("You received a 5-minute ticket!");
@@ -320,8 +365,10 @@ public class StStatusCommand implements CommandExecutor {
       return true;
     }
 
+    // /ststatus [admin]
     if (sender instanceof Player player) {
-      if (player.isOp()) {
+      boolean isAdmin = args.length > 0 && args[0].equalsIgnoreCase("admin");
+      if (isAdmin && player.isOp()) {
         openAdminStatusInventory(player, 0);
         return true;
       } else {
@@ -618,7 +665,7 @@ public class StStatusCommand implements CommandExecutor {
     multiplierLoreRaw.add(" ");
 
     double weekendMultiplier = PlaytimeTracker.getWeekendMultiplier();
-    boolean isWeekend = isWeekend();
+    boolean isWeekend = PlaytimeTracker.isWeekend();
     if (isWeekend) {
       multiplierLoreRaw.add("Weekend Multiplier: " + weekendMultiplier + "x (active)");
     } else {
@@ -679,7 +726,7 @@ public class StStatusCommand implements CommandExecutor {
             .decoration(TextDecoration.ITALIC, false)
             .color(NamedTextColor.WHITE));
     List<String> dailyLoreRaw = new ArrayList<>();
-    dailyLoreRaw.add("Every day at 1 AM, playtime is reset back to an hour.");
+    dailyLoreRaw.add("Every day at 4 AM, playtime is reset back to an hour.");
     dailyLoreRaw.add(" ");
     dailyLoreRaw.add("You can use tickets to fill your playtime bar back up!");
     List<Component> dailyLore = new ArrayList<>();
@@ -831,11 +878,6 @@ public class StStatusCommand implements CommandExecutor {
         player.getOpenInventory().setItem(20, timeLeft);
       }
     }.runTaskTimer(plugin, 20L, 20L);
-  }
-
-  private boolean isWeekend() {
-    java.time.DayOfWeek day = java.time.LocalDate.now().getDayOfWeek();
-    return day == java.time.DayOfWeek.SATURDAY || day == java.time.DayOfWeek.SUNDAY;
   }
 
   /** Wraps a string into lines of maxLineLength, not breaking words. */
