@@ -71,6 +71,10 @@ repositories {
 
     maven { url "https://repo.dmulloy2.net/repository/public/" }
 
+    maven {
+        url "https://repo.md-5.net/content/groups/public/"
+    }
+
     mavenCentral()
 }
 
@@ -86,6 +90,8 @@ dependencies {
     implementation 'org.xerial:sqlite-jdbc:3.42.0.0'
     compileOnly 'net.skinsrestorer:skinsrestorer-api:15.6.2'
     compileOnly 'com.comphenix.protocol:ProtocolLib:5.1.0'
+    compileOnly 'me.libraryaddict.disguises:libsdisguises:11.0.6'
+    compileOnly 'com.github.retrooper:packetevents-spigot:2.7.0'
 }
 
 test {

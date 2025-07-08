@@ -1,0 +1,264 @@
+hunt:
+  # World name where the hunt game takes place
+  world: "hunt"
+
+  # Spawn location where players are teleported when using /hunt
+  spawn:
+    x: 100.0
+    y: 65.0
+    z: 200.0
+    yaw: 0.0
+    pitch: 0.0
+
+  # Disguise locations where armor stands with player disguises are placed
+  disguise-locations:
+    # Each location has a unique identifier
+    location1:
+      # World coordinates
+      x: 100.5
+      y: 65.0
+      z: 200.5
+      # Rotation (in degrees)
+      # yaw: left/right rotation (0=north, 90=east, 180=south, 270=west)
+      # pitch: up/down rotation (-90=looking up, 0=level, 90=looking down)
+      yaw: 0.0
+      pitch: 0.0
+      # Player skin to disguise the armor stand as (actual player name for skin)
+      player-skin: "Springtrap"
+      # Display name to show above the armor stand
+      display-name: "Springtrap"
+      # Scale of the armor stand (default 1.3)
+      scale: 1.3
+      # Whether this location is enabled
+      enabled: true
+
+    location2:
+      x: 105.5
+      y: 65.0
+      z: 205.5
+      yaw: 90.0
+      pitch: 0.0
+      player-skin: "Herobrine"
+      display-name: "Herobrine"
+      scale: 1.3
+      enabled: true
+
+    location3:
+      x: 110.5
+      y: 65.0
+      z: 210.5
+      yaw: 180.0
+      pitch: -10
+      player-skin: "FoxyTheFierce"
+      display-name: "Slenderman"
+      scale: 1.3
+      enabled: true
+
+    location4:
+      x: 115.5
+      y: 65.0
+      z: 215.5
+      yaw: 270.0
+      pitch: 0.0
+      player-skin: "Cryptid"
+      display-name: "Cryptid"
+      scale: 1.3
+      enabled: true
+
+    location5:
+      x: 120.5
+      y: 65.0
+      z: 220.5
+      yaw: 45.0
+      pitch: 0.0
+      player-skin: "Jigsaw"
+      display-name: "Jigsaw"
+      scale: 1.3
+      enabled: true
+
+    location6:
+      x: 125.5
+      y: 65.0
+      z: 225.5
+      yaw: 135.0
+      pitch: 0.0
+      player-skin: "Scarecrow"
+      display-name: "Scarecrow"
+      scale: 1.3
+      enabled: true
+
+  # Disguise settings
+  disguise:
+    # How long a disguise lasts (in seconds, 0 = permanent until removed)
+    duration: 0
+    # Scale to apply to disguised players
+    player-scale: 1.3
+    # Whether to show the display name above the disguised player (true = show display name, false = hide name)
+    retain-username: true
+    # Cooldown between disguise attempts (in seconds)
+    cooldown: 3
+
+  # Utility item cooldowns (in seconds)
+  utility-cooldowns:
+    # Brute class - Resilience Totem (provides temporary resistance)
+    resilience-totem: 30
+    # Nimble class - Dash (provides speed boost)
+    dash: 15
+    # Saboteur class - Scanner (reveals nearby hiders)
+    scanner: 25
+
+  # Prep phase configuration
+  prep-phase:
+    # Location for the "START GAME" hologram
+    start-hologram:
+      x: 95.0
+      y: 67.0
+      z: 195.0
+
+    # Map voting hologram locations
+    map-vote-holograms:
+      warehouse:
+        x: 90.0
+        y: 66.0
+        z: 190.0
+      factory:
+        x: 92.0
+        y: 66.0
+        z: 190.0
+      mansion:
+        x: 94.0
+        y: 66.0
+        z: 190.0
+
+    # Ready tracking hologram location
+    ready-status:
+      x: 100.0
+      y: 67.0
+      z: 195.0
+
+    # Countdown settings
+    countdown-duration: 5 # seconds
+
+    # Game duration (in minutes)
+    game-duration: 5
+
+    # Hunter lock-in duration (in seconds)
+    hunter-lock-duration: 30
+
+    # Heartbeat system configuration
+    heartbeat:
+      # Distance in blocks for hunter detection (when hiders hear heartbeat)
+      detection-radius: 15.0
+      # Interval between heartbeat checks (in ticks, 20 ticks = 1 second)
+      interval-ticks: 40
+
+  # Map configurations
+  maps:
+    warehouse:
+      display-name: "Warehouse"
+      description: "Industrial warehouse with lots of hiding spots"
+      world: "hunt_warehouse"
+      # Hunter spawn location (locked area)
+      hunter-spawn:
+        x: 0.0
+        y: 64.0
+        z: 0.0
+        yaw: 0.0
+        pitch: 0.0
+      # Hider spawn locations (multiple spawn points)
+      hider-spawns:
+      - x: 50.0
+        y: 64.0
+        z: 50.0
+        yaw: 0.0
+        pitch: 0.0
+      - x: -50
+        y: 64.0
+        z: 50.0
+        yaw: 90.0
+        pitch: 0.0
+      - x: 50.0
+        y: 64.0
+        z: -50
+        yaw: 180.0
+        pitch: 0.0
+      - x: -50
+        y: 64.0
+        z: -50
+        yaw: 270.0
+        pitch: 0.0
+
+    factory:
+      display-name: "Factory"
+      description: "Abandoned factory with machinery and conveyor belts"
+      world: "hunt_factory"
+      hunter-spawn:
+        x: 0.0
+        y: 64.0
+        z: 0.0
+        yaw: 0.0
+        pitch: 0.0
+      hider-spawns:
+      - x: 75.0
+        y: 64.0
+        z: 75.0
+        yaw: 0.0
+        pitch: 0.0
+      - x: -75
+        y: 64.0
+        z: 75.0
+        yaw: 90.0
+        pitch: 0.0
+      - x: 75.0
+        y: 64.0
+        z: -75
+        yaw: 180.0
+        pitch: 0.0
+      - x: -75
+        y: 64.0
+        z: -75
+        yaw: 270.0
+        pitch: 0.0
+
+    mansion:
+      display-name: "Mansion"
+      description: "Spooky mansion with many rooms and secret passages"
+      world: "hunt_mansion"
+      hunter-spawn:
+        x: 0.0
+        y: 64.0
+        z: 0.0
+        yaw: 0.0
+        pitch: 0.0
+      hider-spawns:
+      - x: 100.0
+        y: 64.0
+        z: 100.0
+        yaw: 0.0
+        pitch: 0.0
+      - x: -100
+        y: 64.0
+        z: 100.0
+        yaw: 90.0
+        pitch: 0.0
+      - x: 100.0
+        y: 64.0
+        z: -100
+        yaw: 180.0
+        pitch: 0.0
+      - x: -100
+        y: 64.0
+        z: -100
+        yaw: 270.0
+        pitch: 0.0
+
+  # Hider ability cooldowns (in seconds)
+  hider-abilities:
+    # Trickster class - Trap ability (places slowness traps for hunters)
+    trickster-cooldown: 45
+    # Phaser class - Phase ability (allows flying through walls)
+    phaser-cooldown: 60
+    # Cloaker class - Invisibility ability (grants temporary invisibility)
+    cloaker-cooldown: 90
+    # Block disguise cooldown (for all hiders - transform into blocks)
+    block-disguise-cooldown: 30

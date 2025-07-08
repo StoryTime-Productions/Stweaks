@@ -41,6 +41,13 @@ commands:
     description: Opens the casino GUI
     usage: /stcasino
     aliases: casino
+  stdisguise:
+    description: Manage entity disguises in the lobby
+    usage: /disguise [apply|remove|reload]
+  hunt:
+    description: Opens the Hunt game lobby
+    usage: /hunt [join|leave|status]
+    aliases: [ huntlobby, huntgame ]
 
 permissions:
   stweaks.stpets:
@@ -67,6 +74,9 @@ permissions:
   stweaks.cosmetics:
     description: Allows access to /stcosmetics
     default: true
+  stweaks.disguise:
+    description: Allows access to /stdisguise command
+    default: op
   stweaks.*:
     description: Grants all Stweaks permissions
     default: false
@@ -79,3 +89,11 @@ permissions:
       stweaks.quests: true
       stweaks.pets: true
       stweaks.cosmetics: true
+      stweaks.disguise: true
+
+depend:
+- LibsDisguises
+- DecentHolograms
+
+softdepend:
+- EntitySize
