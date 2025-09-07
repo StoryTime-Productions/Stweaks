@@ -2,25 +2,6 @@
 
 <a id="readme-top"></a>
 
-<!-- PROJECT SHIELDS -->
-<p align="center">
-  <a href="https://github.com/StoryTime-Productions/Stweaks/graphs/contributors">
-    <img src="https://img.shields.io/github/contributors/StoryTime-Productions/Stweaks.svg?style=for-the-badge" alt="Contributors">
-  </a>
-  <a href="https://github.com/StoryTime-Productions/Stweaks/network/members">
-    <img src="https://img.shields.io/github/forks/StoryTime-Productions/Stweaks.svg?style=for-the-badge" alt="Forks">
-  </a>
-  <a href="https://github.com/StoryTime-Productions/Stweaks/stargazers">
-    <img src="https://img.shields.io/github/stars/StoryTime-Productions/Stweaks.svg?style=for-the-badge" alt="Stargazers">
-  </a>
-  <a href="https://github.com/StoryTime-Productions/Stweaks/issues">
-    <img src="https://img.shields.io/github/issues/StoryTime-Productions/Stweaks.svg?style=for-the-badge" alt="Issues">
-  </a>
-  <a href="https://github.com/StoryTime-Productions/Stweaks/blob/master/LICENSE.txt">
-    <img src="https://img.shields.io/github/license/StoryTime-Productions/Stweaks.svg?style=for-the-badge" alt="License">
-  </a>
-</p>
-
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
@@ -41,6 +22,25 @@
     <a href="https://github.com/StoryTime-Productions/Stweaks/issues/new?template=feature_request.md">Request Feature</a>
   </p>
 </div>
+
+<!-- PROJECT SHIELDS -->
+<p align="center">
+  <a href="https://github.com/StoryTime-Productions/Stweaks/graphs/contributors">
+    <img src="https://img.shields.io/github/contributors/StoryTime-Productions/Stweaks.svg?style=for-the-badge" alt="Contributors">
+  </a>
+  <a href="https://github.com/StoryTime-Productions/Stweaks/network/members">
+    <img src="https://img.shields.io/github/forks/StoryTime-Productions/Stweaks.svg?style=for-the-badge" alt="Forks">
+  </a>
+  <a href="https://github.com/StoryTime-Productions/Stweaks/stargazers">
+    <img src="https://img.shields.io/github/stars/StoryTime-Productions/Stweaks.svg?style=for-the-badge" alt="Stargazers">
+  </a>
+  <a href="https://github.com/StoryTime-Productions/Stweaks/issues">
+    <img src="https://img.shields.io/github/issues/StoryTime-Productions/Stweaks.svg?style=for-the-badge" alt="Issues">
+  </a>
+  <a href="https://github.com/StoryTime-Productions/Stweaks/blob/master/LICENSE.txt">
+    <img src="https://img.shields.io/github/license/StoryTime-Productions/Stweaks.svg?style=for-the-badge" alt="License">
+  </a>
+</p>
 
 <!-- TABLE OF CONTENTS -->
 <details>
