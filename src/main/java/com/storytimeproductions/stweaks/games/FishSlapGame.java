@@ -335,6 +335,7 @@ public class FishSlapGame implements Minigame, Listener {
     }
     player.sendActionBar(bar);
   }
+
   // CHECKSTYLE:ON: AvoidEscapedUnicodeCharacters
 
   private void broadcastToGamePlayers(Component message) {
