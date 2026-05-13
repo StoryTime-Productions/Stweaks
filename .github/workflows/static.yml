@@ -22,13 +22,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - name: Set up JDK 26 (compilation toolchain)
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: '17' # Adjust if needed
+          java-version: '26'
+
+      - name: Set up JDK 21 (Gradle JVM)
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
 
       - name: Generate Javadoc
         run: ./gradlew javadoc
@@ -37,7 +43,7 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Upload Javadoc as artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: './build/docs/javadoc'
 

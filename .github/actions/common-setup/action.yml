@@ -3,19 +3,25 @@ description: 'Set up JDK and grant execute permissions for gradlew'
 
 inputs:
   java-version:
-    description: 'Java version'
-    required: true
-    default: '21'
+    description: 'Java version for the compilation toolchain'
+    required: false
+    default: '26'
 
 runs:
   using: 'composite'
   steps:
-    - name: Set up JDK
-      uses: actions/setup-java@v4
+    - name: Set up JDK ${{ inputs.java-version }} (compilation toolchain)
+      uses: actions/setup-java@v5
       with:
         java-version: ${{ inputs.java-version }}
         distribution: 'zulu'
         cache: gradle
+
+    - name: Set up JDK 21 (Gradle JVM)
+      uses: actions/setup-java@v5
+      with:
+        java-version: '21'
+        distribution: 'zulu'
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3

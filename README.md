@@ -2,6 +2,13 @@
 
 <a id="readme-top"></a>
 
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/StoryTime-Productions/Stweaks">
+    <img src="https://i.imgur.com/zlGbFm5.png" alt="Logo" style="max-width: 100%; height: auto;">
+  </a>
+
 <!-- PROJECT SHIELDS -->
 <p align="center">
   <a href="https://github.com/StoryTime-Productions/Stweaks/graphs/contributors">
@@ -20,13 +27,6 @@
     <img src="https://img.shields.io/github/license/StoryTime-Productions/Stweaks.svg?style=for-the-badge" alt="License">
   </a>
 </p>
-
-<!-- PROJECT LOGO -->
-<br />
-<div align="center">
-  <a href="https://github.com/StoryTime-Productions/Stweaks">
-    <img src="https://i.imgur.com/zlGbFm5.png" alt="Logo" style="max-width: 100%; height: auto;">
-  </a>
 
   <p align="center">
     A plugin introducing vanilla-based tweaks.<br/>

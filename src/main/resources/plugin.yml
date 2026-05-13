@@ -1,7 +1,7 @@
 main: com.storytimeproductions.stweaks.Stweaks
 name: Stweaks
 version: "1.0.0"
-api-version: "1.21.4"
+api-version: "26.1"
 author: StoryTimeProductions
 description: A collection of in-house tweaks for the StoryTime SMP. Currently includes the Stracker module for daily playtime tracking.
 
