@@ -87,7 +87,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:6.0.0'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:6.0.0'
     implementation 'org.xerial:sqlite-jdbc:3.50.3.0'
-    compileOnly 'net.skinsrestorer:skinsrestorer-api:15.6.2'
+    compileOnly 'net.skinsrestorer:skinsrestorer-api:15.12.0'
     compileOnly 'net.dmulloy2:ProtocolLib:5.4.0'
     compileOnly 'me.libraryaddict.disguises:libsdisguises:11.0.16'
     compileOnly 'com.github.retrooper:packetevents-spigot:2.12.0'
