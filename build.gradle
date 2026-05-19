@@ -6,7 +6,7 @@ plugins {
     id "com.github.spotbugs" version "6.1.7"
     id 'com.gradleup.shadow' version '8.3.10'
     id 'java'
-    id 'com.diffplug.spotless' version '8.0.0'
+    id 'com.diffplug.spotless' version '8.5.1'
 }
 
 group = "com.storytimeproductions.stweaks"
