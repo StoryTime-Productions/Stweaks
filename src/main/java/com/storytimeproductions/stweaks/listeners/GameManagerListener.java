@@ -1,22 +1,5 @@
 package com.storytimeproductions.stweaks.listeners;
 
-import com.storytimeproductions.models.stgames.GameConfig;
-import com.storytimeproductions.models.stgames.Minigame;
-import com.storytimeproductions.stweaks.games.BattleshipGame;
-import com.storytimeproductions.stweaks.games.BlockBreakGame;
-import com.storytimeproductions.stweaks.games.BlockPartyGame;
-import com.storytimeproductions.stweaks.games.BombermanGame;
-import com.storytimeproductions.stweaks.games.ColorSplatGame;
-import com.storytimeproductions.stweaks.games.DodgeballGame;
-import com.storytimeproductions.stweaks.games.FishSlapGame;
-import com.storytimeproductions.stweaks.games.GymGame;
-import com.storytimeproductions.stweaks.games.HungryHungryHooksGame;
-import com.storytimeproductions.stweaks.games.KothTagGame;
-import com.storytimeproductions.stweaks.games.MobHunt;
-import com.storytimeproductions.stweaks.games.ParkourGame;
-import com.storytimeproductions.stweaks.games.RouletteGame;
-import com.storytimeproductions.stweaks.games.SpleefGame;
-import com.storytimeproductions.stweaks.games.StoryBlitz;
 import java.io.File;
 import java.time.Duration;
 import java.util.HashMap;
@@ -26,10 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.title.Title;
-import net.kyori.adventure.title.Title.Times;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -52,6 +32,30 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import com.storytimeproductions.models.stgames.GameConfig;
+import com.storytimeproductions.models.stgames.Minigame;
+import com.storytimeproductions.stweaks.games.BattleshipGame;
+import com.storytimeproductions.stweaks.games.BlockBreakGame;
+import com.storytimeproductions.stweaks.games.BlockPartyGame;
+import com.storytimeproductions.stweaks.games.BombermanGame;
+import com.storytimeproductions.stweaks.games.ColorSplatGame;
+import com.storytimeproductions.stweaks.games.DodgeballGame;
+import com.storytimeproductions.stweaks.games.FishSlapGame;
+import com.storytimeproductions.stweaks.games.GuessTheBlockGame;
+import com.storytimeproductions.stweaks.games.GymGame;
+import com.storytimeproductions.stweaks.games.HungryHungryHooksGame;
+import com.storytimeproductions.stweaks.games.KothTagGame;
+import com.storytimeproductions.stweaks.games.MobHunt;
+import com.storytimeproductions.stweaks.games.ParkourGame;
+import com.storytimeproductions.stweaks.games.RouletteGame;
+import com.storytimeproductions.stweaks.games.SpleefGame;
+import com.storytimeproductions.stweaks.games.StoryBlitz;
+
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.title.Title;
+import net.kyori.adventure.title.Title.Times;
 
 /**
  * Manages the lifecycle and player interactions for all minigames. Handles loading games from
@@ -81,6 +85,7 @@ public class GameManagerListener implements Listener {
     gameFactories.put("mob_hunt", MobHunt::new);
     gameFactories.put("hungry_hungry_hooks", HungryHungryHooksGame::new);
     gameFactories.put("dodgeball", DodgeballGame::new);
+    gameFactories.put("guess_the_block", GuessTheBlockGame::new);
     gameFactories.put("storyblitz", StoryBlitz::new);
     gameFactories.put("gym", GymGame::new);
     gameFactories.put("parkour", ParkourGame::new);

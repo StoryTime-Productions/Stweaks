@@ -12,3 +12,19 @@ games:
     gameProperties:
       someProperty: value
       anotherProperty: value
+
+  guess_the_block:
+    join-block: casino,120,64,120
+    ticket-cost: 1
+    player-limit: 2
+    join-success-message: "You joined Guess The Block!"
+    join-fail-message: "Guess The Block is full!"
+    win-message: "You win!"
+    lose-message: "You lose!"
+    game-area: casino,220,70,220
+    exit-area: casino,90,64,90
+    gameProperties:
+      board1-origin: casino,220,70,220
+      board-spacing: 16
+      player1-spawn: casino,225,71,222
+      player2-spawn: casino,241,71,222
