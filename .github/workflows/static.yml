@@ -20,6 +20,8 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    env:
+      EDEN_PATH: _eden
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -35,6 +37,19 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
+
+      - name: Checkout EDEN
+        uses: actions/checkout@v4
+        with:
+          repository: StoryTime-Productions/EDEN
+          path: _eden
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build EDEN
+        working-directory: _eden
+        run: |
+          chmod +x gradlew
+          ./gradlew build --no-daemon
 
       - name: Generate Javadoc
         run: ./gradlew javadoc
