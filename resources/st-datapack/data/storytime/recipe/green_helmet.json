@@ -1,0 +1,26 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "AAA",
+        "ABA",
+        "AAA"
+    ],
+    "key": {
+        "A": "minecraft:green_dye",
+        "B": "minecraft:netherite_helmet"
+    },
+    "result": {
+        "id": "minecraft:netherite_helmet",
+        "components": {
+            "minecraft:item_model": "storytime:green_helmet",
+            "minecraft:item_name": {
+                "text": "Jade Helmet"
+            },
+            "minecraft:equippable": {
+                "slot": "head",
+                "asset_id": "storytime:green"
+            }
+        },
+        "count": 1
+    }
+}

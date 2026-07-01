@@ -67,19 +67,19 @@ public class StStatusCommand implements CommandExecutor {
         }
         double newBoost = currentBoost + boostAmount;
 
-        // Store new boost in config (do not modify baseMultiplier)
+        SettingsManager.reload();
         SettingsManager.getConfig().set("activeBoost.amount", newBoost);
         SettingsManager.saveConfig();
-        SettingsManager.reload();
 
-        // Announce to all players
         Bukkit.getServer()
             .sendMessage(
                 Component.text("[Stweaks] ", NamedTextColor.YELLOW)
                     .append(
                         Component.text(
                             (sender instanceof Player p ? p.getName() : sender.getName())
-                                + " has added 0.1 to the timer multiplier! Expires 8 AM EST.",
+                                + " has added "
+                                + boostAmount
+                                + " to the timer multiplier! Expires 8 AM EST.",
                             NamedTextColor.YELLOW)));
       } catch (NumberFormatException e) {
         sender.sendMessage(
@@ -123,7 +123,6 @@ public class StStatusCommand implements CommandExecutor {
         return true;
       }
 
-      String targetName = args[1];
       long secondsToAdd;
       try {
         secondsToAdd = Long.parseLong(args[2]);
@@ -132,52 +131,20 @@ public class StStatusCommand implements CommandExecutor {
         return false;
       }
 
-      List<Player> targets = new ArrayList<>();
-      if (targetName.equalsIgnoreCase("@a")) {
-        targets.addAll(Bukkit.getOnlinePlayers());
-      } else if (targetName.equalsIgnoreCase("@p")) {
-        Player nearest = null;
-        if (sender instanceof BlockCommandSender blockSender) {
-          // Find nearest player to the command block
-          double minDist = Double.MAX_VALUE;
-          for (Player p : Bukkit.getOnlinePlayers()) {
-            double dist =
-                p.getLocation().distance(blockSender.getBlock().getLocation().add(0.5, 0.5, 0.5));
-            if (dist < minDist) {
-              minDist = dist;
-              nearest = p;
-            }
-          }
-        } else if (sender instanceof Player playerSender) {
-          nearest = playerSender;
-        } else {
-          // Console fallback: pick a random online player
-          nearest = Bukkit.getOnlinePlayers().stream().findFirst().orElse(null);
-        }
-        if (nearest != null) {
-          targets.add(nearest);
-        }
-      } else {
-        Player player = Bukkit.getPlayerExact(targetName);
-        if (player != null) {
-          targets.add(player);
-        } else {
-          sender.sendMessage("Could not find player: " + targetName);
-          return false;
-        }
+      List<Player> targets = resolveTargets(sender, args[1]);
+      if (targets == null) {
+        return false;
       }
 
-      boolean anySuccess = false;
       for (Player target : targets) {
         UUID targetIdentifer = target.getUniqueId();
         PlaytimeData data = PlaytimeTracker.getData(targetIdentifer);
-        boolean success;
         if (data == null) {
           data = new PlaytimeData();
           PlaytimeTracker.setPlaytime(targetIdentifer, data);
         }
 
-        success = data.addAvailableSeconds(secondsToAdd);
+        boolean success = data.addAvailableSeconds(secondsToAdd);
         sender.sendMessage("Added " + secondsToAdd + " seconds to " + target.getName() + ".");
 
         if (!success) {
@@ -185,7 +152,7 @@ public class StStatusCommand implements CommandExecutor {
               "Failed to add seconds. The player must have at least 10 minutes of playtime.");
         }
       }
-      return anySuccess;
+      return true;
     }
 
     // /ststatus ticket <player>
@@ -194,40 +161,10 @@ public class StStatusCommand implements CommandExecutor {
         sender.sendMessage("You don't have permission to use this command.");
         return true;
       }
-      String targetName = args[1];
-      List<Player> targets = new ArrayList<>();
-      if (targetName.equalsIgnoreCase("@a")) {
-        targets.addAll(Bukkit.getOnlinePlayers());
-      } else if (targetName.equalsIgnoreCase("@p")) {
-        Player nearest = null;
-        if (sender instanceof BlockCommandSender blockSender) {
-          double minDist = Double.MAX_VALUE;
-          for (Player p : Bukkit.getOnlinePlayers()) {
-            if (p.getWorld().equals(blockSender.getBlock().getWorld())) {
-              double dist =
-                  p.getLocation().distance(blockSender.getBlock().getLocation().add(0.5, 0.5, 0.5));
-              if (dist < minDist) {
-                minDist = dist;
-                nearest = p;
-              }
-            }
-          }
-        } else if (sender instanceof Player playerSender) {
-          nearest = playerSender;
-        } else {
-          nearest = Bukkit.getOnlinePlayers().stream().findFirst().orElse(null);
-        }
-        if (nearest != null) {
-          targets.add(nearest);
-        }
-      } else {
-        Player player = Bukkit.getPlayerExact(targetName);
-        if (player != null) {
-          targets.add(player);
-        } else {
-          sender.sendMessage("Could not find player: " + targetName);
-          return false;
-        }
+
+      List<Player> targets = resolveTargets(sender, args[1]);
+      if (targets == null) {
+        return false;
       }
 
       boolean anySuccess = false;
@@ -237,10 +174,8 @@ public class StStatusCommand implements CommandExecutor {
           sender.sendMessage("No playtime data found for " + target.getName() + ".");
           continue;
         }
-        // Only allow if after removing 5 minutes, available seconds will be > 600
         if (data.getAvailableSeconds() - 300 >= 600) {
           data.addAvailableSeconds(-300);
-          // Give the player a nametag named "5-minute ticket" with custom model data
           ItemStack ticket = new ItemStack(Material.NAME_TAG);
           ItemMeta meta = ticket.getItemMeta();
           meta.displayName(Component.text("5-minute ticket").color(NamedTextColor.GOLD));
@@ -267,40 +202,10 @@ public class StStatusCommand implements CommandExecutor {
         sender.sendMessage("You don't have permission to use this command.");
         return true;
       }
-      String targetName = args[1];
-      List<Player> targets = new ArrayList<>();
-      if (targetName.equalsIgnoreCase("@a")) {
-        targets.addAll(Bukkit.getOnlinePlayers());
-      } else if (targetName.equalsIgnoreCase("@p")) {
-        Player nearest = null;
-        if (sender instanceof BlockCommandSender blockSender) {
-          double minDist = Double.MAX_VALUE;
-          for (Player p : Bukkit.getOnlinePlayers()) {
-            if (p.getWorld().equals(blockSender.getBlock().getWorld())) {
-              double dist =
-                  p.getLocation().distance(blockSender.getBlock().getLocation().add(0.5, 0.5, 0.5));
-              if (dist < minDist) {
-                minDist = dist;
-                nearest = p;
-              }
-            }
-          }
-        } else if (sender instanceof Player playerSender) {
-          nearest = playerSender;
-        } else {
-          nearest = Bukkit.getOnlinePlayers().stream().findFirst().orElse(null);
-        }
-        if (nearest != null) {
-          targets.add(nearest);
-        }
-      } else {
-        Player player = Bukkit.getPlayerExact(targetName);
-        if (player != null) {
-          targets.add(player);
-        } else {
-          sender.sendMessage("Could not find player: " + targetName);
-          return false;
-        }
+
+      List<Player> targets = resolveTargets(sender, args[1]);
+      if (targets == null) {
+        return false;
       }
 
       boolean anySuccess = false;
@@ -320,13 +225,11 @@ public class StStatusCommand implements CommandExecutor {
               NamespacedKey key = new NamespacedKey("storytime", "time_ticket");
               NamespacedKey model = meta.getItemModel();
               if (key.equals(model)) {
-                // Remove one ticket
                 if (item.getAmount() > 1) {
                   item.setAmount(item.getAmount() - 1);
                 } else {
                   target.getInventory().setItem(i, null);
                 }
-                // Add 5 minutes (300 seconds)
                 data.addAvailableSeconds(300);
                 target.sendMessage("You cashed in a 5-minute ticket!");
                 sender.sendMessage("Cashed a 5-minute ticket for " + target.getName() + ".");
@@ -379,6 +282,69 @@ public class StStatusCommand implements CommandExecutor {
     return false;
   }
 
+  /**
+   * Resolves "@a", "@p", or a player name to a list of online players. Returns null and sends an
+   * error message to the sender if the target cannot be resolved.
+   */
+  private List<Player> resolveTargets(CommandSender sender, String targetName) {
+    List<Player> targets = new ArrayList<>();
+
+    if (targetName.equalsIgnoreCase("@a")) {
+      targets.addAll(Bukkit.getOnlinePlayers());
+      return targets;
+    }
+
+    if (targetName.equalsIgnoreCase("@p")) {
+      Player nearest = null;
+      if (sender instanceof BlockCommandSender blockSender) {
+        double minDist = Double.MAX_VALUE;
+        for (Player p : Bukkit.getOnlinePlayers()) {
+          if (p.getWorld().equals(blockSender.getBlock().getWorld())) {
+            double dist =
+                p.getLocation().distance(blockSender.getBlock().getLocation().add(0.5, 0.5, 0.5));
+            if (dist < minDist) {
+              minDist = dist;
+              nearest = p;
+            }
+          }
+        }
+      } else if (sender instanceof Player playerSender) {
+        nearest = playerSender;
+      } else {
+        nearest = Bukkit.getOnlinePlayers().stream().findFirst().orElse(null);
+      }
+      if (nearest != null) {
+        targets.add(nearest);
+      }
+      return targets;
+    }
+
+    Player player = Bukkit.getPlayerExact(targetName);
+    if (player == null) {
+      sender.sendMessage("Could not find player: " + targetName);
+      return null;
+    }
+    targets.add(player);
+    return targets;
+  }
+
+  /**
+   * Schedules a repeating task that updates a single inventory slot every second while the player
+   * keeps a given inventory open. Cancels automatically when the inventory is closed.
+   */
+  private void runWhileOpen(Player player, Component expectedTitle, Runnable update) {
+    new BukkitRunnable() {
+      @Override
+      public void run() {
+        if (!expectedTitle.equals(player.getOpenInventory().title())) {
+          cancel();
+          return;
+        }
+        update.run();
+      }
+    }.runTaskTimer(plugin, 20L, 20L);
+  }
+
   private void openAdminStatusInventory(Player admin, int page) {
     int maxItems = 14;
     List<Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
@@ -403,7 +369,6 @@ public class StStatusCommand implements CommandExecutor {
                     + Math.max(1, totalPages)
                     + ")"));
 
-    // Border: Black panes
     ItemStack borderPane = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
     ItemMeta paneMeta = borderPane.getItemMeta();
     paneMeta.displayName(Component.text(" "));
@@ -414,7 +379,6 @@ public class StStatusCommand implements CommandExecutor {
       }
     }
 
-    // Checkerboard skulls
     final int[] itemsPlacedArr = {0};
     int startIndex = page * maxItems;
     int endIndex = Math.min(startIndex + maxItems, onlinePlayers.size());
@@ -422,22 +386,7 @@ public class StStatusCommand implements CommandExecutor {
       for (int x = 1; x <= 7; x++) {
         if ((x + y) % 2 == 0 && startIndex + itemsPlacedArr[0] < endIndex) {
           Player target = onlinePlayers.get(startIndex + itemsPlacedArr[0]);
-          ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
-          ItemMeta meta = skull.getItemMeta();
-          meta.displayName(Component.text(target.getName()).color(NamedTextColor.AQUA));
-          if (meta instanceof org.bukkit.inventory.meta.SkullMeta skullMeta) {
-            skullMeta.setOwningPlayer(target);
-          }
-          PlaytimeData data = PlaytimeTracker.getData(target.getUniqueId());
-          double secondsLeft = data != null ? data.getAvailableSeconds() : 0;
-          int h = (int) (secondsLeft / 3600);
-          int m = (int) ((secondsLeft % 3600) / 60);
-          int s = (int) (secondsLeft % 60);
-          String timeString = String.format("%02d:%02d:%02d", h, m, s);
-          meta.lore(List.of(Component.text("Time Left: " + timeString, NamedTextColor.GREEN)));
-          skull.setItemMeta(meta);
-          int slot = y * 9 + x;
-          inv.setItem(slot, skull);
+          inv.setItem(y * 9 + x, buildSkullItem(target));
           itemsPlacedArr[0]++;
         }
       }
@@ -448,7 +397,6 @@ public class StStatusCommand implements CommandExecutor {
     grayMeta.displayName(Component.text(" "));
     grayPane.setItemMeta(grayMeta);
 
-    // Pagination controls
     if (page > 0) {
       ItemStack prev = new ItemStack(Material.ARROW);
       ItemMeta prevMeta = prev.getItemMeta();
@@ -468,50 +416,54 @@ public class StStatusCommand implements CommandExecutor {
       inv.setItem(52, grayPane);
     }
 
-    // Start a repeating task to update the skull lores live
+    admin.openInventory(inv);
+
+    String expectedTitle =
+        "Admin: Player Status (Page " + (currentPage + 1) + "/" + Math.max(1, totalPages) + ")";
     new BukkitRunnable() {
       @Override
       public void run() {
-        Component currentTitle = admin.getOpenInventory().title();
-        String expectedTitle =
-            "Admin: Player Status (Page " + (currentPage + 1) + "/" + Math.max(1, totalPages) + ")";
-        if (!currentTitle.toString().contains(expectedTitle)) {
+        if (!admin.getOpenInventory().title().toString().contains(expectedTitle)) {
           cancel();
           return;
         }
         Inventory openInv = admin.getOpenInventory().getTopInventory();
-        int[] itemsPlacedArrUpdate = {0};
+        int[] placed = {0};
         for (int y = 1; y <= 4; y++) {
           for (int x = 1; x <= 7; x++) {
-            if ((x + y) % 2 == 0 && startIndex + itemsPlacedArrUpdate[0] < endIndex) {
-              int slot = y * 9 + x;
-              Player target = onlinePlayers.get(startIndex + itemsPlacedArrUpdate[0]);
-              ItemStack skull = openInv.getItem(slot);
-              if (skull != null && skull.getType() == Material.PLAYER_HEAD) {
-                ItemMeta meta = skull.getItemMeta();
-                PlaytimeData data = PlaytimeTracker.getData(target.getUniqueId());
-                double secondsLeft = data != null ? data.getAvailableSeconds() : 0;
-                int h = (int) (secondsLeft / 3600);
-                int m = (int) ((secondsLeft % 3600) / 60);
-                int s = (int) (secondsLeft % 60);
-                String timeString = String.format("%02d:%02d:%02d", h, m, s);
-                meta.lore(
-                    List.of(Component.text("Time Left: " + timeString, NamedTextColor.GREEN)));
-                skull.setItemMeta(meta);
-                openInv.setItem(slot, skull);
-              }
-              itemsPlacedArrUpdate[0]++;
+            if ((x + y) % 2 == 0 && startIndex + placed[0] < endIndex) {
+              Player target = onlinePlayers.get(startIndex + placed[0]);
+              openInv.setItem(y * 9 + x, buildSkullItem(target));
+              placed[0]++;
             }
           }
         }
       }
     }.runTaskTimer(plugin, 20L, 20L);
+  }
 
-    admin.openInventory(inv);
+  private static ItemStack buildSkullItem(Player target) {
+    ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
+    ItemMeta meta = skull.getItemMeta();
+    meta.displayName(Component.text(target.getName()).color(NamedTextColor.AQUA));
+    if (meta instanceof org.bukkit.inventory.meta.SkullMeta skullMeta) {
+      skullMeta.setOwningPlayer(target);
+    }
+    PlaytimeData data = PlaytimeTracker.getData(target.getUniqueId());
+    double secondsLeft = data != null ? data.getAvailableSeconds() : 0;
+    int h = (int) (secondsLeft / 3600);
+    int m = (int) ((secondsLeft % 3600) / 60);
+    int s = (int) (secondsLeft % 60);
+    meta.lore(
+        List.of(
+            Component.text(
+                "Time Left: " + String.format("%02d:%02d:%02d", h, m, s), NamedTextColor.GREEN)));
+    skull.setItemMeta(meta);
+    return skull;
   }
 
   /**
-   * Opens a 27-slot inventory for the player to manage another player's playtime.
+   * Opens a 27-slot inventory for the admin to manage another player's playtime.
    *
    * @param admin The player who is managing the other player's playtime.
    * @param target The player whose playtime is being managed.
@@ -520,35 +472,49 @@ public class StStatusCommand implements CommandExecutor {
   public static void openPlayerManageInventory(Player admin, Player target, Plugin plugin) {
     Inventory inv = Bukkit.createInventory(null, 27, Component.text("Manage: " + target.getName()));
 
-    // Add 5 minutes
     ItemStack add = new ItemStack(Material.LIME_WOOL);
     ItemMeta addMeta = add.getItemMeta();
     addMeta.displayName(Component.text("Add 5 Minutes").color(NamedTextColor.GREEN));
     add.setItemMeta(addMeta);
     inv.setItem(12, add);
 
-    // Remove 5 minutes
     ItemStack remove = new ItemStack(Material.RED_WOOL);
     ItemMeta removeMeta = remove.getItemMeta();
     removeMeta.displayName(Component.text("Remove 5 Minutes").color(NamedTextColor.RED));
     remove.setItemMeta(removeMeta);
     inv.setItem(10, remove);
 
-    // Give ticket
     ItemStack ticket = new ItemStack(Material.NAME_TAG);
     ItemMeta ticketMeta = ticket.getItemMeta();
     ticketMeta.displayName(Component.text("Give 5-Minute Ticket").color(NamedTextColor.GOLD));
     ticket.setItemMeta(ticketMeta);
     inv.setItem(14, ticket);
 
-    // Cash ticket
     ItemStack cash = new ItemStack(Material.PAPER);
     ItemMeta cashMeta = cash.getItemMeta();
     cashMeta.displayName(Component.text("Cash 5-Minute Ticket").color(NamedTextColor.YELLOW));
     cash.setItemMeta(cashMeta);
     inv.setItem(16, cash);
 
-    // Live time left display (slot 4)
+    inv.setItem(4, buildTimeItem(target));
+    admin.openInventory(inv);
+
+    Component title = Component.text("Manage: " + target.getName());
+    new BukkitRunnable() {
+      @Override
+      public void run() {
+        if (!title.equals(admin.getOpenInventory().title())) {
+          cancel();
+          return;
+        }
+        admin.getOpenInventory().setItem(4, buildTimeItem(target));
+      }
+    }.runTaskTimer(plugin, 20L, 20L);
+
+    admin.openInventory(inv);
+  }
+
+  private static ItemStack buildTimeItem(Player target) {
     PlaytimeData data = PlaytimeTracker.getData(target.getUniqueId());
     double secondsLeft = data != null ? data.getAvailableSeconds() : 0;
     int h = (int) (secondsLeft / 3600);
@@ -561,38 +527,7 @@ public class StStatusCommand implements CommandExecutor {
     timeMeta.displayName(Component.text("Time Left").color(NamedTextColor.WHITE));
     timeMeta.lore(List.of(Component.text("Time Left: " + timeString, NamedTextColor.GREEN)));
     timeLeft.setItemMeta(timeMeta);
-    inv.setItem(4, timeLeft);
-
-    admin.openInventory(inv);
-
-    // Live update the time left display
-    new BukkitRunnable() {
-      @Override
-      public void run() {
-        if (!(admin
-            .getOpenInventory()
-            .title()
-            .equals(Component.text("Manage: " + target.getName())))) {
-          cancel();
-          return;
-        }
-        PlaytimeData data = PlaytimeTracker.getData(target.getUniqueId());
-        double secondsLeft = data != null ? data.getAvailableSeconds() : 0;
-        int h = (int) (secondsLeft / 3600);
-        int m = (int) ((secondsLeft % 3600) / 60);
-        int s = (int) (secondsLeft % 60);
-        String timeString = String.format("%02d:%02d:%02d", h, m, s);
-
-        ItemStack timeLeft = new ItemStack(Material.CLOCK);
-        ItemMeta timeMeta = timeLeft.getItemMeta();
-        timeMeta.displayName(Component.text("Time Left").color(NamedTextColor.WHITE));
-        timeMeta.lore(List.of(Component.text("Time Left: " + timeString, NamedTextColor.GREEN)));
-        timeLeft.setItemMeta(timeMeta);
-        admin.getOpenInventory().setItem(4, timeLeft);
-      }
-    }.runTaskTimer(plugin, 20L, 20L);
-
-    admin.openInventory(inv);
+    return timeLeft;
   }
 
   /**
@@ -600,49 +535,38 @@ public class StStatusCommand implements CommandExecutor {
    * in the center.
    */
   private void openStatusInventory(Player player) {
-    Inventory inv =
-        Bukkit.createInventory(
-            null, 54, net.kyori.adventure.text.Component.text("Your Playtime Status"));
+    Component title = Component.text("Your Playtime Status");
+    Inventory inv = Bukkit.createInventory(null, 54, title);
 
-    // Fill edges with black stained glass panes
     ItemStack blackPane = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
     ItemMeta paneMeta = blackPane.getItemMeta();
-    paneMeta.displayName(net.kyori.adventure.text.Component.text(" "));
+    paneMeta.displayName(Component.text(" "));
     blackPane.setItemMeta(paneMeta);
-
-    // Top and bottom rows
     for (int i = 0; i < 9; i++) {
       inv.setItem(i, blackPane);
       inv.setItem(45 + i, blackPane);
     }
-    // Left and right columns
     for (int i = 1; i < 5; i++) {
       inv.setItem(i * 9, blackPane);
       inv.setItem(i * 9 + 8, blackPane);
     }
 
-    // Get playtime data
     PlaytimeData data = PlaytimeTracker.getData(player.getUniqueId());
     double secondsLeft = data != null ? data.getAvailableSeconds() : 0;
 
-    // Format as HH:MM:SS
     double hours = secondsLeft / 3600;
     double minutes = (secondsLeft % 3600) / 60;
     double seconds = secondsLeft % 60;
-
-    // Format as "You have X hour(s), Y minute(s) and Z second(s) left"
     String formatted = formatTimeLeft(hours, minutes, seconds);
 
-    // Info item: Time left, formatted and wrapped (slot 20)
     ItemStack timeLeft = new ItemStack(Material.CLOCK);
     ItemMeta timeMeta = timeLeft.getItemMeta();
     timeMeta.displayName(
         Component.text("Time Left")
             .decoration(TextDecoration.ITALIC, false)
             .color(NamedTextColor.WHITE));
-    String loreText = formatted;
     timeMeta.lore(
-        wrapLoreLine(loreText, 25).stream()
+        wrapLoreLine(formatted, 25).stream()
             .map(
                 line ->
                     Component.text(line, NamedTextColor.GREEN)
@@ -651,34 +575,25 @@ public class StStatusCommand implements CommandExecutor {
     timeLeft.setItemMeta(timeMeta);
     inv.setItem(20, timeLeft);
 
-    // Info item: Server multiplier (slot 22)
     double baseMultiplier = PlaytimeTracker.getBaseMultiplier();
-
     ItemStack multiplierItem = new ItemStack(Material.EXPERIENCE_BOTTLE);
     ItemMeta multiplierMeta = multiplierItem.getItemMeta();
     multiplierMeta.displayName(
         Component.text("Server Multiplier")
             .decoration(TextDecoration.ITALIC, false)
-            .color(NamedTextColor.WHITE)); // Title is white
+            .color(NamedTextColor.WHITE));
     List<String> multiplierLoreRaw = new ArrayList<>();
     multiplierLoreRaw.add("Base Multiplier: " + baseMultiplier + "x");
     multiplierLoreRaw.add(" ");
-
     double weekendMultiplier = PlaytimeTracker.getWeekendMultiplier();
     boolean isWeekend = PlaytimeTracker.isWeekend();
-    if (isWeekend) {
-      multiplierLoreRaw.add("Weekend Multiplier: " + weekendMultiplier + "x (active)");
-    } else {
-      multiplierLoreRaw.add("Weekend Multiplier: " + weekendMultiplier + "x (inactive)");
-    }
+    String weekendStatus = isWeekend ? "active" : "inactive";
+    multiplierLoreRaw.add("Weekend Multiplier: " + weekendMultiplier + "x (" + weekendStatus + ")");
     multiplierLoreRaw.add(" ");
-
     double socialMultiplier = PlaytimeTracker.computeGlobalSocialMultiplier();
     multiplierLoreRaw.add("Social Multiplier: " + socialMultiplier + "x");
     multiplierLoreRaw.add(" ");
-
-    double totalMultiplier = PlaytimeTracker.getTotalMultiplier();
-    multiplierLoreRaw.add("Total Multiplier: " + totalMultiplier + "x");
+    multiplierLoreRaw.add("Total Multiplier: " + PlaytimeTracker.getTotalMultiplier() + "x");
     List<Component> multiplierLore = new ArrayList<>();
     for (String line : multiplierLoreRaw) {
       wrapLoreLine(line, 25)
@@ -692,21 +607,20 @@ public class StStatusCommand implements CommandExecutor {
     multiplierItem.setItemMeta(multiplierMeta);
     inv.setItem(22, multiplierItem);
 
-    // Slot 30: Social Multiplier Info
     ItemStack socialInfo = new ItemStack(Material.PLAYER_HEAD);
     ItemMeta socialMetaInfo = socialInfo.getItemMeta();
     socialMetaInfo.displayName(
         Component.text("Social Multiplier Info")
             .decoration(TextDecoration.ITALIC, false)
             .color(NamedTextColor.WHITE));
-    List<String> socialLoreInfoRaw = new ArrayList<>();
-    socialLoreInfoRaw.add(
-        "If you remain in proximity to other players, the social multiplier may increase!");
-    socialLoreInfoRaw.add(" ");
-    socialLoreInfoRaw.add(
-        "The activation distance is " + ((int) PlaytimeTracker.getSocialDistance()) + " blocks.");
     List<Component> socialLoreInfo = new ArrayList<>();
-    for (String line : socialLoreInfoRaw) {
+    for (String line :
+        List.of(
+            "If you remain in proximity to other players, the social multiplier may increase!",
+            " ",
+            "The activation distance is "
+                + ((int) PlaytimeTracker.getSocialDistance())
+                + " blocks.")) {
       wrapLoreLine(line, 25)
           .forEach(
               l ->
@@ -718,19 +632,18 @@ public class StStatusCommand implements CommandExecutor {
     socialInfo.setItemMeta(socialMetaInfo);
     inv.setItem(30, socialInfo);
 
-    // Slot 32: Daily Hour Info
     ItemStack dailyHour = new ItemStack(Material.SLIME_BALL);
     ItemMeta dailyMeta = dailyHour.getItemMeta();
     dailyMeta.displayName(
         Component.text("Daily Hour Reset")
             .decoration(TextDecoration.ITALIC, false)
             .color(NamedTextColor.WHITE));
-    List<String> dailyLoreRaw = new ArrayList<>();
-    dailyLoreRaw.add("Every day at 4 AM, playtime is reset back to an hour.");
-    dailyLoreRaw.add(" ");
-    dailyLoreRaw.add("You can use tickets to fill your playtime bar back up!");
     List<Component> dailyLore = new ArrayList<>();
-    for (String line : dailyLoreRaw) {
+    for (String line :
+        List.of(
+            "Every day at 4 AM, playtime is reset back to an hour.",
+            " ",
+            "You can use tickets to fill your playtime bar back up!")) {
       wrapLoreLine(line, 25)
           .forEach(
               l ->
@@ -742,20 +655,16 @@ public class StStatusCommand implements CommandExecutor {
     dailyHour.setItemMeta(dailyMeta);
     inv.setItem(32, dailyHour);
 
-    // Info item: 5-minute tickets (minus 10 minutes)
-    int tickets = 0;
-    if (secondsLeft > 600) {
-      tickets = (int) ((secondsLeft - 900) / 300);
-    }
-
+    int tickets = secondsLeft > 600 ? (int) ((secondsLeft - 900) / 300) : 0;
     ItemStack ticketItem = new ItemStack(Material.PAPER);
     ItemMeta ticketMeta = ticketItem.getItemMeta();
     ticketMeta.displayName(
         Component.text("5-Minute Casino Tickets")
             .decoration(TextDecoration.ITALIC, false)
             .color(NamedTextColor.WHITE));
-    String ticketLore = "You can convert your remaining time into " + tickets + " tickets.";
-    List<String> ticketLoreRaw = new ArrayList<>(wrapLoreLine(ticketLore, 25));
+    List<String> ticketLoreRaw =
+        new ArrayList<>(
+            wrapLoreLine("You can convert your remaining time into " + tickets + " tickets.", 25));
     ticketLoreRaw.add(" ");
     ticketLoreRaw.add("Tickets can be used to gamble playtime at the casino! (/casino)");
     List<Component> ticketLoreLines = new ArrayList<>();
@@ -773,35 +682,29 @@ public class StStatusCommand implements CommandExecutor {
 
     int bankedTickets = data != null ? data.getBankedTickets() : 0;
 
-    int maxBankable = 0;
-    if (secondsLeft > 600) {
-      maxBankable = (int) ((secondsLeft - 900) / 300);
-    }
-
-    // Bottom row, middle slot (slot 49): Banked 5-Minute Chunks
     ItemStack bankedItem = new ItemStack(Material.ENDER_CHEST);
     ItemMeta bankedMeta = bankedItem.getItemMeta();
     bankedMeta.displayName(
         Component.text("Banked 5-Minute Chunks")
             .decoration(TextDecoration.ITALIC, false)
             .color(NamedTextColor.WHITE));
-    String bankedLoreText =
-        "You have "
-            + bankedTickets
-            + " banked 5-minute chunk"
-            + (bankedTickets == 1 ? "" : "s")
-            + ".";
-    String bankedLoreText2 =
-        "You can bank up to " + maxBankable + " more chunk" + (maxBankable == 1 ? "" : "s");
     List<Component> bankedLore = new ArrayList<>();
-    wrapLoreLine(bankedLoreText, 25)
+    wrapLoreLine(
+            "You have "
+                + bankedTickets
+                + " banked 5-minute chunk"
+                + (bankedTickets == 1 ? "" : "s")
+                + ".",
+            25)
         .forEach(
             l ->
                 bankedLore.add(
                     Component.text(l, NamedTextColor.GREEN)
                         .decoration(TextDecoration.ITALIC, true)));
     bankedLore.add(Component.text(" "));
-    wrapLoreLine(bankedLoreText2, 25)
+    int maxBankable = secondsLeft > 600 ? (int) ((secondsLeft - 900) / 300) : 0;
+    wrapLoreLine(
+            "You can bank up to " + maxBankable + " more chunk" + (maxBankable == 1 ? "" : "s"), 25)
         .forEach(
             l ->
                 bankedLore.add(
@@ -811,7 +714,6 @@ public class StStatusCommand implements CommandExecutor {
     bankedItem.setItemMeta(bankedMeta);
     inv.setItem(49, bankedItem);
 
-    // Slot 48: Red pane (remove banked)
     ItemStack removeBanked = new ItemStack(Material.RED_STAINED_GLASS_PANE);
     ItemMeta removeMeta = removeBanked.getItemMeta();
     removeMeta.displayName(
@@ -821,13 +723,12 @@ public class StStatusCommand implements CommandExecutor {
     removeMeta
         .getPersistentDataContainer()
         .set(
-            new org.bukkit.NamespacedKey(plugin, "remove_banked"),
+            new NamespacedKey(plugin, "remove_banked"),
             org.bukkit.persistence.PersistentDataType.STRING,
             "removeBanked");
     removeBanked.setItemMeta(removeMeta);
     inv.setItem(48, removeBanked);
 
-    // Slot 49: Green pane (add banked)
     ItemStack addBanked = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
     ItemMeta addMeta = addBanked.getItemMeta();
     addMeta.displayName(
@@ -837,7 +738,7 @@ public class StStatusCommand implements CommandExecutor {
     addMeta
         .getPersistentDataContainer()
         .set(
-            new org.bukkit.NamespacedKey(plugin, "add_banked"),
+            new NamespacedKey(plugin, "add_banked"),
             org.bukkit.persistence.PersistentDataType.STRING,
             "addBanked");
     addBanked.setItemMeta(addMeta);
@@ -845,39 +746,32 @@ public class StStatusCommand implements CommandExecutor {
 
     player.openInventory(inv);
 
-    // Update slot 20 every second with formatted time
-    new BukkitRunnable() {
-      @Override
-      public void run() {
-        Component inventoryTitle = player.getOpenInventory().title();
-        if (!Component.text("Your Playtime Status").equals(inventoryTitle)) {
-          cancel();
-          return;
-        }
-        PlaytimeData data = PlaytimeTracker.getData(player.getUniqueId());
-        double secondsLeft = data != null ? data.getAvailableSeconds() : 0;
-        double hours = secondsLeft / 3600;
-        double minutes = (secondsLeft % 3600) / 60;
-        double seconds = secondsLeft % 60;
-        String formatted = formatTimeLeft(hours, minutes, seconds);
-        String loreText = formatted;
-        ItemStack timeLeft = new ItemStack(Material.CLOCK);
-        ItemMeta timeMeta = timeLeft.getItemMeta();
-        timeMeta.displayName(
-            Component.text("Time Left")
-                .decoration(TextDecoration.ITALIC, false)
-                .color(NamedTextColor.WHITE));
-        timeMeta.lore(
-            wrapLoreLine(loreText, 25).stream()
-                .map(
-                    line ->
-                        Component.text(line, NamedTextColor.GREEN)
-                            .decoration(TextDecoration.ITALIC, true))
-                .toList());
-        timeLeft.setItemMeta(timeMeta);
-        player.getOpenInventory().setItem(20, timeLeft);
-      }
-    }.runTaskTimer(plugin, 20L, 20L);
+    runWhileOpen(
+        player,
+        title,
+        () -> {
+          PlaytimeData d = PlaytimeTracker.getData(player.getUniqueId());
+          double sl = d != null ? d.getAvailableSeconds() : 0;
+          double h = sl / 3600;
+          double m = (sl % 3600) / 60;
+          double s = sl % 60;
+          String f = formatTimeLeft(h, m, s);
+          ItemStack clock = new ItemStack(Material.CLOCK);
+          ItemMeta cm = clock.getItemMeta();
+          cm.displayName(
+              Component.text("Time Left")
+                  .decoration(TextDecoration.ITALIC, false)
+                  .color(NamedTextColor.WHITE));
+          cm.lore(
+              wrapLoreLine(f, 25).stream()
+                  .map(
+                      line ->
+                          Component.text(line, NamedTextColor.GREEN)
+                              .decoration(TextDecoration.ITALIC, true))
+                  .toList());
+          clock.setItemMeta(cm);
+          player.getOpenInventory().setItem(20, clock);
+        });
   }
 
   /** Wraps a string into lines of maxLineLength, not breaking words. */

@@ -342,7 +342,8 @@ public class BattleshipGame implements Minigame, Listener {
    *
    * @param event the PlayerInteractEvent triggered by the player
    */
-  public void onPlayerInteract(PlayerInteractEvent event) {
+  @Override
+  public void onInteract(PlayerInteractEvent event) {
     Player player = event.getPlayer();
     if (!players.contains(player)) {
       return;

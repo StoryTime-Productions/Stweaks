@@ -7,6 +7,7 @@ plugins {
     id 'com.gradleup.shadow' version '8.3.10'
     id 'java'
     id 'com.diffplug.spotless' version '8.5.1'
+    id 'io.papermc.paperweight.userdev' version '2.0.0-beta.21'
 }
 
 group = "com.storytimeproductions.stweaks"
@@ -69,16 +70,12 @@ repositories {
         url 'https://repo.codemc.io/repository/maven-releases/'
     }
 
-    maven {
-        name 'libsdisguises'
-        url 'https://mvn.lib.co.nz/public'
-    }
-
     mavenCentral()
 }
 
 dependencies {
-    compileOnly 'io.papermc.paper:paper-api:26.1.2.build.+'
+    // Provides full Paper API + NMS (Mojang-mapped) at compile time
+    paperweight.paperDevBundle('26.1.2.build.+')
     compileOnly 'com.github.spotbugs:spotbugs-annotations:4.9.8'
     implementation 'io.papermc:paperlib:1.0.8'
     spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.14.0'
@@ -91,6 +88,8 @@ dependencies {
     compileOnly 'net.dmulloy2:ProtocolLib:5.4.0'
     compileOnly 'me.libraryaddict.disguises:libsdisguises:11.0.16'
     compileOnly 'com.github.retrooper:packetevents-spigot:2.12.1'
+    compileOnly fileTree(dir: '../EDEN/build/libs', include: 'EDEN-*-SNAPSHOT.jar')
+    compileOnly fileTree(dir: '../test-server/plugins', include: 'Slimefun*.jar')
 }
 
 test {
@@ -170,6 +169,13 @@ tasks.register('printProjectName') {
         println rootProject.name
     }
 }
+
+tasks.register('deployDatapack', Copy) {
+    from 'resources/st-datapack'
+    into '../test-server/world/datapacks/st-datapack'
+}
+
+shadowJar.finalizedBy('deployDatapack')
 
 tasks.register('release') {
     dependsOn build

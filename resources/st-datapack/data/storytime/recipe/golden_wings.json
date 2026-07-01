@@ -1,0 +1,28 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "ABA",
+        "CDC",
+        "EFE"
+    ],
+    "key": {
+        "A": "minecraft:gold_block",
+        "B": "minecraft:sunflower",
+        "C": "minecraft:golden_carrot",
+        "D": "minecraft:elytra",
+        "E": "minecraft:gold_ingot",
+        "F": "minecraft:honeycomb"
+    },
+    "result": {
+        "id": "minecraft:elytra",
+        "components": {
+            "minecraft:item_name": {"text": "Golden Wings"},
+            "minecraft:item_model": "ax_wings_pack:golden_wings",
+            "minecraft:lore": [
+                "Gleam in sunlight's glory..."
+            ]
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

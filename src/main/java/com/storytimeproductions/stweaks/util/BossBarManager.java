@@ -51,37 +51,18 @@ public class BossBarManager {
   public static void updateBossBar(Player player) {
     UUID uuid = player.getUniqueId();
 
-    // If the player is in the lobby, show that their timer is paused
+    // In the lobby the timer is paused — hide the bar entirely so it doesn't distract
+    // during puzzle-solving. It reappears automatically once the player enters a game world.
     if (!player.getWorld().getName().startsWith("world")) {
-      double totalSecondsLeftRaw = PlaytimeTracker.getData(uuid).getAvailableSeconds();
-      final double totalSecondsLeft = Math.max(totalSecondsLeftRaw, 0);
-
-      int h = (int) (totalSecondsLeft / 3600);
-      int m = (int) ((totalSecondsLeft % 3600) / 60);
-      int s = (int) (totalSecondsLeft % 60);
-      String timeString = String.format("%02d:%02d:%02d", h, m, s);
-
-      String pausedStatus = "Your remaining time: " + timeString + " (PAUSED)";
-
-      BossBar bar =
-          playerBars.computeIfAbsent(
-              uuid,
-              id -> {
-                BossBar newBar =
-                    BossBar.bossBar(
-                        Component.text(pausedStatus), 0.0f, Color.WHITE, Overlay.PROGRESS);
-                player.showBossBar(newBar);
-                return newBar;
-              });
-
-      bar.name(Component.text(pausedStatus));
-      bar.progress(0.0f);
-      bar.color(Color.WHITE);
+      BossBar bar = playerBars.remove(uuid);
+      if (bar != null) {
+        player.hideBossBar(bar);
+      }
       return;
     }
 
-    // Always use 3600 as the baseline for the progress bar
-    final double baselineSeconds = 3600.0;
+    // Always use 10800 as the baseline for the progress bar
+    final double baselineSeconds = 10800.0;
 
     // Get total remaining seconds
     double totalSecondsLeftRaw = PlaytimeTracker.getData(uuid).getAvailableSeconds();
@@ -91,7 +72,7 @@ public class BossBarManager {
     if (totalSecondsLeft <= 0 && player.getWorld().getName().startsWith("world")) {
       Bukkit.dispatchCommand(player, "lobby");
       player.sendMessage(
-          Component.text("Your daily hour is up! Come back tomorrow.")
+          Component.text("Your daily playtime is up! Come back tomorrow.")
               .color(NamedTextColor.RED)
               .decorate(TextDecoration.BOLD));
       return;

@@ -1,5 +1,7 @@
 package com.storytimeproductions.stweaks.commands;
 
+import com.storytimeproductions.eden.Eden;
+import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -8,6 +10,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 /**
  * Command that teleports a player to a configured spawn location in the "world" world.
@@ -62,10 +65,25 @@ public class StSpawnCommand implements CommandExecutor {
     Player player = (Player) sender;
     String currentWorld = player.getWorld().getName();
     String spawnWorld = config.getString("spawn.world");
+    List<String> allowedWorlds = config.getStringList("spawn.allowed-worlds");
+    if (allowedWorlds.isEmpty()) {
+      allowedWorlds = List.of(spawnWorld);
+    }
 
-    if (!currentWorld.equalsIgnoreCase(spawnWorld)) {
+    boolean allowed = allowedWorlds.stream().anyMatch(w -> w.equalsIgnoreCase(currentWorld));
+    if (!allowed) {
       player.sendMessage("You cannot teleport to spawn from this world.");
       return true;
+    }
+
+    // Lobby players must complete the EDEN puzzle before they can use /spawn
+    String lobbyWorld = config.getString("lobby.world", "lobby");
+    if (currentWorld.equalsIgnoreCase(lobbyWorld)) {
+      Plugin edenPlugin = Bukkit.getPluginManager().getPlugin("EDEN");
+      if (edenPlugin instanceof Eden eden && !eden.getPuzzleManager().isPortalUnlocked(player)) {
+        player.sendMessage("You must complete the puzzle before you can leave the lobby.");
+        return true;
+      }
     }
 
     double x = config.getDouble("spawn.x");

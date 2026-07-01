@@ -102,9 +102,9 @@ public class StCasinoCommand implements CommandExecutor {
     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mv tp " + player.getName() + " casino");
 
     // Get location from config (example path: casino-spawn.x, y, z, yaw, pitch)
-    double x = config.getDouble("casino.x", -117);
-    double y = config.getDouble("casino.y", 223);
-    double z = config.getDouble("casino.z", 184);
+    double x = config.getDouble("casino.x", 0.5);
+    double y = config.getDouble("casino.y", 1.0);
+    double z = config.getDouble("casino.z", 53.5);
     float yaw = (float) config.getDouble("casino.yaw", 0.0);
     float pitch = (float) config.getDouble("casino.pitch", 0.0);
 

@@ -1,0 +1,26 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "AAA",
+        "ABA",
+        "AAA"
+    ],
+    "key": {
+        "A": "minecraft:blue_dye",
+        "B": "minecraft:netherite_boots"
+    },
+    "result": {
+        "id": "minecraft:netherite_boots",
+        "components": {
+            "minecraft:item_model": "storytime:blue_boots",
+            "minecraft:item_name": {
+                "text": "Azure Boots"
+            },
+            "minecraft:equippable": {
+                "slot": "feet",
+                "asset_id": "storytime:blue"
+            }
+        },
+        "count": 1
+    }
+}

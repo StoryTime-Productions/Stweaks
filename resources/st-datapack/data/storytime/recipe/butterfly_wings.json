@@ -1,0 +1,29 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "ABC",
+        "DED",
+        "FGF"
+    ],
+    "key": {
+        "A": "minecraft:pink_dye",
+        "B": "minecraft:yellow_dye",
+        "C": "minecraft:blue_dye",
+        "D": "minecraft:glass_pane",
+        "E": "minecraft:elytra",
+        "F": "minecraft:flower_pot",
+        "G": "minecraft:honey_block"
+    },
+    "result": {
+        "id": "minecraft:elytra",
+        "components": {
+            "minecraft:item_name": {"text": "Butterfly Wings"},
+            "minecraft:item_model": "ax_wings_pack:butterfly_wings",
+            "minecraft:lore": [
+                "Flutter in vibrant silence..."
+            ]
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

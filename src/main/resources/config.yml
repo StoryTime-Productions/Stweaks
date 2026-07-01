@@ -1,21 +1,32 @@
 # A journey of 1,000 lines starts with a single char
 spawn:
   world: world
-  x: -1938
-  y: 166
-  z: 864
+  x: 176.5
+  y: 63.0
+  z: -112.5
+  allowed-worlds:
+    - lobby
+    - casino
 lobby:
   world: lobby
-  x: -117
-  y: 223.0
-  z: 184.0
+  x: 0
+  y: 1
+  z: 0
   yaw: -135.7298
   pitch: -4.836296
-required_minutes: 60
+required_minutes: 180
 afk_threshold_seconds: 300
 weekend_multiplier: 2.0
 multipliers:
   base: 1.0
-  weekend: 1.0
+  weekend: 2.0
   social: 1.11
   social-distance: 40.0
+  social-cap: 2.0
+resource-pack:
+  enabled: true
+  required: true
+  prompt: "StoryTime SMP uses a resource pack. Please accept it."
+  packs:
+    - url: "https://download.mc-packs.net/pack/8a9f31a94ee9f2c18ac1b617503593147fa380fb.zip"
+      hash: "8a9f31a94ee9f2c18ac1b617503593147fa380fb"

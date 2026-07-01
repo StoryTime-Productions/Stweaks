@@ -121,8 +121,20 @@ public class BiomeNotifier implements Listener {
       return;
     }
 
+    // Skip if the player hasn't moved to a new block (e.g. just rotated)
+    Location from = event.getFrom();
+    Location to = event.getTo();
+    if (from.getBlockX() == to.getBlockX()
+        && from.getBlockY() == to.getBlockY()
+        && from.getBlockZ() == to.getBlockZ()) {
+      return;
+    }
+
     Location loc = player.getLocation();
     Biome currentBiome = loc.getBlock().getBiome();
+    if (!"minecraft".equals(currentBiome.getKey().getNamespace())) {
+      return;
+    }
     String biomeKey = currentBiome.getKey().toString();
 
     UUID uuid = player.getUniqueId();
@@ -135,10 +147,7 @@ public class BiomeNotifier implements Listener {
     // If biome is not in the set or expired, show action bar and add/update
     if (!playerRecent.containsKey(biomeKey)) {
       sendBiomeActionBar(player, currentBiome);
-      boolean isFirstDiscovery = biomeTrackerManager.markBiomeDiscovered(uuid, biomeKey);
-      if (isFirstDiscovery) {
-        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.7f, 1.0f);
-      }
+      biomeTrackerManager.markBiomeDiscovered(uuid, biomeKey);
     }
     // Update or add the biome with new expiration
     playerRecent.put(biomeKey, now);
@@ -191,7 +200,7 @@ public class BiomeNotifier implements Listener {
   }
 
   private String formatBiomeName(Biome biome) {
-    String rawName = biome.toString().toLowerCase();
+    String rawName = biome.getKey().toString().toLowerCase();
 
     // Use the part after '/' if present, otherwise after ':'
     if (rawName.contains("/")) {

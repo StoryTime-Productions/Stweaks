@@ -1,0 +1,26 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "equipment",
+    "key": {
+        "X": "minecraft:yellow_dye",
+        "Y": "minecraft:purple_dye"
+    },
+    "pattern": [
+        "X X",
+        "YXY",
+        "XYX"
+    ],
+    "result": {
+        "components": {
+            "minecraft:dyed_color": 16776960,
+            "minecraft:item_model": "storytime:lebron_chestplate",
+            "minecraft:item_name": "Lebron's Jersey",
+            "minecraft:lore": [
+                "Are..."
+            ]
+        },
+        "count": 1,
+        "id": "minecraft:leather_chestplate"
+    },
+    "show_notification": false
+}

@@ -1,0 +1,14 @@
+{
+    "layers": {
+        "humanoid": [
+            {
+                "texture": "storytime:green_armor_layer_1"
+            }
+        ],
+        "humanoid_leggings": [
+            {
+                "texture": "storytime:green_armor_layer_2"
+            }
+        ]
+    }
+}

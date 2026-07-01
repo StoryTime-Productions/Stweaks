@@ -1,0 +1,28 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "ABA",
+        "CDC",
+        "EFE"
+    ],
+    "key": {
+        "A": "minecraft:coarse_dirt",
+        "B": "minecraft:oak_leaves",
+        "C": "minecraft:leather",
+        "D": "minecraft:elytra",
+        "E": "minecraft:brown_dye",
+        "F": "minecraft:mud"
+    },
+    "result": {
+        "id": "minecraft:elytra",
+        "components": {
+            "minecraft:item_name": {"text": "Brown Wings"},
+            "minecraft:item_model": "ax_wings_pack:brown_wings",
+            "minecraft:lore": [
+                "Earthy feathers from deep roots..."
+            ]
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

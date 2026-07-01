@@ -9,8 +9,8 @@ import com.storytimeproductions.stweaks.commands.StLobbyCommand;
 import com.storytimeproductions.stweaks.commands.StSpawnCommand;
 import com.storytimeproductions.stweaks.commands.StStatusCommand;
 import com.storytimeproductions.stweaks.config.SettingsManager;
-import com.storytimeproductions.stweaks.events.EventManager;
 import com.storytimeproductions.stweaks.listeners.BiomeNotifier;
+import com.storytimeproductions.stweaks.listeners.ColoredArmorCraftListener;
 import com.storytimeproductions.stweaks.listeners.CosmeticsListener;
 import com.storytimeproductions.stweaks.listeners.CowSkinnerListener;
 import com.storytimeproductions.stweaks.listeners.FbiDiscListener;
@@ -22,6 +22,7 @@ import com.storytimeproductions.stweaks.listeners.PetsListener;
 import com.storytimeproductions.stweaks.listeners.PetsMenuListener;
 import com.storytimeproductions.stweaks.listeners.PlayerActivityListener;
 import com.storytimeproductions.stweaks.listeners.QuestMenuListener;
+import com.storytimeproductions.stweaks.managers.SurvivalRewardManager;
 import com.storytimeproductions.stweaks.playtime.PlaytimeTracker;
 import com.storytimeproductions.stweaks.util.BiomeTrackerManager;
 import com.storytimeproductions.stweaks.util.BossBarManager;
@@ -63,35 +64,38 @@ public class Stweaks extends JavaPlugin {
     // Initialize playtime tracker and event manager
     PlaytimeTracker.loadFromDatabase(dbManager.getConnection());
     PlaytimeTracker.init(this);
-    EventManager.init(this);
     BossBarManager.init(this);
-
-    BiomeTrackerManager trackerManager = new BiomeTrackerManager(dbManager, this);
-    QuestsManager questsManager = new QuestsManager(dbManager, this);
-    PetsManager petsManager = new PetsManager(this);
-    CosmeticsManager cosmeticsManager = new CosmeticsManager(this);
-
-    QuestMenuCommand questMenuCommand = new QuestMenuCommand(questsManager);
-    PetsMenuCommand petsMenuCommand = new PetsMenuCommand(this, petsManager);
-    CosmeticsMenuCommand cosmeticsMenuCommand = new CosmeticsMenuCommand(cosmeticsManager);
 
     // Register event listeners
     getServer().getPluginManager().registerEvents(new PlayerActivityListener(this), this);
     getServer().getPluginManager().registerEvents(new CowSkinnerListener(), this);
     getServer().getPluginManager().registerEvents(new FbiDiscListener(), this);
     getServer().getPluginManager().registerEvents(new IllegalWaterListener(this), this);
-    getServer().getPluginManager().registerEvents(new LebronArmorListener(this), this);
+    if (Bukkit.getPluginManager().getPlugin("SkinsRestorer") != null
+        && Bukkit.getPluginManager().getPlugin("ProtocolLib") != null) {
+      getServer().getPluginManager().registerEvents(new LebronArmorListener(this), this);
+    }
+
+    BiomeTrackerManager trackerManager = new BiomeTrackerManager(dbManager, this);
     getServer().getPluginManager().registerEvents(new BiomeNotifier(this, trackerManager), this);
+
+    QuestsManager questsManager = new QuestsManager(dbManager, this);
+    QuestMenuCommand questMenuCommand = new QuestMenuCommand(questsManager);
     getServer()
         .getPluginManager()
         .registerEvents(new QuestMenuListener(this, questsManager, questMenuCommand), this);
+
+    PetsManager petsManager = new PetsManager(this);
+    PetsMenuCommand petsMenuCommand = new PetsMenuCommand(this, petsManager);
     getServer()
         .getPluginManager()
         .registerEvents(new PetsMenuListener(this, petsManager, petsMenuCommand), this);
     getServer().getPluginManager().registerEvents(new PetsListener(this, petsManager), this);
     getServer().getPluginManager().registerEvents(new CosmeticsListener(), this);
+    getServer().getPluginManager().registerEvents(new ColoredArmorCraftListener(), this);
     getServer().getPluginManager().registerEvents(new GameManagerListener(this), this);
     getServer().getPluginManager().registerEvents(new ItemConsumableListener(), this);
+    getServer().getPluginManager().registerEvents(new SurvivalRewardManager(this), this);
 
     // Register commands
     getCommand("ststatus").setExecutor(new StStatusCommand(this));
@@ -101,6 +105,9 @@ public class Stweaks extends JavaPlugin {
     getCommand("biometracker").setExecutor(new BiomeTrackerCommand(trackerManager, this));
     getCommand("stquests").setExecutor(questMenuCommand);
     getCommand("stpets").setExecutor(petsMenuCommand);
+
+    CosmeticsManager cosmeticsManager = new CosmeticsManager(this);
+    CosmeticsMenuCommand cosmeticsMenuCommand = new CosmeticsMenuCommand(cosmeticsManager);
     getCommand("stcosmetics").setExecutor(cosmeticsMenuCommand);
 
     getLogger().info("");

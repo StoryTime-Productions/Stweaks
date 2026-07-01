@@ -1,0 +1,26 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "AAA",
+        "ABA",
+        "AAA"
+    ],
+    "key": {
+        "A": "minecraft:green_dye",
+        "B": "minecraft:netherite_leggings"
+    },
+    "result": {
+        "id": "minecraft:netherite_leggings",
+        "components": {
+            "minecraft:item_model": "storytime:green_leggings",
+            "minecraft:item_name": {
+                "text": "Jade Leggings"
+            },
+            "minecraft:equippable": {
+                "slot": "legs",
+                "asset_id": "storytime:green"
+            }
+        },
+        "count": 1
+    }
+}

@@ -1,0 +1,28 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "ABA",
+        "CDC",
+        "EFE"
+    ],
+    "key": {
+        "A": "minecraft:soul_torch",
+        "B": "minecraft:blue_ice",
+        "C": "minecraft:soul_campfire",
+        "D": "minecraft:elytra",
+        "E": "minecraft:blaze_powder",
+        "F": "minecraft:soul_sand"
+    },
+    "result": {
+        "id": "minecraft:elytra",
+        "components": {
+            "minecraft:item_name": {"text": "Bluefire Wings"},
+            "minecraft:item_model": "ax_wings_pack:bluefire_wings",
+            "minecraft:lore": [
+                "Burn colder than ice..."
+            ]
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

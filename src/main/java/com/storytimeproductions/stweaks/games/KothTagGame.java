@@ -17,6 +17,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -329,6 +330,19 @@ public class KothTagGame implements Minigame {
     player.sendMessage(
         Component.text("You win! +" + amount + " Time Tickets!", NamedTextColor.GOLD));
     player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.2f);
+  }
+
+  @Override
+  public void onDamage(EntityDamageByEntityEvent event) {
+    if (!(event.getDamager() instanceof Player tagger)
+        || !(event.getEntity() instanceof Player target)) {
+      return;
+    }
+    if (target.equals(currentIt) && isItInvulnerable(target)) {
+      event.setCancelled(true);
+      return;
+    }
+    tag(tagger, target);
   }
 
   /**

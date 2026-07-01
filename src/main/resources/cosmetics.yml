@@ -420,7 +420,7 @@ cosmetics:
     - Burn colder than ice...
     recipe:
     - "SOUL_TORCH BLUE_ICE SOUL_TORCH"
-    - "SOUL_FIRE_CHARGE ELYTRA SOUL_FIRE_CHARGE"
+    - "SOUL_CAMPFIRE ELYTRA SOUL_CAMPFIRE"
     - "BLAZE_POWDER SOUL_SAND BLAZE_POWDER"
   brown_wings:
     item_model: ax_wings_pack:brown_wings
@@ -482,7 +482,7 @@ cosmetics:
     lore:
     - Carried by the tide...
     recipe:
-    - "PRISMARINE CRYSTALS PRISMARINE"
+    - "PRISMARINE PRISMARINE_CRYSTALS PRISMARINE"
     - "HEART_OF_THE_SEA ELYTRA HEART_OF_THE_SEA"
     - "SEA_LANTERN KELP SEA_LANTERN"
   phoenix_wings:
@@ -503,3 +503,148 @@ cosmetics:
     - "PURPLE_DYE AMETHYST_SHARD PURPLE_DYE"
     - "SHULKER_SHELL ELYTRA SHULKER_SHELL"
     - "CHORUS_FRUIT ENDER_PEARL CHORUS_FRUIT"
+
+  blue_helmet:
+    item_model: storytime:blue_helmet
+    name: Azure Helmet
+    lore:
+    - Forged in nether flame...
+    recipe:
+    - "BLUE_DYE NETHERITE_HELMET BLUE_DYE"
+    - "NETHERITE_HELMET AIR NETHERITE_HELMET"
+    - "BLUE_DYE AIR BLUE_DYE"
+  blue_chestplate:
+    item_model: storytime:blue_chestplate
+    name: Azure Chestplate
+    lore:
+    - Harder than the void...
+    recipe:
+    - "BLUE_DYE NETHERITE_CHESTPLATE BLUE_DYE"
+    - "NETHERITE_CHESTPLATE AIR NETHERITE_CHESTPLATE"
+    - "BLUE_DYE AIR BLUE_DYE"
+  blue_leggings:
+    item_model: storytime:blue_leggings
+    name: Azure Leggings
+    lore:
+    - Swift through the nether...
+    recipe:
+    - "BLUE_DYE NETHERITE_LEGGINGS BLUE_DYE"
+    - "NETHERITE_LEGGINGS AIR NETHERITE_LEGGINGS"
+    - "BLUE_DYE AIR BLUE_DYE"
+  blue_boots:
+    item_model: storytime:blue_boots
+    name: Azure Boots
+    lore:
+    - Walk where others cannot...
+    recipe:
+    - "BLUE_DYE NETHERITE_BOOTS BLUE_DYE"
+    - "NETHERITE_BOOTS AIR NETHERITE_BOOTS"
+    - "BLUE_DYE AIR BLUE_DYE"
+  red_helmet:
+    item_model: storytime:red_helmet
+    name: Scarlet Helmet
+    lore:
+    - Forged in nether flame...
+    recipe:
+    - "RED_DYE NETHERITE_HELMET RED_DYE"
+    - "NETHERITE_HELMET AIR NETHERITE_HELMET"
+    - "RED_DYE AIR RED_DYE"
+  red_chestplate:
+    item_model: storytime:red_chestplate
+    name: Scarlet Chestplate
+    lore:
+    - Harder than the void...
+    recipe:
+    - "RED_DYE NETHERITE_CHESTPLATE RED_DYE"
+    - "NETHERITE_CHESTPLATE AIR NETHERITE_CHESTPLATE"
+    - "RED_DYE AIR RED_DYE"
+  red_leggings:
+    item_model: storytime:red_leggings
+    name: Scarlet Leggings
+    lore:
+    - Swift through the nether...
+    recipe:
+    - "RED_DYE NETHERITE_LEGGINGS RED_DYE"
+    - "NETHERITE_LEGGINGS AIR NETHERITE_LEGGINGS"
+    - "RED_DYE AIR RED_DYE"
+  red_boots:
+    item_model: storytime:red_boots
+    name: Scarlet Boots
+    lore:
+    - Walk where others cannot...
+    recipe:
+    - "RED_DYE NETHERITE_BOOTS RED_DYE"
+    - "NETHERITE_BOOTS AIR NETHERITE_BOOTS"
+    - "RED_DYE AIR RED_DYE"
+  yellow_helmet:
+    item_model: storytime:yellow_helmet
+    name: Amber Helmet
+    lore:
+    - Forged in nether flame...
+    recipe:
+    - "YELLOW_DYE NETHERITE_HELMET YELLOW_DYE"
+    - "NETHERITE_HELMET AIR NETHERITE_HELMET"
+    - "YELLOW_DYE AIR YELLOW_DYE"
+  yellow_chestplate:
+    item_model: storytime:yellow_chestplate
+    name: Amber Chestplate
+    lore:
+    - Harder than the void...
+    recipe:
+    - "YELLOW_DYE NETHERITE_CHESTPLATE YELLOW_DYE"
+    - "NETHERITE_CHESTPLATE AIR NETHERITE_CHESTPLATE"
+    - "YELLOW_DYE AIR YELLOW_DYE"
+  yellow_leggings:
+    item_model: storytime:yellow_leggings
+    name: Amber Leggings
+    lore:
+    - Swift through the nether...
+    recipe:
+    - "YELLOW_DYE NETHERITE_LEGGINGS YELLOW_DYE"
+    - "NETHERITE_LEGGINGS AIR NETHERITE_LEGGINGS"
+    - "YELLOW_DYE AIR YELLOW_DYE"
+  yellow_boots:
+    item_model: storytime:yellow_boots
+    name: Amber Boots
+    lore:
+    - Walk where others cannot...
+    recipe:
+    - "YELLOW_DYE NETHERITE_BOOTS YELLOW_DYE"
+    - "NETHERITE_BOOTS AIR NETHERITE_BOOTS"
+    - "YELLOW_DYE AIR YELLOW_DYE"
+  green_helmet:
+    item_model: storytime:green_helmet
+    name: Jade Helmet
+    lore:
+    - Forged in nether flame...
+    recipe:
+    - "GREEN_DYE NETHERITE_HELMET GREEN_DYE"
+    - "NETHERITE_HELMET AIR NETHERITE_HELMET"
+    - "GREEN_DYE AIR GREEN_DYE"
+  green_chestplate:
+    item_model: storytime:green_chestplate
+    name: Jade Chestplate
+    lore:
+    - Harder than the void...
+    recipe:
+    - "GREEN_DYE NETHERITE_CHESTPLATE GREEN_DYE"
+    - "NETHERITE_CHESTPLATE AIR NETHERITE_CHESTPLATE"
+    - "GREEN_DYE AIR GREEN_DYE"
+  green_leggings:
+    item_model: storytime:green_leggings
+    name: Jade Leggings
+    lore:
+    - Swift through the nether...
+    recipe:
+    - "GREEN_DYE NETHERITE_LEGGINGS GREEN_DYE"
+    - "NETHERITE_LEGGINGS AIR NETHERITE_LEGGINGS"
+    - "GREEN_DYE AIR GREEN_DYE"
+  green_boots:
+    item_model: storytime:green_boots
+    name: Jade Boots
+    lore:
+    - Walk where others cannot...
+    recipe:
+    - "GREEN_DYE NETHERITE_BOOTS GREEN_DYE"
+    - "NETHERITE_BOOTS AIR NETHERITE_BOOTS"
+    - "GREEN_DYE AIR GREEN_DYE"

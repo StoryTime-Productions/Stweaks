@@ -1,0 +1,22 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "AAA",
+        "ABA",
+        "AAA"
+    ],
+    "key": {
+        "A": "minecraft:pink_dye",
+        "B": "minecraft:fishing_rod"
+    },
+    "result": {
+        "id": "minecraft:fishing_rod",
+        "components": {
+            "minecraft:item_model": "storytime:pink_fishing_rod",
+            "minecraft:item_name": {
+                "text": "Rose Quartz Fishing Rod"
+            }
+        },
+        "count": 1
+    }
+}
