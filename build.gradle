@@ -70,11 +70,6 @@ repositories {
         url 'https://repo.codemc.io/repository/maven-releases/'
     }
 
-    maven {
-        name 'libsdisguises'
-        url 'https://mvn.lib.co.nz/public'
-    }
-
     mavenCentral()
 }
 
