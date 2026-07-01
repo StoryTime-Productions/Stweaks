@@ -30,6 +30,19 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
 
+      - name: Checkout EDEN
+        uses: actions/checkout@v4
+        with:
+          repository: StoryTime-Productions/EDEN
+          path: ../EDEN
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build EDEN
+        working-directory: ../EDEN
+        run: ./gradlew build --no-daemon
+        env:
+          JAVA_HOME: ${{ env.JAVA_HOME }}
+
       - name: Build with Gradle
         run: ./gradlew build --info
 

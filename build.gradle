@@ -70,6 +70,11 @@ repositories {
         url 'https://repo.codemc.io/repository/maven-releases/'
     }
 
+    maven {
+        name = 'jitpack'
+        url = 'https://jitpack.io'
+    }
+
     mavenCentral()
 }
 
@@ -89,7 +94,7 @@ dependencies {
     compileOnly 'me.libraryaddict.disguises:libsdisguises:11.0.16'
     compileOnly 'com.github.retrooper:packetevents-spigot:2.12.1'
     compileOnly fileTree(dir: '../EDEN/build/libs', include: 'EDEN-*-SNAPSHOT.jar')
-    compileOnly fileTree(dir: '../test-server/plugins', include: 'Slimefun*.jar')
+    compileOnly 'com.github.Slimefun:Slimefun4:RC-37'
 }
 
 test {
