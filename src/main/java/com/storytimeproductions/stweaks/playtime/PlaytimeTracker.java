@@ -56,10 +56,9 @@ public class PlaytimeTracker {
             continue;
           }
 
-          // If we have crossed from before 3 AM to 4 AM or later
-          if (lastHourChecked < 3 && currentHour >= 3) {
-            if (data.getAvailableSeconds() <= 3600) {
-              data.setAvailableSeconds(3600);
+          if (lastHourChecked < 6 && currentHour >= 6) {
+            if (data.getAvailableSeconds() <= 10800) {
+              data.setAvailableSeconds(10800);
             }
           }
 
@@ -179,6 +178,9 @@ public class PlaytimeTracker {
     double weightedAverage = totalWeight > 0 ? (weightedSum / totalWeight) : 0.0;
     double socialMultiplier = getSocialMultiplier();
     double result = socialMultiplier * weightedAverage;
+    if (n >= 5) {
+      result = Math.min(result, SettingsManager.getSocialMultiplierCap());
+    }
     result = Math.floor(result * 100) / 100.0;
 
     return result;
@@ -207,7 +209,7 @@ public class PlaytimeTracker {
     ZoneId easternZone = ZoneId.of("America/New_York");
     ZonedDateTime nowEastern = ZonedDateTime.now(easternZone);
     int day = nowEastern.getDayOfWeek().getValue();
-    return day == 5 || day == 6 || day == 7; // Friday or Saturday or Sunday
+    return day == 2 || day == 5 || day == 6 || day == 7; // Tuesday, Friday, Saturday, Sunday
   }
 
   /**
@@ -258,7 +260,7 @@ public class PlaytimeTracker {
   public static double getMinutes(UUID uuid) {
     PlaytimeData data = playtimeMap.get(uuid);
     if (data == null) {
-      return 60;
+      return 180;
     }
     double totalMinutes = data.getAvailableSeconds() / 60;
     return Math.max(totalMinutes, 0);
@@ -273,7 +275,7 @@ public class PlaytimeTracker {
   public static double getSeconds(UUID uuid) {
     PlaytimeData data = playtimeMap.get(uuid);
     if (data == null) {
-      return 3600;
+      return 10800;
     }
     double totalSeconds = data.getAvailableSeconds();
     return Math.max(totalSeconds, 0);

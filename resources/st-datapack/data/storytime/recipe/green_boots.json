@@ -1,0 +1,26 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "AAA",
+        "ABA",
+        "AAA"
+    ],
+    "key": {
+        "A": "minecraft:green_dye",
+        "B": "minecraft:netherite_boots"
+    },
+    "result": {
+        "id": "minecraft:netherite_boots",
+        "components": {
+            "minecraft:item_model": "storytime:green_boots",
+            "minecraft:item_name": {
+                "text": "Jade Boots"
+            },
+            "minecraft:equippable": {
+                "slot": "feet",
+                "asset_id": "storytime:green"
+            }
+        },
+        "count": 1
+    }
+}

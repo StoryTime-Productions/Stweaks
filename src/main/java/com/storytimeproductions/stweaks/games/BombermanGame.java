@@ -19,7 +19,6 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemFlag;
@@ -239,6 +238,7 @@ public class BombermanGame implements Minigame {
   @Override
   public void onDestroy() {
     for (Player player : players) {
+      player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
       player.getInventory().remove(Material.TNT);
       // Remove player from the "bomber" region in world "casino"
       Bukkit.dispatchCommand(
@@ -349,8 +349,8 @@ public class BombermanGame implements Minigame {
    *
    * @param event the PlayerInteractEvent
    */
-  @EventHandler
-  public void onPlayerInteract(PlayerInteractEvent event) {
+  @Override
+  public void onInteract(PlayerInteractEvent event) {
     Player player = event.getPlayer();
     if (!players.contains(player)) {
       return;
@@ -375,8 +375,8 @@ public class BombermanGame implements Minigame {
    *
    * @param event the PlayerDeathEvent
    */
-  @EventHandler
-  public void onPlayerDeath(PlayerDeathEvent event) {
+  @Override
+  public void onDeath(PlayerDeathEvent event) {
     Player player = event.getEntity();
     if (!players.contains(player)) {
       return;

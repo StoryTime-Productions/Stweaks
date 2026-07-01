@@ -1,0 +1,34 @@
+{
+    "disco.jackpot": {
+        "sounds": [
+            {
+                "name": "storytime:disco/jackpot",
+                "stream": true
+            }
+        ]
+    },
+    "interaction.dig": {
+        "sounds": [
+            {
+                "name": "storytime:interaction/dig",
+                "volume": 1.0
+            }
+        ]
+    },
+    "interaction.dogtag": {
+        "sounds": [
+            {
+                "name": "storytime:interaction/dogtag",
+                "volume": 1.0
+            }
+        ]
+    },
+    "interaction.pickup": {
+        "sounds": [
+            {
+                "name": "storytime:interaction/pickup",
+                "volume": 1.0
+            }
+        ]
+    }
+}

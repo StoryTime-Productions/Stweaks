@@ -1,0 +1,26 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "AAA",
+        "ABA",
+        "AAA"
+    ],
+    "key": {
+        "A": "minecraft:red_dye",
+        "B": "minecraft:netherite_chestplate"
+    },
+    "result": {
+        "id": "minecraft:netherite_chestplate",
+        "components": {
+            "minecraft:item_model": "storytime:red_chestplate",
+            "minecraft:item_name": {
+                "text": "Scarlet Chestplate"
+            },
+            "minecraft:equippable": {
+                "slot": "chest",
+                "asset_id": "storytime:red"
+            }
+        },
+        "count": 1
+    }
+}

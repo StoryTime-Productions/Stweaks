@@ -1,0 +1,28 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "ABA",
+        "CDC",
+        "EFE"
+    ],
+    "key": {
+        "A": "minecraft:purple_dye",
+        "B": "minecraft:amethyst_shard",
+        "C": "minecraft:shulker_shell",
+        "D": "minecraft:elytra",
+        "E": "minecraft:chorus_fruit",
+        "F": "minecraft:ender_pearl"
+    },
+    "result": {
+        "id": "minecraft:elytra",
+        "components": {
+            "minecraft:item_name": {"text": "Purple Wings"},
+            "minecraft:item_model": "ax_wings_pack:purple_wings",
+            "minecraft:lore": [
+                "Twilight dreams awaken..."
+            ]
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

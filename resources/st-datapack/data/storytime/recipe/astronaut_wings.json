@@ -1,0 +1,28 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "ABA",
+        "CDC",
+        "EFE"
+    ],
+    "key": {
+        "A": "minecraft:iron_block",
+        "B": "minecraft:glass",
+        "C": "minecraft:nether_star",
+        "D": "minecraft:elytra",
+        "E": "minecraft:redstone_block",
+        "F": "minecraft:quartz_block"
+    },
+    "result": {
+        "id": "minecraft:elytra",
+        "components": {
+            "minecraft:item_name": {"text": "Astronaut Wings"},
+            "minecraft:item_model": "ax_wings_pack:astronaut_wings",
+            "minecraft:lore": [
+                "Engineered for zero gravity..."
+            ]
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

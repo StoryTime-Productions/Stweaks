@@ -19,7 +19,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemFlag;
@@ -208,8 +207,8 @@ public class ColorSplatGame implements Minigame, Listener {
    *
    * @param event the PlayerMoveEvent
    */
-  @EventHandler
-  public void onPlayerMove(PlayerMoveEvent event) {
+  @Override
+  public void onMove(PlayerMoveEvent event) {
     if (!gameInProgress) {
       return;
     }

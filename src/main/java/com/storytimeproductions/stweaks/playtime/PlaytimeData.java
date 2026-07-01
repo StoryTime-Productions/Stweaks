@@ -24,7 +24,7 @@ public class PlaytimeData {
 
   /** Constructs a PlaytimeData object with zero available seconds and not AFK. */
   public PlaytimeData() {
-    availableSeconds = 3600;
+    availableSeconds = 10800;
     isAfk = false;
   }
 

@@ -16,11 +16,9 @@ concurrency:
 jobs:
   test:
     name: Run unit tests
-    strategy:
-      matrix:
-        os: [ ubuntu-latest, windows-latest ]
-        java: [ 26 ]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
+    env:
+      EDEN_PATH: _eden
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -28,7 +26,20 @@ jobs:
       - name: Common Setup
         uses: ./.github/actions/common-setup
         with:
-          java-version: ${{ matrix.java }}
+          java-version: 26
+
+      - name: Checkout EDEN
+        uses: actions/checkout@v4
+        with:
+          repository: StoryTime-Productions/EDEN
+          path: _eden
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build EDEN
+        working-directory: _eden
+        run: |
+          chmod +x gradlew
+          ./gradlew build --no-daemon
 
       - name: Build with Gradle
         run: ./gradlew build --info
@@ -36,14 +47,14 @@ jobs:
       - name: Upload build results
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ matrix.os }} Java ${{ matrix.java }} build results
+          name: build-results
           path: ${{ github.workspace }}/build/libs/
 
       - name: Upload test results
         if: ${{ always() }}
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ matrix.os }} Java ${{ matrix.java }} test results
+          name: test-results
           path: ${{ github.workspace }}/build/reports/
 
   release:

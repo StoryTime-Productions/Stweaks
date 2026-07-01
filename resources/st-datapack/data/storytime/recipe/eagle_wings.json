@@ -1,0 +1,28 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "ABA",
+        "CDC",
+        "EFE"
+    ],
+    "key": {
+        "A": "minecraft:feather",
+        "B": "minecraft:hay_block",
+        "C": "minecraft:gold_block",
+        "D": "minecraft:elytra",
+        "E": "minecraft:leather",
+        "F": "minecraft:chicken"
+    },
+    "result": {
+        "id": "minecraft:elytra",
+        "components": {
+            "minecraft:item_name": {"text": "Eagle Wings"},
+            "minecraft:item_model": "ax_wings_pack:eagle_wings",
+            "minecraft:lore": [
+                "Swoop from towering cliffs..."
+            ]
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

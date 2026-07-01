@@ -122,6 +122,15 @@ public class SettingsManager {
   }
 
   /**
+   * Retrieves the social multiplier cap applied when 5 or more players are online.
+   *
+   * @return The maximum social multiplier bonus allowed with 5+ players.
+   */
+  public static double getSocialMultiplierCap() {
+    return config.getDouble("multipliers.social-cap", 2.0);
+  }
+
+  /**
    * Retrieves the player settings for a specific player. If the player settings don't exist yet,
    * create a new `PlayerSettings` object and store it.
    *

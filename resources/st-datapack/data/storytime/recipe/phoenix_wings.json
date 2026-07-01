@@ -1,0 +1,28 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "ABA",
+        "CDC",
+        "EFE"
+    ],
+    "key": {
+        "A": "minecraft:magma_block",
+        "B": "minecraft:fire_charge",
+        "C": "minecraft:blaze_rod",
+        "D": "minecraft:elytra",
+        "E": "minecraft:ghast_tear",
+        "F": "minecraft:redstone_block"
+    },
+    "result": {
+        "id": "minecraft:elytra",
+        "components": {
+            "minecraft:item_name": {"text": "Phoenix Wings"},
+            "minecraft:item_model": "ax_wings_pack:phoenix_wings",
+            "minecraft:lore": [
+                "Ashes mark rebirth..."
+            ]
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

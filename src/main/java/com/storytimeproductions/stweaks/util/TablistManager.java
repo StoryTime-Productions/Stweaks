@@ -47,7 +47,7 @@ public class TablistManager {
         player.getWorld().getName().equalsIgnoreCase("lobby")
             ? "Bababooey"
             : BiomeTrackerManager.formatBiomeName(
-                player.getLocation().getBlock().getBiome().toString());
+                player.getLocation().getBlock().getBiome().getKey().toString());
 
     // TPS (retrieved via Bukkit server performance metrics)
     double[] recentTps = org.bukkit.Bukkit.getServer().getTPS();

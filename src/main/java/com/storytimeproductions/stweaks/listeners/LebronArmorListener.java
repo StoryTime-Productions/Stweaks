@@ -36,7 +36,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class LebronArmorListener implements Listener {
 
   private final Stweaks plugin;
-  private final SkinsRestorer skinsRestorer = SkinsRestorerProvider.get();
+  private SkinsRestorer skinsRestorer;
+
+  private SkinsRestorer skins() {
+    if (skinsRestorer == null) {
+      skinsRestorer = SkinsRestorerProvider.get();
+    }
+    return skinsRestorer;
+  }
 
   /** The custom skin property representing the Lebron skin. */
   private final SkinProperty lebronSkin =
@@ -86,7 +93,7 @@ public class LebronArmorListener implements Listener {
   @EventHandler
   public void onArmorChange(PlayerArmorChangeEvent event) throws DataRequestException {
     Player player = event.getPlayer();
-    skinsRestorer.getPlayerStorage().removeSkinIdOfPlayer(player.getUniqueId());
+    skins().getPlayerStorage().removeSkinIdOfPlayer(player.getUniqueId());
     boolean hasFullSet = isWearingFullLebronSet(player);
 
     if (hasFullSet) {
@@ -218,13 +225,13 @@ public class LebronArmorListener implements Listener {
         .runTaskLater(
             plugin,
             () -> {
-              skinsRestorer.getSkinStorage().setCustomSkinData("lebron_custom", lebronSkin);
+              skins().getSkinStorage().setCustomSkinData("lebron_custom", lebronSkin);
               skinsRestorer
                   .getPlayerStorage()
                   .setSkinIdOfPlayer(
                       player.getUniqueId(), SkinIdentifier.ofCustom("lebron_custom"));
               try {
-                skinsRestorer.getSkinApplier(Player.class).applySkin(player);
+                skins().getSkinApplier(Player.class).applySkin(player);
               } catch (DataRequestException e) {
                 e.printStackTrace();
               }

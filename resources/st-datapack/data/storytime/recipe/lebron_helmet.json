@@ -1,0 +1,25 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "equipment",
+    "key": {
+        "X": "minecraft:yellow_dye",
+        "Y": "minecraft:purple_dye"
+    },
+    "pattern": [
+        "YXY",
+        "X X"
+    ],
+    "result": {
+        "components": {
+            "minecraft:dyed_color": 16776960,
+            "minecraft:item_model": "storytime:lebron_helmet",
+            "minecraft:item_name": "Lebron's Crown",
+            "minecraft:lore": [
+                "You..."
+            ]
+        },
+        "count": 1,
+        "id": "minecraft:leather_helmet"
+    },
+    "show_notification": false
+}

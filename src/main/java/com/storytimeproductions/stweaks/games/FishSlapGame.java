@@ -19,7 +19,6 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemFlag;
@@ -205,8 +204,8 @@ public class FishSlapGame implements Minigame, Listener {
    *
    * @param event the EntityDamageByEntityEvent
    */
-  @EventHandler
-  public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+  @Override
+  public void onDamage(EntityDamageByEntityEvent event) {
     if (!roundInProgress) {
       return;
     }

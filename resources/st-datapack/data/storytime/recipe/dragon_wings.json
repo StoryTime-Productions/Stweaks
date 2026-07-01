@@ -1,0 +1,27 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "ABA",
+        "CDC",
+        "AEA"
+    ],
+    "key": {
+        "A": "minecraft:obsidian",
+        "B": "minecraft:emerald",
+        "C": "minecraft:dragon_head",
+        "D": "minecraft:elytra",
+        "E": "minecraft:nether_star"
+    },
+    "result": {
+        "id": "minecraft:elytra",
+        "components": {
+            "minecraft:item_name": {"text": "Dragon Wings"},
+            "minecraft:item_model": "ax_wings_pack:dragon_wings",
+            "minecraft:lore": [
+                "From scales to sky..."
+            ]
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

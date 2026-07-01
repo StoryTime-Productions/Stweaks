@@ -1,0 +1,26 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "AAA",
+        "ABA",
+        "AAA"
+    ],
+    "key": {
+        "A": "minecraft:green_dye",
+        "B": "minecraft:netherite_chestplate"
+    },
+    "result": {
+        "id": "minecraft:netherite_chestplate",
+        "components": {
+            "minecraft:item_model": "storytime:green_chestplate",
+            "minecraft:item_name": {
+                "text": "Jade Chestplate"
+            },
+            "minecraft:equippable": {
+                "slot": "chest",
+                "asset_id": "storytime:green"
+            }
+        },
+        "count": 1
+    }
+}

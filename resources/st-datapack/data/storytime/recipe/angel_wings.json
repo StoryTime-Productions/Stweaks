@@ -1,0 +1,28 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "ABA",
+        "CDC",
+        "EFE"
+    ],
+    "key": {
+        "A": "minecraft:feather",
+        "B": "minecraft:diamond",
+        "C": "minecraft:ghast_tear",
+        "D": "minecraft:elytra",
+        "E": "minecraft:phantom_membrane",
+        "F": "minecraft:quartz"
+    },
+    "result": {
+        "id": "minecraft:elytra",
+        "components": {
+            "minecraft:item_name": {"text": "Angel Wings"},
+            "minecraft:item_model": "ax_wings_pack:angel_wings",
+            "minecraft:lore": [
+                "Radiant feathers from above..."
+            ]
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

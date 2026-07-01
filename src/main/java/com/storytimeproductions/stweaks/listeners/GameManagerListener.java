@@ -12,7 +12,6 @@ import com.storytimeproductions.stweaks.games.FishSlapGame;
 import com.storytimeproductions.stweaks.games.GymGame;
 import com.storytimeproductions.stweaks.games.HungryHungryHooksGame;
 import com.storytimeproductions.stweaks.games.KothTagGame;
-import com.storytimeproductions.stweaks.games.MobHunt;
 import com.storytimeproductions.stweaks.games.ParkourGame;
 import com.storytimeproductions.stweaks.games.RouletteGame;
 import com.storytimeproductions.stweaks.games.SpleefGame;
@@ -46,9 +45,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -78,7 +79,6 @@ public class GameManagerListener implements Listener {
     gameFactories.put("color_splat", ColorSplatGame::new);
     gameFactories.put("fish_slap", FishSlapGame::new);
     gameFactories.put("bomberman", BombermanGame::new);
-    gameFactories.put("mob_hunt", MobHunt::new);
     gameFactories.put("hungry_hungry_hooks", HungryHungryHooksGame::new);
     gameFactories.put("dodgeball", DodgeballGame::new);
     gameFactories.put("storyblitz", StoryBlitz::new);
@@ -145,7 +145,6 @@ public class GameManagerListener implements Listener {
     for (String gameId : gamesSection.getKeys(false)) {
       ConfigurationSection section = gamesSection.getConfigurationSection(gameId);
 
-      // Parse locations from comma-separated strings
       Location joinBlockLoc = parseLocation(section.getString("join-block"));
       Location gameAreaLoc = parseLocation(section.getString("game-area"));
       Location exitAreaLoc = parseLocation(section.getString("exit-area"));
@@ -157,7 +156,6 @@ public class GameManagerListener implements Listener {
       String winMessage = section.getString("win-message", "You win!");
       String loseMessage = section.getString("lose-message", "You lose!");
 
-      // Parse gameProperties as a map
       ConfigurationSection propsSection = section.getConfigurationSection("gameProperties");
       Map<String, String> gameProperties = new HashMap<>();
       if (propsSection != null) {
@@ -191,15 +189,13 @@ public class GameManagerListener implements Listener {
   }
 
   /**
-   * Handles firework damage events to prevent players from being damaged by fireworks in the casino
-   * world.
+   * Prevents firework damage to players in the casino world.
    *
-   * @param event the EntityDamageByEntityEvent triggered when a firework damages a player
+   * @param event the EntityDamageByEntityEvent
    */
   @EventHandler
   public void onFireworkDamage(EntityDamageByEntityEvent event) {
-    if (event.getDamager() instanceof Firework && event.getEntity() instanceof Player) {
-      Player player = (Player) event.getEntity();
+    if (event.getDamager() instanceof Firework && event.getEntity() instanceof Player player) {
       if (player.getWorld().getName().equalsIgnoreCase("casino")) {
         event.setCancelled(true);
       }
@@ -207,69 +203,47 @@ public class GameManagerListener implements Listener {
   }
 
   /**
-   * Handles player interactions with BattleshipGame blocks.
+   * Dispatches in-game player interact events to the relevant minigame.
    *
-   * @param event the PlayerInteractEvent triggered in the world
+   * @param event the PlayerInteractEvent
    */
   @EventHandler
-  public void onPlayerInteractBattleship(PlayerInteractEvent event) {
+  public void onPlayerInteractInGame(PlayerInteractEvent event) {
     Player player = event.getPlayer();
-
-    // Only run if the player is in a BattleshipGame and in its players list
     for (Minigame minigame : activeGames.values()) {
-      if (minigame instanceof BattleshipGame battleship) {
-        // Use the players field of the BattleshipGame instance
-        if (battleship.getPlayers().contains(player)) {
-          battleship.onPlayerInteract(event);
-          break;
-        }
-      }
-      if (minigame instanceof RouletteGame roulette) {
-        if (roulette.getPlayers().contains(player)) {
-          roulette.handleTableInteract(event);
-          break;
-        }
-      }
-      if (minigame instanceof BombermanGame bomberman) {
-        if (bomberman.getPlayers().contains(player)) {
-          bomberman.onPlayerInteract(event);
-          break;
-        }
+      if (minigame.getPlayers().contains(player)) {
+        minigame.onInteract(event);
+        break;
       }
     }
   }
 
   /**
-   * Handles player damage events to allow games to respond to player interactions.
+   * Dispatches player-vs-player damage events to the relevant minigame.
    *
-   * @param event the EntityDamageByEntityEvent triggered when a player damages another entity
+   * @param event the EntityDamageByEntityEvent
    */
   @EventHandler
-  public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-    if (!(event.getDamager() instanceof Player) || !(event.getEntity() instanceof Player)) {
+  public void onPlayerDamagePlayer(EntityDamageByEntityEvent event) {
+    if (!(event.getDamager() instanceof Player damager)
+        || !(event.getEntity() instanceof Player target)) {
       return;
     }
-    Player damager = (Player) event.getDamager();
-    Player target = (Player) event.getEntity();
-
     for (Minigame minigame : activeGames.values()) {
       if (minigame.getPlayers().contains(damager) && minigame.getPlayers().contains(target)) {
-        if (minigame instanceof FishSlapGame fishSlap) {
-          fishSlap.onEntityDamageByEntity(event);
-          return;
-        }
+        minigame.onDamage(event);
+        return;
       }
     }
   }
 
   /**
-   * Handles player right-click events to allow players to join games by interacting with join
-   * blocks.
+   * Handles player right-click on join blocks to let players enter games.
    *
-   * @param event the PlayerInteractEvent triggered in the world
+   * @param event the PlayerInteractEvent
    */
   @EventHandler
-  public void onPlayerInteract(PlayerInteractEvent event) {
+  public void onJoinBlockInteract(PlayerInteractEvent event) {
     if (event.getHand() != org.bukkit.inventory.EquipmentSlot.HAND) {
       return;
     }
@@ -289,7 +263,6 @@ public class GameManagerListener implements Listener {
       if (!block.getLocation().equals(joinLoc)) {
         continue;
       }
-
       if (!minigame.getPlayers().contains(player)) {
         tryJoinGame(minigame, player, joinLoc);
       }
@@ -298,13 +271,87 @@ public class GameManagerListener implements Listener {
     }
   }
 
+  /**
+   * Handles player quitting: removes items and leaves all active games.
+   *
+   * @param event the PlayerQuitEvent
+   */
+  @EventHandler
+  public void onPlayerQuit(PlayerQuitEvent event) {
+    Player player = event.getPlayer();
+
+    for (Minigame minigame : activeGames.values()) {
+      if (minigame.getPlayers().contains(player)) {
+        minigame.removeItems(player);
+        minigame.leave(player);
+      }
+    }
+  }
+
+  /**
+   * Dispatches player move events to each minigame the player is in.
+   *
+   * @param event the PlayerMoveEvent
+   */
+  @EventHandler
+  public void onPlayerMove(PlayerMoveEvent event) {
+    Player player = event.getPlayer();
+    for (Minigame minigame : activeGames.values()) {
+      if (minigame.getPlayers().contains(player)) {
+        minigame.onMove(event);
+      }
+    }
+  }
+
+  /**
+   * Dispatches player death events to each minigame the player is in.
+   *
+   * @param event the PlayerDeathEvent
+   */
+  @EventHandler
+  public void onPlayerDeath(PlayerDeathEvent event) {
+    Player player = event.getEntity();
+    for (Minigame minigame : activeGames.values()) {
+      if (minigame.getPlayers().contains(player)) {
+        minigame.onDeath(event);
+      }
+    }
+  }
+
+  /**
+   * Dispatches sneak toggle events to each minigame the player is in.
+   *
+   * @param event the PlayerToggleSneakEvent
+   */
+  @EventHandler
+  public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
+    Player player = event.getPlayer();
+    for (Minigame minigame : activeGames.values()) {
+      if (minigame.getPlayers().contains(player)) {
+        minigame.onSneak(event);
+      }
+    }
+  }
+
+  /**
+   * Dispatches command events to each minigame the player is in.
+   *
+   * @param event the PlayerCommandPreprocessEvent
+   */
+  @EventHandler
+  public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
+    Player player = event.getPlayer();
+    for (Minigame minigame : activeGames.values()) {
+      if (minigame.getPlayers().contains(player)) {
+        minigame.onCommand(event);
+      }
+    }
+  }
+
   private void tryJoinGame(Minigame minigame, Player player, Location joinLoc) {
     String gameId = minigame.getConfig().getGameId();
 
-    // Allow joining at any time if the game is roulette or the time gym
-    if (minigame instanceof RouletteGame
-        || minigame instanceof GymGame
-        || minigame instanceof ParkourGame) {
+    if (minigame.allowsConcurrentJoins()) {
       joinedPlayers.putIfAbsent(gameId, new HashSet<>());
       Set<UUID> players = joinedPlayers.get(gameId);
 
@@ -333,14 +380,13 @@ public class GameManagerListener implements Listener {
               "Type /casino leave to leave the game before it begins.", NamedTextColor.YELLOW));
       setJoinIndicator(joinLoc, true);
 
-      if (gameActive.getOrDefault(gameId, false)) {
-        return;
+      if (!gameActive.getOrDefault(gameId, false)) {
+        startGame(minigame);
       }
-      startGame(minigame);
       return;
     }
 
-    // Default logic for other games
+    // Default logic for turn-based games
     if (gameActive.getOrDefault(gameId, false)) {
       player.sendMessage(Component.text("Game is already running!", NamedTextColor.RED));
       return;
@@ -438,7 +484,6 @@ public class GameManagerListener implements Listener {
     timer.runTaskTimer(plugin, 0L, 20L);
   }
 
-  // Helper to parse "world,x,y,z"
   private static Location parseLocation(String str) {
     if (str == null) {
       return null;
@@ -497,57 +542,18 @@ public class GameManagerListener implements Listener {
     }
   }
 
-  /**
-   * Handles player quitting the game. Removes items and leaves all active games.
-   *
-   * @param event the PlayerQuitEvent triggered when a player quits
-   */
-  @EventHandler
-  public void onPlayerQuit(PlayerQuitEvent event) {
-    Player player = event.getPlayer();
-
-    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "undisguiseplayer " + player.getName());
-
-    for (Minigame minigame : activeGames.values()) {
-      if (minigame.getPlayers().contains(player)) {
-        minigame.removeItems(player);
-        minigame.leave(player);
-      }
-    }
-  }
-
-  /**
-   * Handles player movement events to allow games to respond to player actions.
-   *
-   * @param event the PlayerMoveEvent triggered when a player moves
-   */
-  @EventHandler
-  public void onPlayerMove(PlayerMoveEvent event) {
-    Player player = event.getPlayer();
-    for (Minigame minigame : activeGames.values()) {
-      if (minigame.getPlayers().contains(player)) {
-        if (minigame instanceof ColorSplatGame colorSplat) {
-          colorSplat.onPlayerMove(event);
-        }
-      }
-    }
-  }
-
   private void startGame(Minigame minigame) {
     String gameId = minigame.getConfig().getGameId();
     gameActive.put(gameId, true);
 
-    // Call game lifecycle methods
     minigame.onInit();
     minigame.afterInit();
 
-    // Game loop
     BukkitRunnable gameLoop =
         new BukkitRunnable() {
           @Override
           public void run() {
-            // If game signals quit, stop loop
-            if (minigameShouldQuit(minigame)) {
+            if (minigame.shouldQuit()) {
               this.cancel();
               minigame.onDestroy();
               gameActive.put(gameId, false);
@@ -555,9 +561,7 @@ public class GameManagerListener implements Listener {
               for (UUID uuid : joinedPlayers.get(gameId)) {
                 Player p = Bukkit.getPlayer(uuid);
                 if (p != null) {
-                  if (!(minigame instanceof RouletteGame)
-                      && !(minigame instanceof GymGame)
-                      && !(minigame instanceof ParkourGame)) {
+                  if (minigame.shouldTeleportOnExit()) {
                     p.teleport(minigame.getConfig().getExitArea());
                   }
                   if (minigame.getPlayers().contains(p)) {
@@ -573,58 +577,5 @@ public class GameManagerListener implements Listener {
           }
         };
     gameLoop.runTaskTimer(plugin, 0L, 20L);
-  }
-
-  private boolean minigameShouldQuit(Minigame minigame) {
-    return minigame.shouldQuit();
-  }
-
-  /**
-   * Handles player tagging in KothTagGame when one player damages another.
-   *
-   * @param event the EntityDamageByEntityEvent triggered when a player damages another player
-   */
-  @EventHandler
-  public void onPlayerTag(EntityDamageByEntityEvent event) {
-    if (!(event.getDamager() instanceof Player) || !(event.getEntity() instanceof Player)) {
-      return;
-    }
-    Player tagger = (Player) event.getDamager();
-    Player target = (Player) event.getEntity();
-    for (Minigame minigame : activeGames.values()) {
-      if (minigame instanceof KothTagGame koth) {
-        if (koth.getPlayers().contains(tagger) && koth.getPlayers().contains(target)) {
-          // Prevent damage if IT is invulnerable
-          if (target.equals(koth.getCurrentIt()) && koth.isItInvulnerable(target)) {
-            event.setCancelled(true);
-            return;
-          }
-          koth.tag(tagger, target);
-        }
-      }
-    }
-  }
-
-  /**
-   * Handles player death events to allow games to respond to player deaths.
-   *
-   * @param event the PlayerDeathEvent triggered when a player dies
-   */
-  @EventHandler
-  public void onPlayerDeath(PlayerDeathEvent event) {
-    Player player = event.getEntity();
-    for (Minigame minigame : activeGames.values()) {
-      if (minigame.getPlayers().contains(player)) {
-        if (minigame instanceof BombermanGame bomberman) {
-          bomberman.onPlayerDeath(event);
-        }
-        if (minigame instanceof MobHunt mobHunt) {
-          mobHunt.onPlayerDeath(event);
-        }
-        if (minigame instanceof DodgeballGame dodgeball) {
-          dodgeball.onPlayerDeath(event);
-        }
-      }
-    }
   }
 }

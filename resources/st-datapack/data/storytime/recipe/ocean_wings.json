@@ -1,0 +1,28 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "ABA",
+        "CDC",
+        "EFE"
+    ],
+    "key": {
+        "A": "minecraft:prismarine",
+        "B": "minecraft:prismarine_crystals",
+        "C": "minecraft:heart_of_the_sea",
+        "D": "minecraft:elytra",
+        "E": "minecraft:sea_lantern",
+        "F": "minecraft:kelp"
+    },
+    "result": {
+        "id": "minecraft:elytra",
+        "components": {
+            "minecraft:item_name": {"text": "Ocean Wings"},
+            "minecraft:item_model": "ax_wings_pack:ocean_wings",
+            "minecraft:lore": [
+                "Carried by the tide..."
+            ]
+        },
+        "count": 1
+    },
+    "show_notification": true
+}

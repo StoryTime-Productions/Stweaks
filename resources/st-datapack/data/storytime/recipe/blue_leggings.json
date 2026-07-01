@@ -1,0 +1,26 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "AAA",
+        "ABA",
+        "AAA"
+    ],
+    "key": {
+        "A": "minecraft:blue_dye",
+        "B": "minecraft:netherite_leggings"
+    },
+    "result": {
+        "id": "minecraft:netherite_leggings",
+        "components": {
+            "minecraft:item_model": "storytime:blue_leggings",
+            "minecraft:item_name": {
+                "text": "Azure Leggings"
+            },
+            "minecraft:equippable": {
+                "slot": "legs",
+                "asset_id": "storytime:blue"
+            }
+        },
+        "count": 1
+    }
+}

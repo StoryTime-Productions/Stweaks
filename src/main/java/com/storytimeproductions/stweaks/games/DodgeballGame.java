@@ -20,7 +20,6 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemFlag;
@@ -146,8 +145,8 @@ public class DodgeballGame implements Minigame {
    *
    * @param event the PlayerDeathEvent
    */
-  @EventHandler
-  public void onPlayerDeath(PlayerDeathEvent event) {
+  @Override
+  public void onDeath(PlayerDeathEvent event) {
     Player dead = event.getEntity();
     if (players.contains(dead)) {
       String team = teamMap.get(dead);

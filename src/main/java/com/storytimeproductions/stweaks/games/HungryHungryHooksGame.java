@@ -408,8 +408,8 @@ public class HungryHungryHooksGame implements Minigame, Listener {
       } else {
         p.sendMessage(winMsg);
       }
-      // Remove scoreboard for all players (set to a new/empty scoreboard)
-      p.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+      // Remove scoreboard for all players
+      p.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
     }
 
     // Unregister the sidebar objective to fully clear the sidebar

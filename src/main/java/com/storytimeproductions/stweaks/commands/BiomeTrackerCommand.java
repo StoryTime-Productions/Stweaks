@@ -60,7 +60,14 @@ public class BiomeTrackerCommand implements CommandExecutor {
       RegistryAccess registryAccess = RegistryAccess.registryAccess();
       Registry<Biome> biomeRegistry = registryAccess.getRegistry(RegistryKey.BIOME);
       if (biomeRegistry != null) {
-        biomeRegistry.iterator().forEachRemaining(allBiomes::add);
+        biomeRegistry
+            .iterator()
+            .forEachRemaining(
+                b -> {
+                  if ("minecraft".equals(b.getKey().getNamespace())) {
+                    allBiomes.add(b);
+                  }
+                });
       }
     }
     trackerManager.syncAndLoadBiomeItems(allBiomes);
@@ -215,25 +222,12 @@ public class BiomeTrackerCommand implements CommandExecutor {
     UUID uuid = player.getUniqueId();
     Set<String> discovered = trackerManager.getDiscoveredBiomes(uuid);
 
-    int minecraftTotal = 0;
-    int terralithTotal = 0;
-    int minecraftFound = 0;
-    int terralithFound = 0;
+    int found = 0;
+    int total = allBiomes.size();
 
     for (Biome biome : allBiomes) {
-      String biomeKey = biome.getKey().toString();
-      if (biomeKey.startsWith("minecraft")) {
-        minecraftTotal++;
-        if (discovered.contains(biomeKey)) {
-          minecraftFound++;
-        }
-      } else if (biomeKey.startsWith("terralith")
-          || biomeKey.startsWith("incendium")
-          || biomeKey.startsWith("nullscape")) {
-        terralithTotal++;
-        if (discovered.contains(biomeKey)) {
-          terralithFound++;
-        }
+      if (discovered.contains(biome.getKey().toString())) {
+        found++;
       }
     }
 
@@ -244,20 +238,8 @@ public class BiomeTrackerCommand implements CommandExecutor {
 
     List<Component> lore = new ArrayList<>();
 
-    double pctMc = minecraftTotal == 0 ? 0.0 : (minecraftFound * 100.0) / minecraftTotal;
-    lore.add(
-        Component.text(
-            String.format("Minecraft: %.1f%% (%d/%d)", pctMc, minecraftFound, minecraftTotal)));
-
-    double pctT = terralithTotal == 0 ? 0.0 : (terralithFound * 100.0) / terralithTotal;
-    lore.add(
-        Component.text(
-            String.format("Terralith: %.1f%% (%d/%d)", pctT, terralithFound, terralithTotal)));
-
-    int totalFound = minecraftFound + terralithFound;
-    int total = minecraftTotal + terralithTotal;
-    double pctAll = total == 0 ? 0.0 : (totalFound * 100.0) / total;
-    lore.add(Component.text(String.format("Total: %.1f%% (%d/%d)", pctAll, totalFound, total)));
+    double pct = total == 0 ? 0.0 : (found * 100.0) / total;
+    lore.add(Component.text(String.format("Discovered: %.1f%% (%d/%d)", pct, found, total)));
 
     meta.lore(lore);
     progressPane.setItemMeta(meta);

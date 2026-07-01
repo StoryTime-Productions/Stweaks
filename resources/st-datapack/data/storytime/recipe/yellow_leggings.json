@@ -1,0 +1,26 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "AAA",
+        "ABA",
+        "AAA"
+    ],
+    "key": {
+        "A": "minecraft:yellow_dye",
+        "B": "minecraft:netherite_leggings"
+    },
+    "result": {
+        "id": "minecraft:netherite_leggings",
+        "components": {
+            "minecraft:item_model": "storytime:yellow_leggings",
+            "minecraft:item_name": {
+                "text": "Amber Leggings"
+            },
+            "minecraft:equippable": {
+                "slot": "legs",
+                "asset_id": "storytime:yellow"
+            }
+        },
+        "count": 1
+    }
+}

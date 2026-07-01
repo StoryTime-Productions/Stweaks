@@ -260,8 +260,19 @@ public class RouletteGame implements Minigame {
   @Override
   public void removeItems(Player player) {}
 
+  @Override
+  public boolean allowsConcurrentJoins() {
+    return true;
+  }
+
+  @Override
+  public boolean shouldTeleportOnExit() {
+    return false;
+  }
+
   /** Handles player interaction with a table block. Only main hand interactions are allowed. */
-  public void handleTableInteract(PlayerInteractEvent event) {
+  @Override
+  public void onInteract(PlayerInteractEvent event) {
     if (event.getHand() == null || event.getHand().name().equals("OFF_HAND")) {
       return;
     }

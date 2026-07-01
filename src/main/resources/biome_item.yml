@@ -1,0 +1,72 @@
+# Maps formatted biome display names to representative item Material names.
+# Keys must match BiomeTrackerCommand#formatBiomeName output (Title Case, spaces for underscores).
+
+# --- Overworld ---
+Plains: GRASS_BLOCK
+Sunflower Plains: SUNFLOWER
+Snowy Plains: SNOW_BLOCK
+Ice Spikes: PACKED_ICE
+Desert: SAND
+Swamp: LILY_PAD
+Mangrove Swamp: MANGROVE_LOG
+Forest: OAK_LOG
+Flower Forest: POPPY
+Birch Forest: BIRCH_LOG
+Old Growth Birch Forest: BIRCH_LOG
+Dark Forest: DARK_OAK_LOG
+Pale Garden: PALE_OAK_LOG
+Jungle: JUNGLE_LOG
+Sparse Jungle: JUNGLE_SAPLING
+Bamboo Jungle: BAMBOO
+Taiga: SPRUCE_LOG
+Old Growth Spruce Taiga: SPRUCE_LOG
+Old Growth Pine Taiga: SPRUCE_LOG
+Snowy Taiga: SNOW
+Windswept Hills: COBBLESTONE
+Windswept Gravelly Hills: GRAVEL
+Windswept Forest: OAK_LOG
+Windswept Savanna: ACACIA_LOG
+Savanna: ACACIA_LOG
+Savanna Plateau: ACACIA_LOG
+Badlands: RED_SAND
+Wooded Badlands: RED_SAND
+Eroded Badlands: TERRACOTTA
+Meadow: DANDELION
+Cherry Grove: CHERRY_LOG
+Grove: SPRUCE_LOG
+Snowy Slopes: SNOW
+Jagged Peaks: STONE
+Frozen Peaks: PACKED_ICE
+Stony Peaks: CALCITE
+River: BLUE_STAINED_GLASS
+Frozen River: ICE
+Beach: SAND
+Snowy Beach: SNOW
+Stony Shore: COBBLESTONE
+Ocean: BLUE_STAINED_GLASS
+Deep Ocean: BLUE_STAINED_GLASS
+Warm Ocean: BRAIN_CORAL_BLOCK
+Lukewarm Ocean: TUBE_CORAL_BLOCK
+Deep Lukewarm Ocean: TUBE_CORAL_BLOCK
+Cold Ocean: KELP
+Deep Cold Ocean: KELP
+Frozen Ocean: BLUE_ICE
+Deep Frozen Ocean: BLUE_ICE
+Mushroom Fields: RED_MUSHROOM_BLOCK
+Dripstone Caves: POINTED_DRIPSTONE
+Lush Caves: AZALEA
+Deep Dark: SCULK
+
+# --- Nether ---
+Nether Wastes: NETHERRACK
+Soul Sand Valley: SOUL_SAND
+Crimson Forest: CRIMSON_STEM
+Warped Forest: WARPED_STEM
+Basalt Deltas: BASALT
+
+# --- The End ---
+The End: END_STONE
+Small End Islands: END_STONE
+End Midlands: END_STONE
+End Highlands: END_STONE
+End Barrens: END_STONE

@@ -17,7 +17,6 @@ import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -115,8 +114,18 @@ public class ParkourGame implements Minigame, Listener {
   /** If a player in the game lands on the floor level, remove them from the game. */
   // ...existing code...
 
-  @EventHandler
-  public void onPlayerMove(PlayerMoveEvent event) {
+  @Override
+  public boolean allowsConcurrentJoins() {
+    return true;
+  }
+
+  @Override
+  public boolean shouldTeleportOnExit() {
+    return false;
+  }
+
+  @Override
+  public void onMove(PlayerMoveEvent event) {
     Player player = event.getPlayer();
     if (!players.contains(player.getUniqueId())) {
       return;
@@ -135,8 +144,8 @@ public class ParkourGame implements Minigame, Listener {
   }
 
   /** If a player in the game right-clicks the win block, reward and remove them. */
-  @EventHandler
-  public void onPlayerInteract(PlayerInteractEvent event) {
+  @Override
+  public void onInteract(PlayerInteractEvent event) {
     Player player = event.getPlayer();
     if (!players.contains(player.getUniqueId())) {
       return;
@@ -180,8 +189,8 @@ public class ParkourGame implements Minigame, Listener {
    *
    * <p>This is to ensure that players cannot teleport out of the parkour area during gameplay.
    */
-  @EventHandler
-  public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
+  @Override
+  public void onCommand(PlayerCommandPreprocessEvent event) {
     Player player = event.getPlayer();
     if (!players.contains(player.getUniqueId())) {
       return;

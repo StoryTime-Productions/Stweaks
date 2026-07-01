@@ -1,3 +1,14 @@
+netherite_hoarder:
+  name: "Netherite Hoarder"
+  lore: "Fill your entire inventory with netherite blocks. A true flex of wealth and mining endurance."
+  itemRequirements:
+    - "minecraft:netherite_block:2304"
+  rewards:
+    - "minecraft:beacon:1"
+  requiredPlayers: []
+  deadline: "2025-05-10T00:00:00"
+  icon: "minecraft:netherite_block"
+
 gather_flowers:
   name: "Flower Collector"
   lore: "Collect a bouquet of beautiful flowers."
@@ -5,10 +16,12 @@ gather_flowers:
     - "minecraft:dandelion:5"
     - "minecraft:poppy:3"
   rewards:
-    - "money:100"
-    - "item:minecraft:flower_banner"
-  requiredPlayers: []
-  deadline: 2025-06-01T23:59:00
+    - "minecraft:flower_banner_pattern:1"
+  icon: "minecraft:poppy"
+  requiredPlayers: 
+    - "Niravanaaa"
+    - "nishaptl"
+  deadline: "2025-06-15T00:00:00"
 
 mine_diamonds:
   name: "Shiny Discovery"
@@ -16,9 +29,12 @@ mine_diamonds:
   itemRequirements:
     - "minecraft:diamond:10"
   rewards:
-    - "item:minecraft:diamond_pickaxe"
-  requiredPlayers: []
-  deadline: 2025-06-15T00:00:00
+    - "minecraft:diamond_pickaxe:1"
+  icon: "minecraft:diamond"
+  requiredPlayers:
+    - "Niravanaaa"
+    - "TheyCallMeSu"
+  deadline: "2025-06-15T00:00:00"
 
 community_build:
   name: "Community Builder"
@@ -27,29 +43,507 @@ community_build:
     - "minecraft:oak_log:64"
     - "minecraft:stone_bricks:64"
   rewards:
-    - "item:minecraft:golden_shovel"
-  requiredPlayers: []
+    - "minecraft:golden_shovel:1"
+  icon: "minecraft:stone_bricks"
+  requiredPlayers:
+    - "Niravanaaa"
+    - "TheyCallMeSu"
   deadline: null
 
 slay_the_beast:
   name: "Beast Slayer"
-  lore: "Defeat the Ravager in the nearby plains."
-  itemRequirements:
-    - "item:mob_kill:ravager:1"
+  lore: "Defeat the Ravager."
+  statRequirements:
+    - "kill_entity:ravager:1"
   rewards:
-    - "item:minecraft:netherite_sword"
-    - "title:Beast Slayer"
+    - "minecraft:iron_sword:1"
+  icon: "minecraft:iron_sword"
   requiredPlayers: []
-  deadline: 2025-07-01T18:00:00
+  deadline: "2025-06-15T00:00:00"
 
 nether_explorer:
   name: "Nether Explorer"
   lore: "Bring back relics from the Nether."
   itemRequirements:
-    - "minecraft:nether_quartz:20"
+    - "minecraft:quartz:20"
     - "minecraft:glowstone_dust:10"
   rewards:
-    - "xp:300"
-    - "item:minecraft:fire_resistance_potion"
+    - "minecraft:potion[potion_contents={potion:'minecraft:fire_resistance',custom_effects:[{id:'minecraft:absorption',amplifier:0,duration:2400,show_particles:1b,show_icon:1b,ambient:1b},custom_name='{'color':'red','text':'Fire Resistance Potion'}}]:1"
+  icon: "minecraft:quartz"
+  requiredPlayers: []
+  deadline: null
+
+fish_feast:
+  name: "Fish Feast"
+  lore: "Catch and prepare a feast of fish."
+  itemRequirements:
+    - "minecraft:cod:10"
+    - "minecraft:salmon:5"
+  rewards:
+    - "minecraft:cooked_cod:1"
+  icon: "minecraft:cod"
+  requiredPlayers: []
+  deadline: "2025-06-15T00:00:00"
+
+lumberjack_challenge:
+  name: "Lumberjack Challenge"
+  lore: "Chop down various trees and gather wood."
+  itemRequirements:
+    - "minecraft:birch_log:32"
+    - "minecraft:spruce_log:32"
+  rewards:
+    - "minecraft:iron_axe:1"
+  icon: "minecraft:iron_axe"
+  requiredPlayers: []
+  deadline: null
+
+desert_treasure:
+  name: "Desert Treasure"
+  lore: "Uncover the hidden treasure in a desert temple."
+  itemRequirements:
+    - "minecraft:sand:64"
+    - "minecraft:emerald:2"
+  rewards:
+    - "minecraft:emerald_block:1"
+  icon: "minecraft:emerald"
+  requiredPlayers: []
+  deadline: "2025-06-15T00:00:00"
+
+mountain_miner:
+  name: "Mountain Miner"
+  lore: "Mine rare ores in mountainous terrain."
+  itemRequirements:
+    - "minecraft:coal_ore:10"
+    - "minecraft:iron_ore:10"
+  rewards:
+    - "minecraft:torch:64"
+  icon: "minecraft:iron_ore"
+  requiredPlayers: []
+  deadline: null
+
+wheat_farmer:
+  name: "Wheat Farmer"
+  lore: "Harvest a plentiful amount of wheat."
+  itemRequirements:
+    - "minecraft:wheat:128"
+  rewards:
+    - "minecraft:bread:32"
+  icon: "minecraft:wheat"
+  requiredPlayers: []
+  deadline: null
+
+zombie_hunter:
+  name: "Zombie Hunter"
+  lore: "Defeat the undead that roam the night."
+  statRequirements:
+    - "kill_entity:zombie:20"
+  rewards:
+    - "minecraft:iron_sword:1"
+  icon: "minecraft:zombie_head"
+  requiredPlayers: []
+  deadline: "2025-06-15T00:00:00"
+
+nether_fortress_run:
+  name: "Fortress Runner"
+  lore: "Navigate a Nether Fortress and bring back loot."
+  itemRequirements:
+    - "minecraft:nether_brick:20"
+    - "minecraft:blaze_rod:5"
+  rewards:
+    - "minecraft:nether_wart:10"
+  icon: "minecraft:nether_brick"
+  requiredPlayers: []
+  deadline: "2025-06-15T00:00:00"
+
+arctic_explorer:
+  name: "Arctic Explorer"
+  lore: "Explore cold biomes and collect frozen goods."
+  itemRequirements:
+    - "minecraft:packed_ice:10"
+    - "minecraft:snow_block:10"
+  rewards:
+    - "minecraft:leather_boots:1"
+  icon: "minecraft:snow_block"
+  requiredPlayers: []
+  deadline: null
+
+archer_training:
+  name: "Archer Training"
+  lore: "Practice your aim with a bow."
+  itemRequirements:
+    - "minecraft:arrow:50"
+  rewards:
+    - "minecraft:bow:1"
+  icon: "minecraft:bow"
+  requiredPlayers: []
+  deadline: null
+
+bee_friend:
+  name: "Friend of the Bees"
+  lore: "Gather honey and help the bees flourish."
+  itemRequirements:
+    - "minecraft:honey_bottle:5"
+    - "minecraft:bee_nest:1"
+  rewards:
+    - "item:minecraft:campfire:1"
+  icon: "minecraft:honey_bottle"
+  requiredPlayers: []
+  deadline: "2025-06-15T00:00:00"
+
+castle_walls:
+  name: "Castle Walls"
+  lore: "Contribute to the community castle defense."
+  itemRequirements:
+    - "minecraft:cobblestone:128"
+    - "minecraft:iron_bars:32"
+  rewards:
+    - "minecraft:shield:1"
+  icon: "minecraft:shield"
+  requiredPlayers:
+    - "LavenderMadder"
+    - "Niravanaaa"
+  deadline: null
+
+creeper_cleaner:
+  name: "Creeper Cleaner"
+  lore: "Clear the area of creepers before they explode."
+  statRequirements:
+    - "kill_entity:creeper:10"
+  rewards:
+    - "minecraft:gunpowder:10"
+  icon: "minecraft:creeper_head"
+  requiredPlayers: []
+  deadline: "2025-06-15T00:00:00"
+
+deep_dive:
+  name: "Deep Sea Dive"
+  lore: "Explore the ocean depths and bring back loot."
+  itemRequirements:
+    - "minecraft:nautilus_shell:2"
+    - "minecraft:kelp:30"
+  rewards:
+    - "minecraft:trident:1"
+  icon: "minecraft:trident"
+  requiredPlayers: []
+  deadline: "2025-06-15T00:00:00"
+
+farmland_restoration:
+  name: "Farmland Restoration"
+  lore: "Help restore and expand the farmland."
+  itemRequirements:
+    - "minecraft:farmland:16"
+    - "minecraft:water_bucket:2"
+  rewards:
+    - "minecraft:iron_hoe:1"
+  icon: "minecraft:wooden_hoe"
+  requiredPlayers: []
+  deadline: null
+
+slime_squasher:
+  name: "Slime Squasher"
+  lore: "Squash the slimes in the swamp."
+  statRequirements:
+    - "kill_entity:slime:15"
+  rewards:
+    - "minecraft:slime_ball:10"
+  icon: "minecraft:slime_ball"
+  requiredPlayers: []
+  deadline: null
+
+jungle_run:
+  name: "Jungle Run"
+  lore: "Collect jungle treasures and survive the wilderness."
+  itemRequirements:
+    - "minecraft:melon_slice:20"
+    - "minecraft:cocoa_beans:15"
+  rewards:
+    - "minecraft:cookie:10"
+  icon: "minecraft:melon"
+  requiredPlayers: []
+  deadline: "2025-06-15T00:00:00"
+
+enchanters_journey:
+  name: "Enchanter's Journey"
+  lore: "Collect ingredients for powerful enchantments."
+  itemRequirements:
+    - "minecraft:lapis_lazuli:10"
+    - "minecraft:book:5"
+  rewards:
+    - "minecraft:enchanting_table:1"
+  icon: "minecraft:enchanting_table"
+  requiredPlayers: []
+  deadline: null
+
+enderman_exile:
+  name: "Enderman Exile"
+  lore: "Send Endermen back to the End."
+  statRequirements:
+    - "kill_entity:enderman:8"
+  rewards:
+    - "minecraft:ender_pearl:8"
+  icon: "minecraft:ender_pearl"
+  requiredPlayers: []
+  deadline: null
+
+villager_help:
+  name: "Helping Hands"
+  lore: "Trade with villagers to improve the economy."
+  itemRequirements:
+    - "minecraft:emerald:5"
+    - "minecraft:bread:10"
+  rewards:
+    - "minecraft:emerald:1"
+  icon: "minecraft:emerald"
+  requiredPlayers: []
+  deadline: "2025-06-15T00:00:00"
+
+magma_mayhem:
+  name: "Magma Mayhem"
+  lore: "Fight magma cubes in the Nether fortress."
+  statRequirements:
+    - "kill_entity:magma_cube:10"
+  rewards:
+    - "minecraft:magma_cream:5"
+  icon: "minecraft:magma_cream"
+  requiredPlayers: []
+  deadline: null
+
+fisherman_fortune:
+  name: "Fisherman's Fortune"
+  lore: "Catch fish to feed the village."
+  statRequirements:
+    - "fish_caught::15"
+  rewards:
+    - "minecraft:cooked_cod:5"
+  icon: "minecraft:fishing_rod"
+  requiredPlayers: []
+  deadline: null
+
+cave_diver:
+  name: "Cave Diver"
+  lore: "Travel deep underground in search of treasures."
+  statRequirements:
+    - "climb_one_cm::500"
+  rewards:
+    - "minecraft:torch:32"
+  icon: "minecraft:stone_pickaxe"
+  requiredPlayers: []
+  deadline: null
+
+runner_legacy:
+  name: "Runner's Legacy"
+  lore: "Sprint through the world to improve your stamina."
+  statRequirements:
+    - "sprint_one_cm::3000"
+  rewards:
+    - "minecraft:golden_carrot:5"
+  icon: "minecraft:leather_boots"
+  requiredPlayers: []
+  deadline: null
+
+friendly_farmer:
+  name: "Friendly Farmer"
+  lore: "Breed animals to grow your farm."
+  statRequirements:
+    - "animals_bred::10"
+  rewards:
+    - "minecraft:wheat:20"
+  icon: "minecraft:hay_block"
+  requiredPlayers: []
+  deadline: null
+
+campfire_cook:
+  name: "Campfire Cook"
+  lore: "Use a campfire to prepare a hearty meal."
+  statRequirements:
+    - "interact_with_campfire::1"
+  rewards:
+    - "minecraft:cooked_porkchop:4"
+  icon: "minecraft:campfire"
+  requiredPlayers: []
+  deadline: null
+
+redstone_engineer:
+  name: "Redstone Engineer"
+  lore: "Inspect dispensers and droppers for redstone contraptions."
+  statRequirements:
+    - "dispenser_inspected::2"
+    - "dropper_inspected::2"
+  rewards:
+    - "minecraft:redstone:16"
+  icon: "minecraft:redstone"
+  requiredPlayers: []
+  deadline: null
+
+early_bird:
+  name: "Early Bird"
+  lore: "Rest early and dream well."
+  statRequirements:
+    - "sleep_in_bed::1"
+  rewards:
+    - "minecraft:white_bed:1"
+  icon: "minecraft:white_bed"
+  requiredPlayers: []
+  deadline: null
+
+melody_maker:
+  name: "Melody Maker"
+  lore: "Play a note block to create a simple melody."
+  statRequirements:
+    - "noteblock_played::1"
+  rewards:
+    - "minecraft:jukebox:1"
+  icon: "minecraft:note_block"
+  requiredPlayers: []
+  deadline: null
+
+village_helper:
+  name: "Village Helper"
+  lore: "Talk and trade with the villagers."
+  statRequirements:
+    - "talked_to_villager::1"
+    - "traded_with_villager::1"
+  rewards:
+    - "minecraft:emerald:3"
+  icon: "minecraft:emerald"
+  requiredPlayers: []
+  deadline: null
+
+undead_battle:
+  name: "Undead Battle"
+  lore: "Defeat a skeleton and a zombie."
+  statRequirements:
+    - "kill_entity:zombie:1"
+    - "kill_entity:skeleton:1"
+  rewards:
+    - "minecraft:bone:5"
+    - "minecraft:rotten_flesh:5"
+  icon: "minecraft:iron_sword"
+  requiredPlayers: []
+  deadline: null
+
+high_jump:
+  name: "High Jump"
+  lore: "Show your jumping prowess."
+  statRequirements:
+    - "jump::100"
+  rewards:
+    - "minecraft:rabbit_foot:1"
+  icon: "minecraft:rabbit_foot"
+  requiredPlayers: []
+  deadline: null
+
+iron_smith:
+  name: "Iron Smith"
+  lore: "Use the smithing table like a true blacksmith."
+  statRequirements:
+    - "interact_with_smithing_table::1"
+  rewards:
+    - "minecraft:iron_ingot:3"
+  icon: "minecraft:smithing_table"
+  requiredPlayers: []
+  deadline: null
+
+smoky_flavor:
+  name: "Smoky Flavor"
+  lore: "Use a smoker to cook your meal."
+  statRequirements:
+    - "interact_with_smoker::1"
+  rewards:
+    - "minecraft:cooked_beef:3"
+  icon: "minecraft:smoker"
+  requiredPlayers: []
+  deadline: null
+
+ride_the_boat:
+  name: "Ride the Boat"
+  lore: "Paddle your way through the water."
+  statRequirements:
+    - "boat_one_cm::1000"
+  rewards:
+    - "minecraft:oak_boat:1"
+  icon: "minecraft:oak_boat"
+  requiredPlayers: []
+  deadline: null
+
+nether_blaze:
+  name: "Nether Blaze"
+  lore: "Defeat the fiery blaze in the Nether."
+  statRequirements:
+    - "kill_entity:blaze:2"
+  rewards:
+    - "minecraft:blaze_rod:2"
+  icon: "minecraft:blaze_powder"
+  requiredPlayers: []
+  deadline: null
+
+cooked_to_perfection:
+  name: "Cooked to Perfection"
+  lore: "Use a furnace to prepare food."
+  statRequirements:
+    - "furnace_interaction::1"
+  rewards:
+    - "minecraft:coal:4"
+  icon: "minecraft:furnace"
+  requiredPlayers: []
+  deadline: null
+
+silent_sneaker:
+  name: "Silent Sneaker"
+  lore: "Sneak for a long distance without being noticed."
+  statRequirements:
+    - "crouch_one_cm::1000"
+  rewards:
+    - "minecraft:leather_leggings:1"
+  icon: "minecraft:sneaking"
+  requiredPlayers: []
+  deadline: null
+
+knowledge_seeker:
+  name: "Knowledge Seeker"
+  lore: "Read from a lectern."
+  statRequirements:
+    - "interact_with_lectern::1"
+  rewards:
+    - "minecraft:book:3"
+  icon: "minecraft:lectern"
+  requiredPlayers: []
+  deadline: null
+
+enchanted_path:
+  name: "Enchanted Path"
+  lore: "Enchant an item to gain magical powers."
+  statRequirements:
+    - "item_enchanted::1"
+  rewards:
+    - "minecraft:lapis_lazuli:5"
+  icon: "minecraft:enchanting_table"
+  requiredPlayers: []
+  deadline: null
+
+battle_ready:
+  name: "Battle Ready"
+  lore: "Take damage and deal it back."
+  statRequirements:
+    - "damage_taken::50"
+    - "damage_dealt::50"
+  rewards:
+    - "minecraft:shield:1"
+  icon: "minecraft:shield"
+  requiredPlayers: []
+  deadline: null
+
+number_fifteen:
+  name: "BK's #15"
+  lore: "The last thing you'd want in your Burger King burger is someone's foot fungus."
+  itemRequirements:
+    - "minecraft:bread:2"
+    - "minecraft:beef:1"
+    - "minecraft:brown_mushroom:1"
+    - "minecraft:rabbit_foot:1"
+  rewards:
+    - "minecraft:lingering_potion[potion_contents={custom_color:1376020,custom_effects:[{id:'minecraft:nausea',amplifier:0,duration:9600,show_particles:1b,show_icon:1b,ambient:1b}]},custom_name='{'color':'green','text':'Lingering Potion of Foot Fungus'}']:1"
+    - "minecraft:splash_potion[potion_contents={custom_color:1376020,custom_effects:[{id:'minecraft:nausea',amplifier:0,duration:9600,show_particles:1b,show_icon:1b,ambient:1b}]},custom_name='{'color':'green','text':'Splash Potion of Foot Fungus'}']:1"
+  icon: "minecraft:rabbit_foot"
   requiredPlayers: []
   deadline: null

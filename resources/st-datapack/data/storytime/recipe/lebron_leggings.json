@@ -1,0 +1,26 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "equipment",
+    "key": {
+        "X": "minecraft:yellow_dye",
+        "Y": "minecraft:purple_dye"
+    },
+    "pattern": [
+        "X Y",
+        "Y X",
+        "X Y"
+    ],
+    "result": {
+        "components": {
+            "minecraft:dyed_color": 16776960,
+            "minecraft:item_model": "storytime:lebron_leggings",
+            "minecraft:item_name": "Lebron's Shorts",
+            "minecraft:lore": [
+                "My..."
+            ]
+        },
+        "count": 1,
+        "id": "minecraft:leather_leggings"
+    },
+    "show_notification": false
+}
