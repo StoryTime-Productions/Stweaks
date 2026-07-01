@@ -5,9 +5,6 @@ import com.storytimeproductions.stweaks.playtime.PlaytimeData;
 import com.storytimeproductions.stweaks.playtime.PlaytimeTracker;
 import com.storytimeproductions.stweaks.util.BossBarManager;
 import com.storytimeproductions.stweaks.util.TablistManager;
-import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
-import io.github.thebusybiscuit.slimefun4.api.player.PlayerProfile;
-import io.github.thebusybiscuit.slimefun4.api.researches.Research;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -112,7 +109,6 @@ public class PlayerActivityListener implements Listener {
     BossBarManager.updateBossBar(player);
     TablistManager.updateTablist(player, PlaytimeTracker.getTotalMultiplier());
     updateTablistTimer(player, PlaytimeTracker.getSeconds(uuid));
-    unlockElevatorKnowledge(player);
     sendResourcePack(player);
 
     Bukkit.getScheduler()
@@ -158,28 +154,6 @@ public class PlayerActivityListener implements Listener {
             .warning("[Stweaks] Could not send resource pack " + url + ": " + e.getMessage());
       }
     }
-  }
-
-  private void unlockElevatorKnowledge(Player player) {
-    if (Bukkit.getPluginManager().getPlugin("Slimefun") == null) {
-      return;
-    }
-    SlimefunItem elevatorItem = SlimefunItem.getById("ELEVATOR_PLATE");
-    if (elevatorItem == null) {
-      return;
-    }
-    Research research = elevatorItem.getResearch();
-    if (research == null) {
-      return;
-    }
-    PlayerProfile.get(
-        player,
-        profile -> {
-          if (!profile.hasUnlocked(research)) {
-            profile.setResearched(research, true);
-            profile.markDirty();
-          }
-        });
   }
 
   /**
