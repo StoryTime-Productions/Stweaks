@@ -75,6 +75,11 @@ repositories {
         url = 'https://jitpack.io'
     }
 
+    maven {
+        name 'libsdisguises'
+        url 'https://mvn.lib.co.nz/public'
+    }
+
     mavenCentral()
 }
 
@@ -93,7 +98,7 @@ dependencies {
     compileOnly 'net.dmulloy2:ProtocolLib:5.4.0'
     compileOnly 'me.libraryaddict.disguises:libsdisguises:11.0.16'
     compileOnly 'com.github.retrooper:packetevents-spigot:2.12.1'
-    compileOnly fileTree(dir: '../EDEN/build/libs', include: 'EDEN-*-SNAPSHOT.jar')
+    compileOnly fileTree(dir: "${System.getenv('EDEN_PATH') ?: '../EDEN'}/build/libs", include: 'EDEN-*-SNAPSHOT.jar')
     compileOnly 'com.github.Slimefun:Slimefun4:RC-37'
 }
 
