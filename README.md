@@ -1,76 +1,16 @@
-<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
-
 <a id="readme-top"></a>
 
-<!-- PROJECT LOGO -->
-<br />
-<div align="center">
-  <a href="https://github.com/StoryTime-Productions/Stweaks">
-    <img src="https://i.imgur.com/zlGbFm5.png" alt="Logo" style="max-width: 100%; height: auto;">
-  </a>
-
-<!-- PROJECT SHIELDS -->
 <p align="center">
-  <a href="https://github.com/StoryTime-Productions/Stweaks/graphs/contributors">
-    <img src="https://img.shields.io/github/contributors/StoryTime-Productions/Stweaks.svg?style=for-the-badge" alt="Contributors">
-  </a>
-  <a href="https://github.com/StoryTime-Productions/Stweaks/network/members">
-    <img src="https://img.shields.io/github/forks/StoryTime-Productions/Stweaks.svg?style=for-the-badge" alt="Forks">
-  </a>
-  <a href="https://github.com/StoryTime-Productions/Stweaks/stargazers">
-    <img src="https://img.shields.io/github/stars/StoryTime-Productions/Stweaks.svg?style=for-the-badge" alt="Stargazers">
-  </a>
-  <a href="https://github.com/StoryTime-Productions/Stweaks/issues">
-    <img src="https://img.shields.io/github/issues/StoryTime-Productions/Stweaks.svg?style=for-the-badge" alt="Issues">
-  </a>
-  <a href="https://github.com/StoryTime-Productions/Stweaks/blob/master/LICENSE.txt">
-    <img src="https://img.shields.io/github/license/StoryTime-Productions/Stweaks.svg?style=for-the-badge" alt="License">
-  </a>
+  <img src="https://i.imgur.com/zlGbFm5.png" alt="Stweaks banner" />
 </p>
 
-  <p align="center">
-    A plugin introducing vanilla-based tweaks.<br/>
-    <br />
-    <a href="https://github.com/StoryTime-Productions/Stweaks/wiki"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/StoryTime-Productions/Stweaks">View Demo</a>
-    &middot;
-    <a href="https://github.com/StoryTime-Productions/Stweaks/issues/new?template=bug_report.md">Report Bug</a>
-    &middot;
-    <a href="https://github.com/StoryTime-Productions/Stweaks/issues/new?template=feature_request.md">Request Feature</a>
-  </p>
-</div>
+<p align="center">
+  <a href="https://github.com/StoryTime-Productions/Stweaks/actions/workflows/main.yml"><img src="https://github.com/StoryTime-Productions/Stweaks/actions/workflows/main.yml/badge.svg" alt="CI status" /></a>
+  <img src="https://img.shields.io/badge/Paper-26.1.2-blue" alt="Paper 26.1.2" />
+  <img src="https://img.shields.io/badge/Java-26-orange" alt="Java 26" />
+</p>
 
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ol>
-</details>
-
-<!-- ABOUT THE PROJECT -->
-
-## About The Project
-
-**Stweaks** is a Minecraft plugin developed for <a href="https://papermc.io/">PaperMC</a> servers. This plugin introduces various silly custom items, mechanic modifications and additional add-ons to make playing Vanilla a bit more fun.
+Stweaks is a PaperMC plugin built for the StoryTime SMP - a collection of in-house vanilla tweaks (daily playtime tracking, teleport/lobby utilities, biome tracking, quests, pets, cosmetics, and a casino GUI) meant to make playing vanilla Minecraft together a bit more fun.
 
 ### Why Stweaks?
 
@@ -82,73 +22,102 @@ Contributions, ideas, or feature requests are always welcome!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### Built With
+## What It Does
 
-- [![Java 17](https://img.shields.io/badge/Java-17-007396?style=flat&logo=openjdk&logoColor=white)](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
-  — Core language used to develop the plugin.
-- [![Spigot API](https://img.shields.io/badge/Spigot-API-FABF2D?style=flat&logo=minecraft&logoColor=black)](https://www.spigotmc.org/wiki/spigot-plugin-development/)
-  — Minecraft server API used for plugin development.
+- **Stracker**: tracks daily active playtime and applies weekend/social participation multipliers toward a required-minutes goal.
+- **Teleport utilities**: lobby and spawn teleport commands, with a configurable spawn location and allowed worlds.
+- **Biome tracker**: a GUI for tracking discovered biomes.
+- **Quests, Pets, Cosmetics, Casino**: dedicated GUIs for each system.
+- **Boost**: a community-participation multiplier booster (work in progress).
+- Ships a bundled resource pack (`src/main/resources/st-respack`) and datapack (`src/main/resources/st-datapack`), and integrates with SkinsRestorer, ProtocolLib, LibsDisguises, packetevents, and the StoryTime EDEN plugin.
 
-- [![Gradle](https://img.shields.io/badge/Gradle-02303A?style=flat&logo=gradle&logoColor=white)](https://gradle.org/)
-  — Build automation tool used for compiling and packaging.
+## Commands
 
-- [![Spotless](https://img.shields.io/badge/Spotless-Format-4B32C3?style=flat&logo=prettier&logoColor=white)](https://github.com/diffplug/spotless)
-  — Used for automatic code formatting during builds.
+| Command | Description | Permission |
+|---------|-------------|------------|
+| `/ststatus` (alias `status`) | Shows how much time you've actively played today | `stweaks.status` (default: true) |
+| `/stboost` (alias `boost`) | Boosts multiplier for community participation (WIP) | `stweaks.boost` (default: op) |
+| `/stlobby` (alias `lobby`) | Teleport to the lobby | `stweaks.lobby` (default: true) |
+| `/stspawn` (alias `spawn`) | Teleports you to the spawn location in the world | `stweaks.spawn` (default: true) |
+| `/biometracker` | Opens the biome tracker GUI | `stweaks.biometracker` (default: true) |
+| `/stquests` (alias `quests`) | Opens the quests GUI | `stweaks.quests` (default: true) |
+| `/stpets` (alias `pets`) | Opens the pets GUI | `stweaks.stpets` (default: true) |
+| `/stcosmetics` (alias `cosmetics`) | Opens the cosmetics GUI | `stweaks.cosmetics` (default: true) |
+| `/stcasino` (alias `casino`) | Opens the casino GUI | none - open to all players. The `casino reload` subcommand is gated by op status (`isOp()`), not a permission node. |
 
-- [![Batch Script](https://img.shields.io/badge/Batch%20Script-Windows-4D4D4D?style=flat&logo=windows&logoColor=white)](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/windows-commands)
-  — Windows batch scripting for automating plugin deployment.
+`stweaks.*` grants all of the above permissions (default: false).
 
-- [![PowerShell](https://img.shields.io/badge/PowerShell-5391FE?style=flat&logo=powershell&logoColor=white)](https://learn.microsoft.com/en-us/powershell/)
-  — Used for zipping assets and other deployment tasks.
+## Requirements
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+- Paper `26.1` (see `api-version` in `plugin.yml`; built against `paperDevBundle('26.1.2.build.+')`)
+- Java 26 (toolchain), source/target compatibility 25
+- Optional soft-dependencies: SkinsRestorer, ProtocolLib, Slimefun
+- Requires the [EDEN](https://github.com/StoryTime-Productions/EDEN) plugin jar available at build time (see Build below)
 
-<!-- GETTING STARTED -->
-
-## Getting Started
-
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+## Getting Started (Developers)
 
 ### Prerequisites
 
-To build and deploy ks locally, ensure the following tools are installed:
-
-- [Java 21+](https://adoptium.net/en-GB/temurin/releases/)
-  Required to compile and run the plugin.
-- [Gradle](https://gradle.org/install/) _(or use the included `gradlew` wrapper)_  
-  Used to build the project and apply formatting.
-
-- [PowerShell 5.1+](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell) _(for Windows users)_  
-  Required for deployment zip compression.
-
-- `.env` file in the project root  
-  Must define:
+- Gradle (or the included `gradlew` / `gradlew.bat` wrapper)
+- Java 26: set `JAVA_HOME` accordingly
+- A local build of [EDEN](https://github.com/StoryTime-Productions/EDEN) (defaults to `../EDEN`, or set the `EDEN_PATH` environment variable to point elsewhere)
+- PowerShell 5.1+ (for Windows users): used for deployment zip compression
+- A `.env` file in the project root defining:
   ```env
   SERVER_PATH=path\to\your\server
   RESOURCE_PATH=path\to\your\resourcepacks
   ```
 
-### Installation
+### Build
 
-1. Clone the repository locally.
+```
+./gradlew build
+```
 
-2. Assuming the current structure of the project, you may add-on functionality right away.
+Run `./gradlew spotlessApply` first to auto-format code (CI runs `spotlessApply` on PRs and expects clean formatting; it's skipped automatically when `CI` env var is set).
 
-3. For resource pack implementation, you can refer to the `src/main/resources/st-respack` folder.
+### Install
 
-4. For datapack implementation, you can refer to the `src/main/resources'st-datapack` folder.
+Drop the built shadow jar (from `build/libs/`) into your server's `plugins/` folder and restart.
 
-5. The `deploy.bat` script, located in root, can be used to update the plugin, resource pack, and datapack respectively, assuming correct paths are provided in the `.env` file.
+Additional local dev steps:
 
-6. Run the following command in your terminal to enable project-specific Git hooks:
-   ```sh
-   ./set-hooks-path.sh
-   ```
+1. For resource pack implementation, refer to `src/main/resources/st-respack`.
+2. For datapack implementation, refer to `src/main/resources/st-datapack`.
+3. The `deploy.bat` script in the repo root can update the plugin, resource pack, and datapack, assuming correct paths are set in `.env`.
+4. Run `./set-hooks-path.sh` once to enable project-specific Git hooks.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+## Configuration
 
-<!-- ROADMAP -->
+Configuration lives in `src/main/resources/config.yml`:
+
+- `spawn`: world/coordinates/allowed-worlds for `/stspawn`
+- `lobby`: world/coordinates/yaw/pitch for `/stlobby`
+- `required_minutes`: daily playtime goal for Stracker
+- `afk_threshold_seconds`: AFK cutoff for playtime tracking
+- `weekend_multiplier` / `multipliers`: base, weekend, social, social-distance, and social-cap multipliers for playtime
+- `resource-pack`: enable/require a server resource pack, with a prompt message and pack URL/hash list
+
+## CI/CD
+
+GitHub Actions workflows under `.github/workflows/`:
+
+- `pr.yml`: on pull requests to `main`: checks out EDEN, builds it, runs `spotlessApply`, then builds this plugin with Gradle and uploads build/test artifacts.
+- `main.yml`: on push to `main` (and a weekly Saturday cron, to catch PaperMC upstream breakage): builds and tests, then runs a `release` Gradle task and uploads the release build.
+- `commitlint.yml`: lints commit messages.
+- `static.yml`: on push to `main` or manual dispatch: checks out EDEN, builds with Gradle (JDK 26 + 21), runs `./gradlew javadoc`, and deploys the generated Javadoc to GitHub Pages.
+- `release.yml`: on a published GitHub release: posts a Discord notification (pre-release vs. full release, different webhooks) via `appleboy/discord-action`.
+- `tag.yml`: on pushing a `v*` tag: runs `./gradlew release`, uploads build artifacts, and creates a draft GitHub Release (marked prerelease if the tag contains `-rc-`); a second job notifies Discord of the outcome.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). In short: fork the repo, create a feature branch, commit your changes, push, and open a pull request. Issues and feature requests are also welcome via the [issue templates](.github/ISSUE_TEMPLATE).
+
+### Top contributors
+
+<a href="https://github.com/StoryTime-Productions/Stweaks/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=StoryTime-Productions/Stweaks" alt="contrib.rocks image" />
+</a>
 
 ## Roadmap
 
@@ -159,42 +128,7 @@ To build and deploy ks locally, ensure the following tools are installed:
 - [x] Add 1-hour Timer
 - [ ] Add Nature Compass
 
-See the [open issues](https://github.com/StoryTime-Productions/ks/issues) for a full list of proposed features (and known issues).
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- CONTRIBUTING -->
-
-## Contributing
-
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-### Top contributors:
-
-<a href="https://github.com/StoryTime-Productions/Stweaks/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=StoryTime-Productions/Stweaks" alt="contrib.rocks image" />
-</a>
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- LICENSE -->
-
-## License
-
-See `LICENSE.txt` for more information.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- CONTACT -->
+See the [open issues](https://github.com/StoryTime-Productions/Stweaks/issues) for a full list of proposed features (and known issues).
 
 ## Contact
 
@@ -203,3 +137,7 @@ Nirav Patel - [@Niravanaa](https://github.com/Niravanaa) - niravp0703@gmail.com
 StoryTime Productions: [Portfolio Link](https://storytime-productions.github.io/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## License
+
+GNU General Public License v3.0 - see [LICENSE](LICENSE).
