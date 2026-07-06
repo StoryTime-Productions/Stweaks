@@ -20,7 +20,7 @@ jobs:
       EDEN_PATH: _eden
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Common Setup
         uses: ./.github/actions/common-setup
@@ -28,7 +28,7 @@ jobs:
           java-version: 26
 
       - name: Checkout EDEN
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: StoryTime-Productions/EDEN
           path: _eden
