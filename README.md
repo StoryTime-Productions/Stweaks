@@ -60,7 +60,7 @@ Contributions, ideas, or feature requests are always welcome!
 
 - Gradle (or the included `gradlew` / `gradlew.bat` wrapper)
 - Java 26: set `JAVA_HOME` accordingly
-- A local build of [EDEN](https://github.com/StoryTime-Productions/EDEN) (defaults to `../../EDEN`, or set the `EDEN_PATH` environment variable to point elsewhere)
+- A local build of [EDEN](https://github.com/StoryTime-Productions/EDEN) (defaults to `../EDEN`, or set the `EDEN_PATH` environment variable to point elsewhere)
 - PowerShell 5.1+ (for Windows users): used for deployment zip compression
 - A `.env` file in the project root defining:
   ```env
