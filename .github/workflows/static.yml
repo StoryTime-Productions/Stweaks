@@ -27,13 +27,13 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Set up JDK 26 (compilation toolchain)
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: 'temurin'
           java-version: '26'
 
       - name: Set up JDK 21 (Gradle JVM)
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: 'temurin'
           java-version: '21'
